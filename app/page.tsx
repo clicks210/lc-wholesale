@@ -1,65 +1,379 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import Link from 'next/link'
+import Script from 'next/script'
+
+const productLines = [
+  {
+    name: 'Fresh Produce',
+    href: '/products?category=Produce',
+    eyebrow: 'BC Farms',
+    description:
+      'Our produce program is built in partnership with the Kamloops Farmers Market and a network of local farms, giving restaurants access to fresh, seasonal product sourced close to home. We focus on quality and consistency, aggregating supply and handling logistics so kitchens can rely on local produce without the usual friction.',
+    items: ['Greens', 'Root veg', 'Fruit', 'Herbs'],
+    image: '/images/produce.jpg',
+  },
+  {
+    name: 'Frozen Bakery',
+    href: '/products?category=Bread',
+    eyebrow: 'Specialty Bakery',
+    description:
+      'Our frozen bread program features premium products from Specialty Bakery, giving restaurants access to high-quality, artisan bread with the convenience of frozen inventory. Each product is crafted for consistency, easy storage, and bake-off performance—so kitchens can serve fresh, great-tasting bread on demand without the waste or unpredictability of daily deliveries.',
+    items: ['Buns', 'Loaves', 'Pastries', 'Specialty'],
+    image: '/images/bread.jpg',
+  },
+  {
+    name: 'Colonial Farms',
+    href: '/products?category=Protein',
+    eyebrow: 'Poultry',
+    description:
+      'Our poultry program features high-quality product from Colonial Farms, with both fresh and frozen options available. We handle sourcing, storage, and delivery to ensure consistent supply and seamless integration into your kitchen.',
+    items: ['Poultry', 'Fresh', 'Frozen', 'Case-ready'],
+    image: '/images/poultry.jpg',
+  },
+  {
+    name: 'Paper & Janitorial',
+    href: '/products?category=Paper',
+    eyebrow: 'R3 Distribution',
+    description:
+      'Our paper and janitorial program offers a full suite of products through R3 Redistribution, covering everything from essential disposables to cleaning supplies. We centralize sourcing and delivery so you can manage these core items alongside your food orders with ease and consistency.',
+    items: ['Takeout', 'Gloves', 'Chemicals', 'Paper'],
+    image: '/images/paper.jpg',
+  },
+]
+
+const steps = [
+  {
+    title: 'Create account',
+    text: 'Set up your buyer profile and tell us what your kitchen usually orders.',
+  },
+  {
+    title: 'Browse supply',
+    text: 'View available product lines and build a clean weekly order guide.',
+  },
+  {
+    title: 'Submit order',
+    text: 'Send everything through one flow instead of chasing sheets and texts.',
+  },
+  {
+    title: 'We coordinate',
+    text: 'Your dedicated account representative handles supplier coordination, delivery planning, and communication.',
+  },
+]
+
+export default function WholesaleLandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <main className="min-h-screen bg-[#f4f1ea] text-[#1d1d1b]">
+      {/* TOP BAR / LOGO */}
+      <header className="border-b border-[#1d1d1b]/25 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
+          <Link href="/" className="flex items-center gap-4">
+            <img
+              src="/images/logo.png"
+              alt="Local Connect"
+              className="h-20 w-auto object-contain"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div></div>
+          </Link>
+
+          <Link
+            href="/signup"
+            className="hidden border border-[#244f3d] bg-[#244f3d] px-5 py-3 text-xs font-black uppercase tracking-[0.08em] text-white transition hover:bg-transparent hover:text-[#244f3d] sm:inline-flex"
           >
-            Documentation
-          </a>
+            Buyer access
+          </Link>
         </div>
-      </main>
-    </div>
-  );
+      </header>
+
+      <Script
+  src="https://clickbooks-app-production.up.railway.app/embed.js"
+  strategy="afterInteractive"
+  data-slug="local-connect-91b5d7"
+  data-label="Get Set Up"
+  data-position="right"
+  data-color="#244f3d"
+  data-icon="none"
+/>
+
+      
+
+      {/* HERO */}
+      <section className="relative min-h-[90vh] overflow-hidden border-b border-[#1d1d1b]/25">
+        {/* BACKGROUND VIDEO */}
+        <iframe
+          src="https://www.youtube.com/embed/NMhskDzU4hI?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=NMhskDzU4hI"
+          title="Local Connect supplier video"
+          className="pointer-events-none absolute inset-0 h-full w-full scale-125 object-cover opacity-60"
+          allow="autoplay; encrypted-media; picture-in-picture"
+        />
+
+        {/* OVERLAYS */}
+        <div className="absolute inset-0 bg-[#1d1d1b]/35" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1d1d1b]/40 via-[#1d1d1b]/20 to-[#1d1d1b]" />
+
+        {/* CONTENT */}
+        <div className="relative z-10 mx-auto flex min-h-[90vh] max-w-7xl items-center px-6 py-20 lg:px-10">
+          <div className="max-w-3xl text-white">
+            <div className="mb-6 inline-flex border border-white/40 bg-black/30 px-5 py-2 text-xs font-black uppercase tracking-[0.16em] backdrop-blur">
+              Wholesale marketplace
+            </div>
+
+            <h1 className="text-5xl font-black leading-[0.92] tracking-[-0.05em] md:text-7xl lg:text-8xl">
+              Premium Food-Service Distribution.
+            </h1>
+
+            <p className="mt-6 max-w-xl text-lg leading-8 text-white/75">
+              Local Connect provides your restaurant with affordable staples and top-quality local food through one reliable wholesale system.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link
+                href="/signup"
+                className="border border-white bg-white px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white"
+              >
+                Request access
+              </Link>
+              <Link
+                href="/products"
+                className="border border-white/60 bg-black/20 px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white backdrop-blur transition hover:bg-white hover:text-[#1d1d1b]"
+              >
+                Browse marketplace
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STORY / TRUST */}
+      <section className="border-b border-[#1d1d1b]/25">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
+          {/* IMAGE */}
+          <div className="border border-[#1d1d1b]/30 bg-white p-3">
+            <div className="relative min-h-[320px] overflow-hidden border border-[#1d1d1b]/20 md:min-h-[460px]">
+              <img
+                src="/images/lc-story.jpg"
+                alt="Local Connect working with suppliers"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent" />
+            </div>
+          </div>
+
+          {/* COPY */}
+          <div className="flex items-center">
+            <div className="max-w-xl">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
+                Why Local Connect
+              </p>
+              <h2 className="mt-3 text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+                Built by chefs, for chefs.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-[#4b4b45]">
+                Local Connect was built inside kitchens to solve a simple problem: great local products weren’t reaching restaurants easily. We bring local produce, poultry, bread, paper, and janitorial products into one reliable, centralized wholesale system.
+              </p>
+              <p className="mt-4 text-lg leading-8 text-[#4b4b45]">
+                We source directly, warehouse, and deliver ourselves—making buying local as seamless and dependable as traditional distribution while strengthening the local food system.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link
+                  href="/signup"
+                  className="border border-[#1d1d1b] bg-[#1d1d1b] px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#244f3d]"
+                >
+                  Request access
+                </Link>
+                <Link
+                  href="/products"
+                  className="border border-[#1d1d1b] bg-transparent px-6 py-4 text-sm font-black uppercase tracking-[0.08em] transition hover:bg-[#1d1d1b] hover:text-white"
+                >
+                  View products
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PRODUCT LINES */}
+      <section className="bg-white text-[#1d1d1b]">
+        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+          <div className="max-w-3xl">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
+              Product lines
+            </p>
+            <h2 className="mt-3 text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+              Four core categories. One clean wholesale system.
+            </h2>
+          </div>
+        </div>
+
+        <div className="border-t border-[#1d1d1b]/20">
+          {productLines.map((line, index) => {
+            const imageFirst = index % 2 === 0
+
+            return (
+              <section key={line.name} className="border-b border-[#1d1d1b]/20">
+                <div className="mx-auto grid max-w-7xl gap-0 px-6 py-16 lg:grid-cols-2 lg:px-10 lg:py-20">
+                  <div
+                    className={`${
+                      imageFirst ? 'lg:order-1' : 'lg:order-2'
+                    } border border-[#1d1d1b]/30 bg-white p-3`}
+                  >
+                    <div className="relative min-h-[320px] overflow-hidden border border-[#1d1d1b]/20 bg-[#2a2a26] md:min-h-[460px]">
+                      <img
+                        src={line.image}
+                        alt={line.name}
+                        className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-500 hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
+                    </div>
+                  </div>
+
+                  <div
+                    className={`${
+                      imageFirst ? 'lg:order-2' : 'lg:order-1'
+                    } flex items-center border border-[#1d1d1b]/30 bg-[#244f3d] p-8 text-white lg:p-12`}
+                  >
+                    <div className="max-w-xl">
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-white/70">
+                        {line.eyebrow}
+                      </p>
+                      <h3 className="mt-4 text-4xl font-black leading-tight tracking-[-0.04em] md:text-6xl">
+                        {line.name}
+                      </h3>
+                      <p className="mt-6 text-lg leading-8 text-white/80">
+                        {line.description}
+                      </p>
+
+                      <div className="mt-7 flex flex-wrap gap-2">
+                        {line.items.map((item) => (
+                          <span
+                            key={item}
+                            className="border border-white/40 px-3 py-2 text-xs font-black uppercase tracking-[0.08em] text-white/80"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+
+                      <Link
+                        href={line.href}
+                        className="mt-9 inline-flex border border-white bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white"
+                      >
+                        Browse {line.name}
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="border-b border-[#1d1d1b]/25 px-6 py-20 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-3xl">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
+              How it works
+            </p>
+            <h2 className="mt-3 text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+              From scattered sourcing to one clean order flow.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#4b4b45]">
+              We’re not just a tech platform. We’re a hands-on partner in your business, with real people helping you source, order, warehouse, and receive the products your kitchen depends on.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step, index) => (
+              <div
+                key={step.title}
+                className="border border-[#1d1d1b] bg-[#fffaf1] p-6"
+              >
+                <div className="mb-8 text-sm font-black text-[#244f3d]">
+                  0{index + 1}
+                </div>
+                <h3 className="text-2xl font-black tracking-[-0.03em]">
+                  {step.title}
+                </h3>
+                <p className="mt-4 leading-7 text-[#5f5f57]">{step.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 py-20 lg:px-10">
+        <div className="mx-auto max-w-7xl border border-[#1d1d1b] bg-[#244f3d] p-8 text-white shadow-[12px_12px_0_#1d1d1b] md:p-10">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-white/60">
+                Buyer access
+              </p>
+              <h2 className="mt-3 max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+                Start ordering smarter.
+              </h2>
+              <p className="mt-4 max-w-2xl text-lg leading-8 text-white/75">
+                Get access to the Local Connect wholesale marketplace and build your first order guide with support from a dedicated account representative.
+              </p>
+            </div>
+            <Link
+              href="/signup"
+              className="border border-white bg-white px-8 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white"
+            >
+              Sign up
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-[#1d1d1b]/25 bg-white px-6 py-16 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-3">
+          {/* CONTACT */}
+          <div>
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
+              Contact
+            </h3>
+            <p className="text-sm text-[#5f5f57]">
+              Local Connect Wholesale
+            </p>
+            <p className="mt-2 text-sm text-[#5f5f57]">
+              Kamloops, BC
+            </p>
+            <p className="mt-2 text-sm text-[#5f5f57]">
+              liam@localconnect.ca
+            </p>
+          </div>
+
+          {/* CENTER PIECE */}
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="mb-3 text-4xl">🍁</div>
+            <p className="text-lg font-black uppercase tracking-[0.12em]">
+              Supporting Canadian Foodservice
+            </p>
+          </div>
+
+          {/* SUPPLIERS */}
+          <div>
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
+              Suppliers
+            </h3>
+            <div className="grid gap-2 text-sm text-[#5f5f57]">
+              <p>Local Farms</p>
+              <p>Specialty Bakery</p>
+              <p>Colonial Farms</p>
+              <p>R3 Redistribution</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 border-t border-[#1d1d1b]/10 pt-6 text-center text-xs text-[#7a7a72]">
+          © {new Date().getFullYear()} Local Connect. All rights reserved.
+        </div>
+      </footer>
+    </main>
+  )
 }

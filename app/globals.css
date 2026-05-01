@@ -1,26 +1,78 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --lc-green: #244f3d;
+  --lc-green-soft: #2f5d46;
+  --lc-bg: #f4f1ea;
+  --lc-sand: #e9e1d4;
+  --lc-border: #d6cec0;
+  --lc-ink: #1e1e1e;
+  --lc-muted: #6f675c;
+  --lc-white: #ffffff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-lc-green: var(--lc-green);
+  --color-lc-green-soft: var(--lc-green-soft);
+  --color-lc-bg: var(--lc-bg);
+  --color-lc-sand: var(--lc-sand);
+  --color-lc-border: var(--lc-border);
+  --color-lc-ink: var(--lc-ink);
+  --color-lc-muted: var(--lc-muted);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--lc-bg);
+  color: var(--lc-ink);
 }
+
+.nav-link {
+  color: var(--lc-ink);
+  transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--lc-green);
+}
+
+.nav-icon {
+  color: var(--lc-ink);
+  transition: color 0.15s ease;
+}
+
+.nav-icon:hover {
+  color: var(--lc-green);
+}
+
+.lc-container {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.lc-section {
+  padding-block: 4rem;
+}
+
+.lc-card {
+  border: 1px solid var(--lc-border);
+  background: white;
+}
+
+.lc-button-primary {
+  background: var(--lc-green);
+  color: white;
+  padding: 0.875rem 1.5rem;
+  font-weight: 700;
+}
+
+.lc-button-secondary {
+  border: 1px solid var(--lc-green);
+  color: var(--lc-green);
+  padding: 0.875rem 1.5rem;
+  font-weight: 700;
+} 
