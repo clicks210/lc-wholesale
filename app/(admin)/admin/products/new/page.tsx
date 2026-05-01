@@ -14,6 +14,7 @@ export default function NewProductPage() {
   const [sku, setSku] = useState('')
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
+  const [supplier, setSupplier] = useState('')
   const [unit, setUnit] = useState('')
   const [price, setPrice] = useState('')
   const [costPrice, setCostPrice] = useState('')
@@ -59,6 +60,7 @@ export default function NewProductPage() {
         sku,
         name,
         category,
+        supplier,
         unit,
         price: Number(price),
         cost_price: costPrice ? Number(costPrice) : null,
@@ -92,8 +94,8 @@ export default function NewProductPage() {
         </h1>
 
         <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6f675c]">
-          Create a wholesale catalog item with buyer-facing details, internal cost,
-          margin visibility, and product media.
+          Create a wholesale catalog item with buyer-facing details, supplier
+          information, internal cost, margin visibility, and product media.
         </p>
       </div>
 
@@ -190,6 +192,22 @@ export default function NewProductPage() {
                   className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="border border-[#d6cec0] bg-white p-6">
+            <h2 className="text-xl font-semibold">Supplier</h2>
+
+            <div className="mt-6">
+              <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                Supplier Name
+              </label>
+              <input
+                value={supplier}
+                onChange={(e) => setSupplier(e.target.value)}
+                placeholder="Specialty Bakery, Colonial Farms, R3 Redistribution..."
+                className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+              />
             </div>
           </div>
 
