@@ -17,10 +17,14 @@ export default function CartPage() {
   const [savingGuide, setSavingGuide] = useState(false)
   const [message, setMessage] = useState('')
 
-  function refreshCart() {
-    setItems([...getCart()])
+  function notifyCartUpdated() {
     window.dispatchEvent(new Event('cartUpdated'))
     window.dispatchEvent(new Event('cart-updated'))
+  }
+
+  function refreshCart() {
+    setItems([...getCart()])
+    notifyCartUpdated()
   }
 
   useEffect(() => {
@@ -84,12 +88,7 @@ export default function CartPage() {
       .single()
 
     if (guideError || !guide) {
-      console.error('Create guide error:', {
-        message: guideError?.message,
-        details: guideError?.details,
-        hint: guideError?.hint,
-        code: guideError?.code,
-      })
+      console.error('Create guide error:', guideError)
       setMessage('Could not create order guide.')
       setSavingGuide(false)
       return
@@ -106,12 +105,7 @@ export default function CartPage() {
       .insert(rows)
 
     if (itemsError) {
-      console.error('Create guide items error:', {
-        message: itemsError.message,
-        details: itemsError.details,
-        hint: itemsError.hint,
-        code: itemsError.code,
-      })
+      console.error('Create guide items error:', itemsError)
       setMessage('Guide created, but products could not be saved.')
       setSavingGuide(false)
       return
@@ -207,6 +201,7 @@ export default function CartPage() {
 
                     <div className="text-right">
                       <p className="font-bold">${lineTotal.toFixed(2)}</p>
+
                       <button
                         type="button"
                         onClick={() => {
@@ -252,6 +247,7 @@ export default function CartPage() {
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                   Order Notes
                 </label>
+
                 <textarea
                   rows={4}
                   value={notes}

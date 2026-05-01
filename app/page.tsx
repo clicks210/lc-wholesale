@@ -66,19 +66,18 @@ export default function WholesaleLandingPage() {
     <main className="min-h-screen bg-[#f4f1ea] text-[#1d1d1b]">
       {/* TOP BAR / LOGO */}
       <header className="border-b border-[#1d1d1b]/25 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
           <Link href="/" className="flex items-center gap-4">
             <img
               src="/images/logo.png"
               alt="Local Connect"
-              className="h-20 w-auto object-contain"
+              className="h-14 w-auto object-contain sm:h-20"
             />
-            <div></div>
           </Link>
 
           <Link
             href="/signup"
-            className="hidden border border-[#244f3d] bg-[#244f3d] px-5 py-3 text-xs font-black uppercase tracking-[0.08em] text-white transition hover:bg-transparent hover:text-[#244f3d] sm:inline-flex"
+            className="inline-flex border border-[#244f3d] bg-[#244f3d] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-transparent hover:text-[#244f3d] sm:px-5 sm:py-3 sm:text-xs"
           >
             Buyer access
           </Link>
@@ -86,56 +85,51 @@ export default function WholesaleLandingPage() {
       </header>
 
       <Script
-  src="https://clickbooks-app-production.up.railway.app/embed.js"
-  strategy="afterInteractive"
-  data-slug="local-connect-91b5d7"
-  data-label="Get Set Up"
-  data-position="right"
-  data-color="#244f3d"
-  data-icon="none"
-/>
-
-      
+        src="https://clickbooks-app-production.up.railway.app/embed.js"
+        strategy="afterInteractive"
+        data-slug="local-connect-91b5d7"
+        data-label="Get Set Up"
+        data-position="right"
+        data-color="#244f3d"
+        data-icon="none"
+      />
 
       {/* HERO */}
-      <section className="relative min-h-[90vh] overflow-hidden border-b border-[#1d1d1b]/25">
-        {/* BACKGROUND VIDEO */}
+      <section className="relative min-h-[78vh] overflow-hidden border-b border-[#1d1d1b]/25 sm:min-h-[90vh]">
         <iframe
           src="https://www.youtube.com/embed/NMhskDzU4hI?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=NMhskDzU4hI"
           title="Local Connect supplier video"
-          className="pointer-events-none absolute inset-0 h-full w-full scale-125 object-cover opacity-60"
+          className="pointer-events-none absolute inset-0 h-full w-full scale-[1.75] object-cover opacity-60 sm:scale-125"
           allow="autoplay; encrypted-media; picture-in-picture"
         />
 
-        {/* OVERLAYS */}
-        <div className="absolute inset-0 bg-[#1d1d1b]/35" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1d1d1b]/40 via-[#1d1d1b]/20 to-[#1d1d1b]" />
+        <div className="absolute inset-0 bg-[#1d1d1b]/45 sm:bg-[#1d1d1b]/35" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1d1d1b]/50 via-[#1d1d1b]/25 to-[#1d1d1b]" />
 
-        {/* CONTENT */}
-        <div className="relative z-10 mx-auto flex min-h-[90vh] max-w-7xl items-center px-6 py-20 lg:px-10">
+        <div className="relative z-10 mx-auto flex min-h-[78vh] max-w-7xl items-center px-4 py-16 sm:min-h-[90vh] sm:px-6 sm:py-20 lg:px-10">
           <div className="max-w-3xl text-white">
-            <div className="mb-6 inline-flex border border-white/40 bg-black/30 px-5 py-2 text-xs font-black uppercase tracking-[0.16em] backdrop-blur">
+            <div className="mb-5 inline-flex border border-white/40 bg-black/30 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] backdrop-blur sm:mb-6 sm:px-5 sm:text-xs">
               Wholesale marketplace
             </div>
 
-            <h1 className="text-5xl font-black leading-[0.92] tracking-[-0.05em] md:text-7xl lg:text-8xl">
+            <h1 className="text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-6xl md:text-7xl lg:text-8xl">
               Premium Food-Service Distribution.
             </h1>
 
-            <p className="mt-6 max-w-xl text-lg leading-8 text-white/75">
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/80 sm:mt-6 sm:text-lg sm:leading-8">
               Local Connect provides your restaurant with affordable staples and top-quality local food through one reliable wholesale system.
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap">
               <Link
                 href="/signup"
-                className="border border-white bg-white px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white"
+                className="border border-white bg-white px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white sm:px-7"
               >
                 Request access
               </Link>
               <Link
                 href="/products"
-                className="border border-white/60 bg-black/20 px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white backdrop-blur transition hover:bg-white hover:text-[#1d1d1b]"
+                className="border border-white/60 bg-black/20 px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white backdrop-blur transition hover:bg-white hover:text-[#1d1d1b] sm:px-7"
               >
                 Browse marketplace
               </Link>
@@ -146,10 +140,9 @@ export default function WholesaleLandingPage() {
 
       {/* STORY / TRUST */}
       <section className="border-b border-[#1d1d1b]/25">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
-          {/* IMAGE */}
-          <div className="border border-[#1d1d1b]/30 bg-white p-3">
-            <div className="relative min-h-[320px] overflow-hidden border border-[#1d1d1b]/20 md:min-h-[460px]">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10 lg:px-10">
+          <div className="border border-[#1d1d1b]/30 bg-white p-2 sm:p-3">
+            <div className="relative min-h-[260px] overflow-hidden border border-[#1d1d1b]/20 sm:min-h-[380px] md:min-h-[460px]">
               <img
                 src="/images/lc-story.jpg"
                 alt="Local Connect working with suppliers"
@@ -159,31 +152,30 @@ export default function WholesaleLandingPage() {
             </div>
           </div>
 
-          {/* COPY */}
           <div className="flex items-center">
             <div className="max-w-xl">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
                 Why Local Connect
               </p>
-              <h2 className="mt-3 text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+              <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
                 Built by chefs, for chefs.
               </h2>
-              <p className="mt-5 text-lg leading-8 text-[#4b4b45]">
+              <p className="mt-5 text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
                 Local Connect was built inside kitchens to solve a simple problem: great local products weren’t reaching restaurants easily. We bring local produce, poultry, bread, paper, and janitorial products into one reliable, centralized wholesale system.
               </p>
-              <p className="mt-4 text-lg leading-8 text-[#4b4b45]">
+              <p className="mt-4 text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
                 We source directly, warehouse, and deliver ourselves—making buying local as seamless and dependable as traditional distribution while strengthening the local food system.
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   href="/signup"
-                  className="border border-[#1d1d1b] bg-[#1d1d1b] px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#244f3d]"
+                  className="border border-[#1d1d1b] bg-[#1d1d1b] px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#244f3d]"
                 >
                   Request access
                 </Link>
                 <Link
                   href="/products"
-                  className="border border-[#1d1d1b] bg-transparent px-6 py-4 text-sm font-black uppercase tracking-[0.08em] transition hover:bg-[#1d1d1b] hover:text-white"
+                  className="border border-[#1d1d1b] bg-transparent px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] transition hover:bg-[#1d1d1b] hover:text-white"
                 >
                   View products
                 </Link>
@@ -195,12 +187,12 @@ export default function WholesaleLandingPage() {
 
       {/* PRODUCT LINES */}
       <section className="bg-white text-[#1d1d1b]">
-        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
           <div className="max-w-3xl">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
               Product lines
             </p>
-            <h2 className="mt-3 text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
               Four core categories. One clean wholesale system.
             </h2>
           </div>
@@ -212,13 +204,13 @@ export default function WholesaleLandingPage() {
 
             return (
               <section key={line.name} className="border-b border-[#1d1d1b]/20">
-                <div className="mx-auto grid max-w-7xl gap-0 px-6 py-16 lg:grid-cols-2 lg:px-10 lg:py-20">
+                <div className="mx-auto grid max-w-7xl gap-4 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-0 lg:px-10 lg:py-20">
                   <div
                     className={`${
                       imageFirst ? 'lg:order-1' : 'lg:order-2'
-                    } border border-[#1d1d1b]/30 bg-white p-3`}
+                    } border border-[#1d1d1b]/30 bg-white p-2 sm:p-3`}
                   >
-                    <div className="relative min-h-[320px] overflow-hidden border border-[#1d1d1b]/20 bg-[#2a2a26] md:min-h-[460px]">
+                    <div className="relative min-h-[250px] overflow-hidden border border-[#1d1d1b]/20 bg-[#2a2a26] sm:min-h-[340px] md:min-h-[460px]">
                       <img
                         src={line.image}
                         alt={line.name}
@@ -231,24 +223,24 @@ export default function WholesaleLandingPage() {
                   <div
                     className={`${
                       imageFirst ? 'lg:order-2' : 'lg:order-1'
-                    } flex items-center border border-[#1d1d1b]/30 bg-[#244f3d] p-8 text-white lg:p-12`}
+                    } flex items-center border border-[#1d1d1b]/30 bg-[#244f3d] p-6 text-white sm:p-8 lg:p-12`}
                   >
                     <div className="max-w-xl">
                       <p className="text-xs font-black uppercase tracking-[0.16em] text-white/70">
                         {line.eyebrow}
                       </p>
-                      <h3 className="mt-4 text-4xl font-black leading-tight tracking-[-0.04em] md:text-6xl">
+                      <h3 className="mt-4 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-5xl md:text-6xl">
                         {line.name}
                       </h3>
-                      <p className="mt-6 text-lg leading-8 text-white/80">
+                      <p className="mt-5 text-base leading-7 text-white/82 sm:mt-6 sm:text-lg sm:leading-8">
                         {line.description}
                       </p>
 
-                      <div className="mt-7 flex flex-wrap gap-2">
+                      <div className="mt-6 flex flex-wrap gap-2 sm:mt-7">
                         {line.items.map((item) => (
                           <span
                             key={item}
-                            className="border border-white/40 px-3 py-2 text-xs font-black uppercase tracking-[0.08em] text-white/80"
+                            className="border border-white/40 px-3 py-2 text-[11px] font-black uppercase tracking-[0.08em] text-white/80 sm:text-xs"
                           >
                             {item}
                           </span>
@@ -257,7 +249,7 @@ export default function WholesaleLandingPage() {
 
                       <Link
                         href={line.href}
-                        className="mt-9 inline-flex border border-white bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white"
+                        className="mt-8 inline-flex w-full justify-center border border-white bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white sm:mt-9 sm:w-auto"
                       >
                         Browse {line.name}
                       </Link>
@@ -271,33 +263,35 @@ export default function WholesaleLandingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="border-b border-[#1d1d1b]/25 px-6 py-20 lg:px-10">
+      <section className="border-b border-[#1d1d1b]/25 px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
               How it works
             </p>
-            <h2 className="mt-3 text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
               From scattered sourcing to one clean order flow.
             </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#4b4b45]">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
               We’re not just a tech platform. We’re a hands-on partner in your business, with real people helping you source, order, warehouse, and receive the products your kitchen depends on.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-9 grid gap-4 sm:mt-10 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((step, index) => (
               <div
                 key={step.title}
-                className="border border-[#1d1d1b] bg-[#fffaf1] p-6"
+                className="border border-[#1d1d1b] bg-[#fffaf1] p-5 sm:p-6"
               >
-                <div className="mb-8 text-sm font-black text-[#244f3d]">
+                <div className="mb-6 text-sm font-black text-[#244f3d] sm:mb-8">
                   0{index + 1}
                 </div>
-                <h3 className="text-2xl font-black tracking-[-0.03em]">
+                <h3 className="text-xl font-black tracking-[-0.03em] sm:text-2xl">
                   {step.title}
                 </h3>
-                <p className="mt-4 leading-7 text-[#5f5f57]">{step.text}</p>
+                <p className="mt-3 text-sm leading-6 text-[#5f5f57] sm:mt-4 sm:text-base sm:leading-7">
+                  {step.text}
+                </p>
               </div>
             ))}
           </div>
@@ -305,17 +299,17 @@ export default function WholesaleLandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 py-20 lg:px-10">
-        <div className="mx-auto max-w-7xl border border-[#1d1d1b] bg-[#244f3d] p-8 text-white shadow-[12px_12px_0_#1d1d1b] md:p-10">
+      <section className="px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
+        <div className="mx-auto max-w-7xl border border-[#1d1d1b] bg-[#244f3d] p-6 text-white shadow-[7px_7px_0_#1d1d1b] sm:p-8 sm:shadow-[12px_12px_0_#1d1d1b] md:p-10">
           <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-white/60">
                 Buyer access
               </p>
-              <h2 className="mt-3 max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+              <h2 className="mt-3 max-w-3xl text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
                 Start ordering smarter.
               </h2>
-              <p className="mt-4 max-w-2xl text-lg leading-8 text-white/75">
+              <p className="mt-4 max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
                 Get access to the Local Connect wholesale marketplace and build your first order guide with support from a dedicated account representative.
               </p>
             </div>
@@ -330,33 +324,19 @@ export default function WholesaleLandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#1d1d1b]/25 bg-white px-6 py-16 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-3">
-          {/* CONTACT */}
+      <footer className="border-t border-[#1d1d1b]/25 bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 text-center sm:text-left md:grid-cols-3 md:gap-12">
           <div>
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
               Contact
             </h3>
-            <p className="text-sm text-[#5f5f57]">
-              Local Connect Wholesale
-            </p>
-            <p className="mt-2 text-sm text-[#5f5f57]">
-              Kamloops, BC
-            </p>
-            <p className="mt-2 text-sm text-[#5f5f57]">
-              liam@localconnect.ca
-            </p>
+            <p className="text-sm text-[#5f5f57]">Local Connect Wholesale</p>
+            <p className="mt-2 text-sm text-[#5f5f57]">Kamloops, BC</p>
+            <p className="mt-2 text-sm text-[#5f5f57]">liam@localconnect.ca</p>
           </div>
 
-          {/* CENTER PIECE */}
-          <div className="flex flex-col items-center justify-center text-center">
-            <div className="mb-3 text-4xl">🍁</div>
-            <p className="text-lg font-black uppercase tracking-[0.12em]">
-              Supporting Canadian Foodservice
-            </p>
-          </div>
+        
 
-          {/* SUPPLIERS */}
           <div>
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
               Suppliers
@@ -370,7 +350,7 @@ export default function WholesaleLandingPage() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-[#1d1d1b]/10 pt-6 text-center text-xs text-[#7a7a72]">
+        <div className="mt-10 border-t border-[#1d1d1b]/10 pt-6 text-center text-xs text-[#7a7a72] sm:mt-12">
           © {new Date().getFullYear()} Local Connect. All rights reserved.
         </div>
       </footer>
