@@ -14,9 +14,10 @@ export async function POST(
 
     const invoice = await createZohoInvoiceForOrder(orderId)
 
+    // ✅ FIX: spread first, then success
     return NextResponse.json({
-      success: true,
       ...invoice,
+      success: true,
     })
   } catch (error: any) {
     console.error('Create Zoho invoice error:', error)
@@ -24,7 +25,7 @@ export async function POST(
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to create Zoho invoice',
+        error: error?.message || 'Failed to create Zoho invoice',
       },
       { status: 500 }
     )
