@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -13,11 +13,7 @@ const categories = [
   { label: 'Paper', href: '/products?category=Paper', value: 'Paper' },
 ]
 
-export default function BuyerLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+function BuyerLayoutContent({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null)
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -52,13 +48,13 @@ export default function BuyerLayout({
     <main className="min-h-screen bg-[#f4f1ea] text-[#1e1e1e]">
       <header className="sticky top-0 z-40 border-b border-[#d6cec0] bg-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center">
-  <img
-    src="/images/logo.png"
-    alt="Local Connect"
-    className="h-12 w-auto object-contain"
-  />
-</Link>
+          <Link href="/" className="flex items-center">
+            <img
+              src="/images/logo.png"
+              alt="Local Connect"
+              className="h-12 w-auto object-contain"
+            />
+          </Link>
 
           <nav className="hidden items-center gap-2 md:flex">
             {categories.map((item) => {
@@ -80,8 +76,6 @@ export default function BuyerLayout({
                 </Link>
               )
             })}
-
-            
           </nav>
 
           <div className="flex items-center gap-2 text-sm font-semibold">
@@ -139,5 +133,17 @@ export default function BuyerLayout({
 
       {children}
     </main>
+  )
+}
+
+export default function BuyerLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <Suspense fallback={null}>
+      <BuyerLayoutContent>{children}</BuyerLayoutContent>
+    </Suspense>
   )
 }
