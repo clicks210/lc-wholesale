@@ -31,3 +31,21 @@ export async function unapproveCustomer(customerId: string) {
 
   if (error) throw error
 }
+
+export async function updateCustomerDeliveryTerms(
+  customerId: string,
+  values: {
+    order_minimum: number
+    delivery_cost: number
+  }
+) {
+  const { error } = await supabase
+    .from('customers')
+    .update({
+      order_minimum: values.order_minimum,
+      delivery_cost: values.delivery_cost,
+    })
+    .eq('id', customerId)
+
+  if (error) throw error
+}

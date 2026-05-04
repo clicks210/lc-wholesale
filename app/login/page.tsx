@@ -32,18 +32,62 @@ export default function LoginPage() {
       .eq('id', data.user.id)
       .single()
 
-    setLoading(false)
-
     if (profileError) {
+      await supabase.auth.signOut()
+      setLoading(false)
       setMessage('Login worked, but role lookup failed.')
       return
     }
 
     if (profile?.role === 'admin') {
+      setLoading(false)
       window.location.assign('/admin/dashboard')
-    } else {
-      window.location.assign('/products')
+      return
     }
+
+    const ensureRes = await fetch('/api/account/ensure-customer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: data.user.id }),
+    })
+
+    const ensureResult = await ensureRes.json()
+
+    if (!ensureRes.ok) {
+      await supabase.auth.signOut()
+      setLoading(false)
+      setMessage(
+        ensureResult.error || 'Login worked, but buyer account setup failed.'
+      )
+      return
+    }
+
+    const { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('approved')
+      .eq('user_id', data.user.id)
+      .single()
+
+    if (customerError || !customer) {
+      await supabase.auth.signOut()
+      setLoading(false)
+      setMessage('Buyer account could not be found.')
+      return
+    }
+
+    if (!customer.approved) {
+      await supabase.auth.signOut()
+      setLoading(false)
+      setMessage(
+        'Your buyer account is pending approval. We’ll notify you once your account has been approved.'
+      )
+      return
+    }
+
+    setLoading(false)
+    window.location.assign('/products')
   }
 
   return (
@@ -71,24 +115,21 @@ export default function LoginPage() {
             </p>
 
             <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
-              Log into your Local Connect wholesale account. 
+              Log into your Local Connect wholesale account.
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-7 text-white/80">
-              Place orders, view previous deliveries, create new guides, improve your menu.
+              Place orders, view previous deliveries, create new guides, improve
+              your menu.
             </p>
           </div>
         </div>
 
         <div className="flex items-center justify-center border border-[#d6cec0] bg-white px-6 py-14 md:px-12">
           <div className="w-full max-w-md">
-           
-
             <h2 className="mt-4 text-3xl font-semibold tracking-tight">
               Sign in
             </h2>
-
-            
 
             <form onSubmit={handleLogin} className="mt-8 space-y-5">
               <div>
@@ -137,19 +178,15 @@ export default function LoginPage() {
               Create Buyer Account
             </Link>
 
-            
-
-          <p className="mt-5 text-center text-xs text-[#6f675c] leading-6">
-            For questions, please contact your Local Connect rep or{' '}
-            <a
-              href="mailto:liam@localconnectfood.ca"
-              className="underline hover:text-[#244f3d]"
-            >
-              liam@localconnectfood.ca
-            </a>
-          </p>
-
-        
+            <p className="mt-5 text-center text-xs leading-6 text-[#6f675c]">
+              For questions, please contact your Local Connect rep or{' '}
+              <a
+                href="mailto:liam@localconnectfood.ca"
+                className="underline hover:text-[#244f3d]"
+              >
+                liam@localconnectfood.ca
+              </a>
+            </p>
 
             {message && (
               <div className="mt-6 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm text-[#6f675c]">

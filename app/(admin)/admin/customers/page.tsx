@@ -5,6 +5,7 @@ import {
   getCustomers,
   approveCustomer,
   unapproveCustomer,
+  updateCustomerDeliveryTerms,
 } from '@/lib/customers'
 
 type ZohoInvoice = {
@@ -44,6 +45,16 @@ export default function AdminCustomersPage() {
     }
 
     await loadCustomers()
+  }
+
+  async function handleCustomerUpdated(updatedCustomer: any) {
+    setSelectedCustomer(updatedCustomer)
+
+    setCustomers((prev) =>
+      prev.map((customer) =>
+        customer.id === updatedCustomer.id ? updatedCustomer : customer
+      )
+    )
   }
 
   return (
@@ -129,13 +140,17 @@ export default function AdminCustomersPage() {
         <CustomerModal
           customer={selectedCustomer}
           onClose={() => setSelectedCustomer(null)}
+          onCustomerUpdated={handleCustomerUpdated}
           onToggle={async () => {
             await handleToggle(selectedCustomer)
 
-            setSelectedCustomer({
+            const updatedCustomer = {
               ...selectedCustomer,
               approved: !selectedCustomer.approved,
-            })
+            }
+
+            setSelectedCustomer(updatedCustomer)
+            handleCustomerUpdated(updatedCustomer)
           }}
         />
       )}
@@ -147,14 +162,31 @@ function CustomerModal({
   customer,
   onClose,
   onToggle,
+  onCustomerUpdated,
 }: {
   customer: any
   onClose: () => void
   onToggle: () => void
+  onCustomerUpdated: (customer: any) => void
 }) {
   const [invoices, setInvoices] = useState<ZohoInvoice[]>([])
   const [invoiceLoading, setInvoiceLoading] = useState(true)
   const [invoiceError, setInvoiceError] = useState('')
+
+  const [orderMinimum, setOrderMinimum] = useState(
+    String(customer.order_minimum ?? 0)
+  )
+  const [deliveryCost, setDeliveryCost] = useState(
+    String(customer.delivery_cost ?? 0)
+  )
+  const [savingTerms, setSavingTerms] = useState(false)
+  const [termsMessage, setTermsMessage] = useState('')
+
+  useEffect(() => {
+    setOrderMinimum(String(customer.order_minimum ?? 0))
+    setDeliveryCost(String(customer.delivery_cost ?? 0))
+    setTermsMessage('')
+  }, [customer.id, customer.order_minimum, customer.delivery_cost])
 
   useEffect(() => {
     async function loadInvoices() {
@@ -184,6 +216,34 @@ function CustomerModal({
       loadInvoices()
     }
   }, [customer?.id])
+
+  async function handleSaveDeliveryTerms() {
+    try {
+      setSavingTerms(true)
+      setTermsMessage('')
+
+      const nextOrderMinimum = Number(orderMinimum || 0)
+      const nextDeliveryCost = Number(deliveryCost || 0)
+
+      await updateCustomerDeliveryTerms(customer.id, {
+        order_minimum: nextOrderMinimum,
+        delivery_cost: nextDeliveryCost,
+      })
+
+      const updatedCustomer = {
+        ...customer,
+        order_minimum: nextOrderMinimum,
+        delivery_cost: nextDeliveryCost,
+      }
+
+      onCustomerUpdated(updatedCustomer)
+      setTermsMessage('Delivery terms saved.')
+    } catch (error: any) {
+      setTermsMessage(error.message || 'Failed to save delivery terms.')
+    } finally {
+      setSavingTerms(false)
+    }
+  }
 
   const totalOutstanding = invoices.reduce((sum, invoice) => {
     return sum + Number(invoice.balance || 0)
@@ -283,6 +343,64 @@ function CustomerModal({
                 {customer.delivery_notes || 'No delivery notes added.'}
               </p>
             </div>
+
+            <div className="mt-5 border border-[#d6cec0] bg-white p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                Delivery Terms
+              </p>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <label>
+                  <span className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    Order Minimum
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={orderMinimum}
+                    onChange={(e) => setOrderMinimum(e.target.value)}
+                    className="mt-2 w-full border border-[#d6cec0] px-4 py-3 text-sm font-semibold outline-none focus:border-[#244f3d]"
+                  />
+                </label>
+
+                <label>
+                  <span className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    Freight Rate
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={deliveryCost}
+                    onChange={(e) => setDeliveryCost(e.target.value)}
+                    className="mt-2 w-full border border-[#d6cec0] px-4 py-3 text-sm font-semibold outline-none focus:border-[#244f3d]"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <p className="text-sm leading-6 text-[#6f675c]">
+                  If checkout subtotal is below{' '}
+                  <strong>{formatMoney(orderMinimum)}</strong>, freight of{' '}
+                  <strong>{formatMoney(deliveryCost)}</strong> will be applied.
+                </p>
+
+                <button
+                  onClick={handleSaveDeliveryTerms}
+                  disabled={savingTerms}
+                  className="bg-[#244f3d] px-5 py-3 text-xs font-bold uppercase tracking-wide text-white disabled:opacity-50"
+                >
+                  {savingTerms ? 'Saving...' : 'Save Terms'}
+                </button>
+              </div>
+
+              {termsMessage && (
+                <p className="mt-3 text-sm font-semibold text-[#244f3d]">
+                  {termsMessage}
+                </p>
+              )}
+            </div>
           </Section>
 
           <Section title="Zoho Invoices">
@@ -338,15 +456,15 @@ function CustomerModal({
                         </p>
 
                         {invoice.invoice_id && (
-  <a
-    href={`/api/admin/invoices/${invoice.invoice_id}/pdf`}
-    target="_blank"
-    rel="noreferrer"
-    className="mt-1 inline-block text-xs font-bold uppercase tracking-wide text-[#244f3d] underline"
-  >
-    View PDF
-  </a>
-)}
+                          <a
+                            href={`/api/admin/invoices/${invoice.invoice_id}/pdf`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-1 inline-block text-xs font-bold uppercase tracking-wide text-[#244f3d] underline"
+                          >
+                            View PDF
+                          </a>
+                        )}
                       </div>
 
                       <div className="text-[#6f675c]">

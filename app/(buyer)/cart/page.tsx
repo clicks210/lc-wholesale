@@ -12,6 +12,7 @@ import Link from 'next/link'
 
 export default function CartPage() {
   const [items, setItems] = useState<any[]>([])
+  const [customer, setCustomer] = useState<any>(null)
   const [notes, setNotes] = useState('')
   const [guideName, setGuideName] = useState('')
   const [savingGuide, setSavingGuide] = useState(false)
@@ -28,7 +29,25 @@ export default function CartPage() {
   }
 
   useEffect(() => {
-    refreshCart()
+    async function loadCart() {
+      refreshCart()
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) return
+
+      const { data } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+
+      setCustomer(data)
+    }
+
+    loadCart()
   }, [])
 
   const subtotal = items.reduce((sum, item) => {
@@ -36,6 +55,16 @@ export default function CartPage() {
   }, 0)
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+
+  const orderMinimum = Number(customer?.order_minimum ?? 0)
+  const deliveryCost = Number(customer?.delivery_cost ?? 0)
+
+  const freightApplied =
+    orderMinimum > 0 && subtotal < orderMinimum ? deliveryCost : 0
+
+  const amountUntilFreeDelivery = Math.max(orderMinimum - subtotal, 0)
+
+  const estimatedTotal = subtotal + freightApplied
 
   async function createOrderGuide() {
     setSavingGuide(true)
@@ -181,7 +210,7 @@ export default function CartPage() {
                       </div>
 
                       <div className="font-bold">
-                        ${Number(item.product.price ?? 0).toFixed(2)}
+                        {formatMoney(item.product.price)}
                       </div>
 
                       <div className="flex items-center">
@@ -213,7 +242,7 @@ export default function CartPage() {
                       </div>
 
                       <div className="text-right">
-                        <p className="font-black">${lineTotal.toFixed(2)}</p>
+                        <p className="font-black">{formatMoney(lineTotal)}</p>
 
                         <button
                           type="button"
@@ -279,7 +308,7 @@ export default function CartPage() {
                             Price
                           </p>
                           <p className="mt-1 font-bold">
-                            ${Number(item.product.price ?? 0).toFixed(2)}
+                            {formatMoney(item.product.price)}
                           </p>
                         </div>
                       </div>
@@ -318,7 +347,7 @@ export default function CartPage() {
                             Line Total
                           </p>
                           <p className="text-lg font-black text-[#244f3d]">
-                            ${lineTotal.toFixed(2)}
+                            {formatMoney(lineTotal)}
                           </p>
                         </div>
                       </div>
@@ -341,18 +370,49 @@ export default function CartPage() {
 
                 <div className="flex justify-between">
                   <span className="font-medium text-[#6f675c]">Subtotal</span>
-                  <span className="font-bold">${subtotal.toFixed(2)}</span>
+                  <span className="font-bold">{formatMoney(subtotal)}</span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="font-medium text-[#6f675c]">Delivery</span>
-                  <span className="font-bold">Calculated later</span>
+                  <span className="font-medium text-[#6f675c]">
+                    Order Minimum
+                  </span>
+                  <span className="font-bold">{formatMoney(orderMinimum)}</span>
                 </div>
+
+                {freightApplied > 0 ? (
+                  <div className="border border-orange-200 bg-orange-50 p-3">
+                    <div className="flex justify-between text-orange-800">
+                      <span className="font-black">Freight</span>
+                      <span className="font-black">
+                        {formatMoney(freightApplied)}
+                      </span>
+                    </div>
+
+                    <p className="mt-2 text-xs font-medium leading-5 text-orange-800">
+                      Add {formatMoney(amountUntilFreeDelivery)} more to remove
+                      freight.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="border border-green-200 bg-green-50 p-3">
+                    <div className="flex justify-between text-green-800">
+                      <span className="font-black">Freight</span>
+                      <span className="font-black">Free</span>
+                    </div>
+
+                    <p className="mt-2 text-xs font-medium leading-5 text-green-800">
+                      This order meets the account minimum.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="mt-5 flex justify-between text-lg font-black">
                 <span>Estimated Total</span>
-                <span className="text-[#244f3d]">${subtotal.toFixed(2)}</span>
+                <span className="text-[#244f3d]">
+                  {formatMoney(estimatedTotal)}
+                </span>
               </div>
 
               <div className="mt-5">
@@ -394,7 +454,9 @@ export default function CartPage() {
                   disabled={savingGuide}
                   className="mt-3 w-full border border-[#244f3d] bg-white px-5 py-3 text-sm font-black text-[#244f3d] hover:bg-white/70 disabled:opacity-60"
                 >
-                  {savingGuide ? 'Creating Order Guide...' : 'Create Order Guide'}
+                  {savingGuide
+                    ? 'Creating Order Guide...'
+                    : 'Create Order Guide'}
                 </button>
               </div>
 
@@ -424,4 +486,13 @@ export default function CartPage() {
       </div>
     </div>
   )
+}
+
+function formatMoney(value: any) {
+  const number = Number(value || 0)
+
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+  }).format(number)
 }

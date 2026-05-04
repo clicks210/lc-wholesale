@@ -46,25 +46,38 @@ export default function CheckoutPage() {
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
+  const orderMinimum = Number(customer?.order_minimum ?? 0)
+  const deliveryCost = Number(customer?.delivery_cost ?? 0)
+
+  const freightApplied =
+    orderMinimum > 0 && subtotal < orderMinimum ? deliveryCost : 0
+
+  const amountUntilFreeDelivery = Math.max(orderMinimum - subtotal, 0)
+
+  const total = subtotal + freightApplied
+
   const categoryDeliveryGroups = getDeliveryGroups(items)
 
-  const deliveryGroups = categoryDeliveryGroups.reduce((groups: any[], group: any) => {
-    const deliveryLabel = group.delivery?.label || 'To be confirmed'
-    const existing = groups.find((g) => g.deliveryLabel === deliveryLabel)
+  const deliveryGroups = categoryDeliveryGroups.reduce(
+    (groups: any[], group: any) => {
+      const deliveryLabel = group.delivery?.label || 'To be confirmed'
+      const existing = groups.find((g) => g.deliveryLabel === deliveryLabel)
 
-    if (existing) {
-      existing.items.push(...group.items)
-      existing.categories.push(group.category)
-    } else {
-      groups.push({
-        deliveryLabel,
-        categories: [group.category],
-        items: [...group.items],
-      })
-    }
+      if (existing) {
+        existing.items.push(...group.items)
+        existing.categories.push(group.category)
+      } else {
+        groups.push({
+          deliveryLabel,
+          categories: [group.category],
+          items: [...group.items],
+        })
+      }
 
-    return groups
-  }, [])
+      return groups
+    },
+    []
+  )
 
   async function handleSubmitOrder() {
     setSubmitting(true)
@@ -82,15 +95,39 @@ export default function CheckoutPage() {
       })
       .join('\n\n')
 
+    const freightSummary =
+      freightApplied > 0
+        ? `Freight Applied: ${formatMoney(freightApplied)} because subtotal ${formatMoney(
+            subtotal
+          )} is below order minimum ${formatMoney(orderMinimum)}.`
+        : `Freight: Free. Subtotal ${formatMoney(
+            subtotal
+          )} meets order minimum ${formatMoney(orderMinimum)}.`
+
     try {
       await submitOrder({
         items,
         deliveryDate: '',
-        notes: `${notes}\n\nDelivery Schedule:\n${deliverySummary}`.trim(),
+        notes: `${notes}
+
+Delivery Schedule:
+${deliverySummary}
+
+Delivery Terms:
+Order Minimum: ${formatMoney(orderMinimum)}
+Freight Rate: ${formatMoney(deliveryCost)}
+${freightSummary}
+
+Order Totals:
+Subtotal: ${formatMoney(subtotal)}
+Freight: ${formatMoney(freightApplied)}
+Total: ${formatMoney(total)}`.trim(),
       })
 
       clearCart()
       window.dispatchEvent(new Event('cartUpdated'))
+      window.dispatchEvent(new Event('cart-updated'))
+      setItems([])
       setMessage('Order submitted successfully.')
     } catch (error: any) {
       setMessage(error.message || 'Order submission failed.')
@@ -174,6 +211,17 @@ export default function CheckoutPage() {
                   />
                 </div>
 
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <MiniStat
+                    label="Order Minimum"
+                    value={formatMoney(orderMinimum)}
+                  />
+                  <MiniStat
+                    label="Freight If Below Minimum"
+                    value={formatMoney(deliveryCost)}
+                  />
+                </div>
+
                 <div className="mt-5 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm">
                   <p className="text-[11px] font-black uppercase tracking-wide text-[#6f675c]">
                     Delivery Address
@@ -203,61 +251,64 @@ export default function CheckoutPage() {
             </div>
 
             <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-  <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
-    <h2 className="text-base font-black text-white sm:text-lg">
-      Delivery Schedule & Items
-    </h2>
-  </div>
-
-  <div className="divide-y divide-[#eee7da]">
-    {deliveryGroups.map((group: any) => (
-      <div key={group.deliveryLabel} className="p-4">
-        <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-black text-[#244f3d]">
-              {group.deliveryLabel}
-            </p>
-            <p className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-              {[...new Set(group.categories)].join(' / ')}
-            </p>
-          </div>
-
-          <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
-            {group.items.length} products
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          {group.items.map((item: any) => {
-            const lineTotal =
-              Number(item.product.price ?? 0) * item.quantity
-
-            return (
-              <div
-                key={item.product.id}
-                className="flex items-start justify-between gap-3 border border-[#eee7da] bg-[#f9f7f1] px-3 py-2 text-sm"
-              >
-                <div className="min-w-0">
-                  <p className="truncate font-bold">
-                    {item.product.name}
-                  </p>
-                  <p className="mt-0.5 truncate text-[11px] font-medium text-[#6f675c]">
-                    {item.quantity} × ${Number(item.product.price ?? 0).toFixed(2)}
-                    {item.product.category ? ` · ${item.product.category}` : ''}
-                  </p>
-                </div>
-
-                <p className="shrink-0 font-black text-[#244f3d]">
-                  ${lineTotal.toFixed(2)}
-                </p>
+              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
+                <h2 className="text-base font-black text-white sm:text-lg">
+                  Delivery Schedule & Items
+                </h2>
               </div>
-            )
-          })}
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
+
+              <div className="divide-y divide-[#eee7da]">
+                {deliveryGroups.map((group: any) => (
+                  <div key={group.deliveryLabel} className="p-4">
+                    <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-black text-[#244f3d]">
+                          {group.deliveryLabel}
+                        </p>
+                        <p className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                          {[...new Set(group.categories)].join(' / ')}
+                        </p>
+                      </div>
+
+                      <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
+                        {group.items.length} products
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      {group.items.map((item: any) => {
+                        const lineTotal =
+                          Number(item.product.price ?? 0) * item.quantity
+
+                        return (
+                          <div
+                            key={item.product.id}
+                            className="flex items-start justify-between gap-3 border border-[#eee7da] bg-[#f9f7f1] px-3 py-2 text-sm"
+                          >
+                            <div className="min-w-0">
+                              <p className="truncate font-bold">
+                                {item.product.name}
+                              </p>
+                              <p className="mt-0.5 truncate text-[11px] font-medium text-[#6f675c]">
+                                {item.quantity} ×{' '}
+                                {formatMoney(item.product.price)}
+                                {item.product.category
+                                  ? ` · ${item.product.category}`
+                                  : ''}
+                              </p>
+                            </div>
+
+                            <p className="shrink-0 font-black text-[#244f3d]">
+                              {formatMoney(lineTotal)}
+                            </p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
               <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
@@ -295,18 +346,50 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between">
                 <span className="font-medium text-[#6f675c]">Subtotal</span>
-                <span className="font-bold">${subtotal.toFixed(2)}</span>
+                <span className="font-bold">{formatMoney(subtotal)}</span>
               </div>
 
               <div className="flex justify-between">
                 <span className="font-medium text-[#6f675c]">Deliveries</span>
                 <span className="font-bold">{deliveryGroups.length}</span>
               </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium text-[#6f675c]">
+                  Order Minimum
+                </span>
+                <span className="font-bold">{formatMoney(orderMinimum)}</span>
+              </div>
+
+              {freightApplied > 0 ? (
+                <div className="border border-orange-200 bg-orange-50 p-3">
+                  <div className="flex justify-between text-orange-800">
+                    <span className="font-black">Freight</span>
+                    <span className="font-black">
+                      {formatMoney(freightApplied)}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs font-medium leading-5 text-orange-800">
+                    Add {formatMoney(amountUntilFreeDelivery)} more to reach
+                    this account&apos;s minimum and remove freight.
+                  </p>
+                </div>
+              ) : (
+                <div className="border border-green-200 bg-green-50 p-3">
+                  <div className="flex justify-between text-green-800">
+                    <span className="font-black">Freight</span>
+                    <span className="font-black">Free</span>
+                  </div>
+                  <p className="mt-2 text-xs font-medium leading-5 text-green-800">
+                    This order meets the account minimum.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="mt-5 flex justify-between text-lg font-black">
               <span>Total</span>
-              <span className="text-[#244f3d]">${subtotal.toFixed(2)}</span>
+              <span className="text-[#244f3d]">{formatMoney(total)}</span>
             </div>
 
             <button
@@ -364,13 +447,7 @@ function Info({
   )
 }
 
-function MiniStat({
-  label,
-  value,
-}: {
-  label: string
-  value: string
-}) {
+function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
       <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
@@ -379,4 +456,13 @@ function MiniStat({
       <p className="mt-1 break-words font-bold">{value}</p>
     </div>
   )
+}
+
+function formatMoney(value: any) {
+  const number = Number(value || 0)
+
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+  }).format(number)
 }

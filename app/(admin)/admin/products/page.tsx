@@ -132,7 +132,7 @@ export default function AdminProductsPage() {
       </div>
 
       <div className="border border-[#d6cec0] bg-white">
-        <div className="grid grid-cols-[0.3fr_0.9fr_1.5fr_0.8fr_0.7fr_0.7fr_0.7fr] border-b border-[#d6cec0] bg-[#f4f1ea] px-5 py-3 text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+        <div className="grid grid-cols-[0.3fr_0.8fr_1.4fr_0.8fr_0.65fr_0.65fr_0.65fr_0.6fr_0.7fr] border-b border-[#d6cec0] bg-[#f4f1ea] px-5 py-3 text-xs font-bold uppercase tracking-wide text-[#6f675c]">
           <div>
             <input
               type="checkbox"
@@ -144,7 +144,9 @@ export default function AdminProductsPage() {
           <div>Name</div>
           <div>Category</div>
           <div>Price</div>
+          <div>Cost</div>
           <div>Status</div>
+          <div>Edit</div>
           <div>Delete</div>
         </div>
 
@@ -156,7 +158,7 @@ export default function AdminProductsPage() {
           products.map((product) => (
             <div
               key={product.id}
-              className="grid grid-cols-[0.3fr_0.9fr_1.5fr_0.8fr_0.7fr_0.7fr_0.7fr] items-center border-b border-[#eee7da] px-5 py-4 text-sm last:border-b-0"
+              className="grid grid-cols-[0.3fr_0.8fr_1.4fr_0.8fr_0.65fr_0.65fr_0.65fr_0.6fr_0.7fr] items-center border-b border-[#eee7da] px-5 py-4 text-sm last:border-b-0"
             >
               <div>
                 <input
@@ -177,12 +179,14 @@ export default function AdminProductsPage() {
                 </p>
               </div>
 
-              <div className="text-[#6f675c]">
-                {product.category || '—'}
-              </div>
+              <div className="text-[#6f675c]">{product.category || '—'}</div>
 
               <div className="font-semibold">
-                ${Number(product.price ?? 0).toFixed(2)}
+                {formatMoney(product.price)}
+              </div>
+
+              <div className="font-semibold text-[#6f675c]">
+                {formatMoney(product.cost_price)}
               </div>
 
               <div>
@@ -196,6 +200,15 @@ export default function AdminProductsPage() {
                 >
                   {product.is_active ? 'Active' : 'Inactive'}
                 </button>
+              </div>
+
+              <div>
+                <Link
+                  href={`/admin/products/${product.id}/edit`}
+                  className="inline-block border border-[#244f3d] px-3 py-2 text-xs font-bold uppercase text-[#244f3d] hover:bg-[#244f3d] hover:text-white"
+                >
+                  Edit
+                </Link>
               </div>
 
               <div>
@@ -213,4 +226,13 @@ export default function AdminProductsPage() {
       </div>
     </div>
   )
+}
+
+function formatMoney(value: any) {
+  const number = Number(value || 0)
+
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+  }).format(number)
 }

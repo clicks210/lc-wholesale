@@ -9,7 +9,9 @@ export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [accessCode, setAccessCode] = useState('')
   const [message, setMessage] = useState('')
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleSignup(e: React.FormEvent) {
@@ -29,6 +31,7 @@ export default function SignupPage() {
           email,
           phone,
           password,
+          accessCode,
         }),
       })
 
@@ -39,13 +42,17 @@ export default function SignupPage() {
         return
       }
 
-      setMessage('Account created. Your buyer account is pending approval.')
+      setSuccess(true)
+      setMessage(
+        'Account created. Please check your email to verify your account before signing in.'
+      )
 
       setBusinessName('')
       setContactName('')
       setEmail('')
       setPhone('')
       setPassword('')
+      setAccessCode('')
     } catch (error) {
       setMessage('Signup failed. Please try again.')
     } finally {
@@ -103,77 +110,95 @@ export default function SignupPage() {
             </p>
 
             <form onSubmit={handleSignup} className="mt-8 space-y-5">
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-                  Business Name
-                </label>
-                <input
-                  required
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-                  Contact Name
-                </label>
-                <input
-                  required
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
-                />
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-2">
+              <fieldset disabled={success} className="space-y-5 disabled:opacity-60">
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-                    Email
+                    Business Name
                   </label>
                   <input
-                    type="email"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
                     className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
                   />
                 </div>
 
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-                    Phone
+                    Contact Name
                   </label>
                   <input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
                     className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
-                />
-              </div>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                    />
+                  </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#244f3d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#2f5d46] disabled:opacity-60"
-              >
-                {loading ? 'Creating account...' : 'Create Buyer Account'}
-              </button>
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                      Phone
+                    </label>
+                    <input
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    Access Code
+                  </label>
+                  <input
+                    value={accessCode}
+                    onChange={(e) => setAccessCode(e.target.value)}
+                    placeholder="Optional"
+                    className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+                  <p className="mt-2 text-xs leading-5 text-[#6f675c]">
+                    Have a Local Connect access code? Enter it to auto-approve
+                    your buyer account after email verification.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#244f3d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#2f5d46] disabled:opacity-60"
+                >
+                  {loading ? 'Creating account...' : 'Create Buyer Account'}
+                </button>
+              </fieldset>
             </form>
 
             <Link
@@ -194,8 +219,17 @@ export default function SignupPage() {
             </p>
 
             {message && (
-              <div className="mt-6 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm text-[#6f675c]">
-                {message}
+              <div
+                className={
+                  success
+                    ? 'mt-6 border border-green-200 bg-green-50 p-4 text-sm text-green-800'
+                    : 'mt-6 border border-red-200 bg-red-50 p-4 text-sm text-red-800'
+                }
+              >
+                <p className="font-bold">
+                  {success ? 'Check your email' : 'Signup issue'}
+                </p>
+                <p className="mt-1">{message}</p>
               </div>
             )}
           </div>

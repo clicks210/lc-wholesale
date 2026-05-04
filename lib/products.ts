@@ -69,3 +69,23 @@ export async function deleteProducts(ids: string[]) {
 
   if (error) throw error
 }
+
+export async function getProductById(productId: string) {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', productId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function updateProduct(productId: string, values: any) {
+  const { error } = await supabase
+    .from('products')
+    .update(values)
+    .eq('id', productId)
+
+  if (error) throw error
+}
