@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { addToCart } from '@/lib/cart'
@@ -251,13 +250,12 @@ export default function SingleOrderGuidePage() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                      <div className="relative h-12 w-12 shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea]">
+                      <div className="h-12 w-12 shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea]">
                         {product.image_url ? (
-                          <Image
+                          <img
                             src={product.image_url}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
+                            alt={product.name || 'Product image'}
+                            className="h-full w-full object-cover"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-xs text-[#6f675c]">
@@ -308,13 +306,12 @@ export default function SingleOrderGuidePage() {
                     className="border border-[#d6cec0] bg-white p-4 shadow-sm"
                   >
                     <div className="flex gap-4">
-                      <div className="relative h-16 w-16 shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea]">
+                      <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea]">
                         {product.image_url ? (
-                          <Image
+                          <img
                             src={product.image_url}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
+                            alt={product.name || 'Product image'}
+                            className="h-full w-full object-cover"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-[10px] text-[#6f675c]">
