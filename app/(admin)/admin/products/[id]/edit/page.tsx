@@ -1,12 +1,26 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getProductById, updateProduct } from '@/lib/products'
 
 const categories = ['Produce', 'Bread', 'Poultry', 'Paper']
+
+type UpdateProductInput = {
+  sku: string
+  name: string
+  category: string
+  supplier: string
+  unit: string
+  price: number | null
+  cost_price: number | null
+  description: string
+  image_url: string
+  is_active: boolean
+  price_on_request: boolean
+}
 
 export default function EditProductPage() {
   const router = useRouter()
@@ -24,31 +38,56 @@ export default function EditProductPage() {
   const [imageUrl, setImageUrl] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [isActive, setIsActive] = useState(true)
+  const [priceOnRequest, setPriceOnRequest] = useState(false)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  const margin = Number(price || 0) - Number(costPrice || 0)
-  const marginPercent = Number(price) > 0 ? (margin / Number(price)) * 100 : 0
+  const numericPrice = price ? Number(price) : null
+  const numericCostPrice = costPrice ? Number(costPrice) : null
+
+  const margin = useMemo(() => {
+    if (priceOnRequest || numericPrice === null) return null
+    return numericPrice - Number(numericCostPrice || 0)
+  }, [priceOnRequest, numericPrice, numericCostPrice])
+
+  const marginPercent = useMemo(() => {
+    if (
+      priceOnRequest ||
+      numericPrice === null ||
+      numericPrice <= 0 ||
+      margin === null
+    ) {
+      return null
+    }
+
+    return (margin / numericPrice) * 100
+  }, [priceOnRequest, numericPrice, margin])
 
   useEffect(() => {
     async function loadProduct() {
       try {
         setLoading(true)
+
         const product = await getProductById(productId)
+        const productPriceOnRequest = Boolean(product.price_on_request)
 
         setSku(product.sku || '')
         setName(product.name || '')
         setCategory(product.category || '')
         setSupplier(product.supplier || '')
         setUnit(product.unit || '')
-        setPrice(String(product.price ?? ''))
+        setPrice(productPriceOnRequest ? '' : String(product.price ?? ''))
         setCostPrice(String(product.cost_price ?? ''))
         setDescription(product.description || '')
         setImageUrl(product.image_url || '')
         setIsActive(Boolean(product.is_active))
-      } catch (error: any) {
-        setMessage(error.message || 'Could not load product.')
+        setPriceOnRequest(productPriceOnRequest)
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Could not load product.'
+
+        setMessage(errorMessage)
       } finally {
         setLoading(false)
       }
@@ -57,7 +96,7 @@ export default function EditProductPage() {
     if (productId) loadProduct()
   }, [productId])
 
-  async function uploadImage() {
+  async function uploadImage(): Promise<string> {
     if (!imageFile) return ''
 
     const fileExt = imageFile.name.split('.').pop()
@@ -77,7 +116,7 @@ export default function EditProductPage() {
     return data.publicUrl
   }
 
-  async function handleUpdate(e: React.FormEvent) {
+  async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setSaving(true)
     setMessage('')
@@ -85,22 +124,28 @@ export default function EditProductPage() {
     try {
       const uploadedImageUrl = await uploadImage()
 
-      await updateProduct(productId, {
+      const productPayload: UpdateProductInput = {
         sku,
         name,
         category,
         supplier,
         unit,
-        price: Number(price),
-        cost_price: costPrice ? Number(costPrice) : null,
+        price: priceOnRequest ? null : numericPrice,
+        cost_price: numericCostPrice,
         description,
         image_url: uploadedImageUrl || imageUrl,
         is_active: isActive,
-      })
+        price_on_request: priceOnRequest,
+      }
+
+      await updateProduct(productId, productPayload)
 
       router.push('/admin/products')
-    } catch (error: any) {
-      setMessage(error.message || 'Could not update product.')
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Could not update product.'
+
+      setMessage(errorMessage)
       setSaving(false)
     }
   }
@@ -191,13 +236,41 @@ export default function EditProductPage() {
 
               <Field label="Sell Price">
                 <input
-                  required
+                  required={!priceOnRequest}
+                  disabled={priceOnRequest}
                   type="number"
                   step="0.01"
+                  min="0"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="input"
+                  placeholder={priceOnRequest ? 'Price hidden' : '42.00'}
+                  className={`input ${
+                    priceOnRequest
+                      ? 'cursor-not-allowed bg-gray-200 text-gray-500'
+                      : ''
+                  }`}
                 />
+
+                <label className="mt-3 flex items-center justify-between border border-[#d6cec0] bg-[#f4f1ea] p-3">
+                  <span>
+                    <span className="block text-sm font-bold">
+                      Price on Request
+                    </span>
+                    <span className="text-xs text-[#6f675c]">
+                      Show product, hide price, and disable add to cart.
+                    </span>
+                  </span>
+
+                  <input
+                    type="checkbox"
+                    checked={priceOnRequest}
+                    onChange={(e) => {
+                      setPriceOnRequest(e.target.checked)
+                      if (e.target.checked) setPrice('')
+                    }}
+                    className="h-5 w-5"
+                  />
+                </label>
               </Field>
 
               <div className="md:col-span-2">
@@ -235,14 +308,26 @@ export default function EditProductPage() {
                 <input
                   type="number"
                   step="0.01"
+                  min="0"
                   value={costPrice}
                   onChange={(e) => setCostPrice(e.target.value)}
                   className="input"
                 />
               </Field>
 
-              <Stat label="Margin" value={`$${margin.toFixed(2)}`} />
-              <Stat label="Margin %" value={`${marginPercent.toFixed(1)}%`} />
+              <Stat
+                label="Margin"
+                value={margin === null ? '—' : `$${margin.toFixed(2)}`}
+              />
+
+              <Stat
+                label="Margin %"
+                value={
+                  marginPercent === null
+                    ? '—'
+                    : `${marginPercent.toFixed(1)}%`
+                }
+              />
             </div>
           </div>
         </div>

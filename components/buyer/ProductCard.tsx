@@ -10,8 +10,12 @@ export default function ProductCard({ product }: { product: Product }) {
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
 
+  const isPriceOnRequest = Boolean(product.price_on_request)
+
   function handleQuickAdd(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
+
+    if (isPriceOnRequest) return
 
     addToCart({ product, quantity: 1 })
     window.dispatchEvent(new Event('cartUpdated'))
@@ -55,9 +59,16 @@ export default function ProductCard({ product }: { product: Product }) {
           </p>
 
           <div className="mt-3 sm:mt-4">
-            <p className="text-lg font-bold sm:text-xl">
-              ${Number(product.price ?? 0).toFixed(2)}
-            </p>
+            {isPriceOnRequest ? (
+              <p className="text-sm font-black uppercase tracking-[0.12em] text-[#b45309] sm:text-base">
+                Price on Request
+              </p>
+            ) : (
+              <p className="text-lg font-bold sm:text-xl">
+                ${Number(product.price ?? 0).toFixed(2)}
+              </p>
+            )}
+
             <p className="text-xs text-[#6f675c] sm:text-sm">{product.unit}</p>
           </div>
         </div>
@@ -66,13 +77,16 @@ export default function ProductCard({ product }: { product: Product }) {
           <button
             type="button"
             onClick={handleQuickAdd}
+            disabled={isPriceOnRequest}
             className={`w-full px-3 py-3 text-[10px] font-black uppercase tracking-[0.1em] transition sm:px-4 sm:text-xs ${
-              added
-                ? 'bg-[#79dd52] text-[#102011]'
-                : 'bg-[#244f3d] text-white hover:bg-[#1d1d1b]'
+              isPriceOnRequest
+                ? 'cursor-not-allowed bg-[#d6cec0] text-[#6f675c]'
+                : added
+                  ? 'bg-[#79dd52] text-[#102011]'
+                  : 'bg-[#244f3d] text-white hover:bg-[#1d1d1b]'
             }`}
           >
-            {added ? 'Added' : 'Quick Add'}
+            {isPriceOnRequest ? 'Request Pricing' : added ? 'Added' : 'Quick Add'}
           </button>
         </div>
       </div>
@@ -107,47 +121,71 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
 
         <div className="my-6">
-          <p className="text-3xl font-bold">
-            ${Number(product.price ?? 0).toFixed(2)}
-          </p>
-          <p className="text-sm text-[#6f675c]">{product.unit}</p>
+          {isPriceOnRequest ? (
+            <>
+              <p className="text-2xl font-black uppercase tracking-[0.08em] text-[#b45309]">
+                Price on Request
+              </p>
+              <p className="mt-2 text-sm leading-6 text-[#6f675c]">
+                This item is available for custom or contract pricing. Contact
+                Local Connect for current availability and pricing.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-3xl font-bold">
+                ${Number(product.price ?? 0).toFixed(2)}
+              </p>
+              <p className="text-sm text-[#6f675c]">{product.unit}</p>
+            </>
+          )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-[#d6cec0] pt-5">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="border border-[#d6cec0] px-3 py-1 transition hover:border-[#244f3d] hover:bg-[#244f3d] hover:text-white"
-              onClick={() => setQty(Math.max(1, qty - 1))}
-            >
-              -
-            </button>
-
-            <span className="w-8 text-center font-bold">{qty}</span>
-
-            <button
-              type="button"
-              className="border border-[#d6cec0] px-3 py-1 transition hover:border-[#244f3d] hover:bg-[#244f3d] hover:text-white"
-              onClick={() => setQty(qty + 1)}
-            >
-              +
-            </button>
-          </div>
-
+        {isPriceOnRequest ? (
           <button
             type="button"
-            className="bg-[#244f3d] px-5 py-2 font-semibold text-white transition hover:bg-[#1d1d1b]"
-            onClick={() => {
-              addToCart({ product, quantity: qty })
-              window.dispatchEvent(new Event('cartUpdated'))
-              window.dispatchEvent(new Event('cart-updated'))
-              setQty(1)
-              setIsOpen(false)
-            }}
+            className="w-full bg-[#244f3d] px-5 py-3 font-semibold text-white transition hover:bg-[#1d1d1b]"
+            onClick={() => setIsOpen(false)}
           >
-            Add to Cart
+            Contact for Pricing
           </button>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between border-t border-[#d6cec0] pt-5">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                className="border border-[#d6cec0] px-3 py-1 transition hover:border-[#244f3d] hover:bg-[#244f3d] hover:text-white"
+                onClick={() => setQty(Math.max(1, qty - 1))}
+              >
+                -
+              </button>
+
+              <span className="w-8 text-center font-bold">{qty}</span>
+
+              <button
+                type="button"
+                className="border border-[#d6cec0] px-3 py-1 transition hover:border-[#244f3d] hover:bg-[#244f3d] hover:text-white"
+                onClick={() => setQty(qty + 1)}
+              >
+                +
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="bg-[#244f3d] px-5 py-2 font-semibold text-white transition hover:bg-[#1d1d1b]"
+              onClick={() => {
+                addToCart({ product, quantity: qty })
+                window.dispatchEvent(new Event('cartUpdated'))
+                window.dispatchEvent(new Event('cart-updated'))
+                setQty(1)
+                setIsOpen(false)
+              }}
+            >
+              Add to Cart
+            </button>
+          </div>
+        )}
       </Modal>
     </>
   )

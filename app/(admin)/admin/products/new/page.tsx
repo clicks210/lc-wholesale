@@ -22,11 +22,13 @@ export default function NewProductPage() {
   const [imageUrl, setImageUrl] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [isActive, setIsActive] = useState(true)
+  const [priceOnRequest, setPriceOnRequest] = useState(false)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const margin = Number(price || 0) - Number(costPrice || 0)
-  const marginPercent = Number(price) > 0 ? (margin / Number(price)) * 100 : 0
+  const margin = priceOnRequest ? 0 : Number(price || 0) - Number(costPrice || 0)
+  const marginPercent =
+    !priceOnRequest && Number(price) > 0 ? (margin / Number(price)) * 100 : 0
 
   async function uploadImage() {
     if (!imageFile) return ''
@@ -62,11 +64,12 @@ export default function NewProductPage() {
         category,
         supplier,
         unit,
-        price: Number(price),
+        price: priceOnRequest ? null : Number(price),
         cost_price: costPrice ? Number(costPrice) : null,
         description,
         image_url: uploadedImageUrl || imageUrl,
         is_active: isActive,
+        price_on_request: priceOnRequest,
       })
 
       router.push('/admin/products')
@@ -170,14 +173,44 @@ export default function NewProductPage() {
                   Sell Price
                 </label>
                 <input
-                  required
+                  required={!priceOnRequest}
+                  disabled={priceOnRequest}
                   type="number"
                   step="0.01"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  placeholder="42.00"
-                  className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  placeholder={priceOnRequest ? 'Price hidden' : '42.00'}
+                  className={`w-full border border-[#d6cec0] px-4 py-3 text-sm outline-none focus:border-[#244f3d] ${
+                    priceOnRequest
+                      ? 'cursor-not-allowed bg-gray-200 text-gray-500'
+                      : 'bg-[#f4f1ea]'
+                  }`}
                 />
+
+                <label className="mt-3 flex items-center justify-between border border-[#d6cec0] bg-[#f4f1ea] p-3">
+                  <span>
+                    <span className="block text-sm font-bold">
+                      Price on Request
+                    </span>
+                    <span className="text-xs text-[#6f675c]">
+                      Show product, hide price, and disable add to cart.
+                    </span>
+                  </span>
+
+                  <input
+                    type="checkbox"
+                    checked={priceOnRequest}
+                    onChange={(e) => setPriceOnRequest(e.target.checked)}
+                    className="h-5 w-5"
+                  />
+                </label>
+
+                {priceOnRequest && (
+                  <p className="mt-2 text-xs font-semibold text-[#b45309]">
+                    This item will appear as “Price on Request” and cannot be
+                    ordered directly.
+                  </p>
+                )}
               </div>
 
               <div className="md:col-span-2">
@@ -234,7 +267,7 @@ export default function NewProductPage() {
                   Margin
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-[#244f3d]">
-                  ${margin.toFixed(2)}
+                  {priceOnRequest ? '—' : `$${margin.toFixed(2)}`}
                 </p>
               </div>
 
@@ -243,7 +276,7 @@ export default function NewProductPage() {
                   Margin %
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-[#244f3d]">
-                  {marginPercent.toFixed(1)}%
+                  {priceOnRequest ? '—' : `${marginPercent.toFixed(1)}%`}
                 </p>
               </div>
             </div>

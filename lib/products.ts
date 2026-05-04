@@ -1,6 +1,20 @@
 import { supabase } from './supabase'
 import type { Product } from '@/types/product'
 
+type ProductInput = {
+  sku: string
+  name: string
+  category?: string
+  unit?: string
+  price: number | null
+  price_on_request?: boolean
+  cost_price?: number | null
+  supplier?: string
+  description?: string
+  image_url?: string
+  is_active?: boolean
+}
+
 export async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
@@ -15,24 +29,14 @@ export async function getProducts(): Promise<Product[]> {
   return data ?? []
 }
 
-export async function createProduct(product: {
-  sku: string
-  name: string
-  category?: string
-  unit?: string
-  price: number
-  cost_price?: number | null
-  supplier?: string
-  description?: string
-  image_url?: string
-  is_active?: boolean
-}) {
+export async function createProduct(product: ProductInput) {
   const { error } = await supabase.from('products').insert({
     sku: product.sku,
     name: product.name,
     category: product.category || null,
     unit: product.unit || null,
-    price: product.price,
+    price: product.price_on_request ? null : product.price,
+    price_on_request: product.price_on_request ?? false,
     cost_price: product.cost_price ?? null,
     supplier: product.supplier || null,
     description: product.description || null,
@@ -53,24 +57,18 @@ export async function toggleProductActive(id: string, isActive: boolean) {
 }
 
 export async function deleteProduct(id: string) {
-  const { error } = await supabase
-    .from('products')
-    .delete()
-    .eq('id', id)
+  const { error } = await supabase.from('products').delete().eq('id', id)
 
   if (error) throw error
 }
 
 export async function deleteProducts(ids: string[]) {
-  const { error } = await supabase
-    .from('products')
-    .delete()
-    .in('id', ids)
+  const { error } = await supabase.from('products').delete().in('id', ids)
 
   if (error) throw error
 }
 
-export async function getProductById(productId: string) {
+export async function getProductById(productId: string): Promise<Product> {
   const { data, error } = await supabase
     .from('products')
     .select('*')
@@ -81,10 +79,18 @@ export async function getProductById(productId: string) {
   return data
 }
 
-export async function updateProduct(productId: string, values: any) {
+export async function updateProduct(
+  productId: string,
+  values: Partial<ProductInput>
+) {
+  const updateValues = {
+    ...values,
+    price: values.price_on_request ? null : values.price,
+  }
+
   const { error } = await supabase
     .from('products')
-    .update(values)
+    .update(updateValues)
     .eq('id', productId)
 
   if (error) throw error

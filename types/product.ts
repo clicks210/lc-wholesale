@@ -5,6 +5,7 @@ export type Product = {
   category: string | null
   unit: string | null
   price: number | null
+  price_on_request: boolean
   cost_price: number | null
   description: string | null
   image_url: string | null
