@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 
 export default function SignupPage() {
   const [businessName, setBusinessName] = useState('')
@@ -18,37 +17,40 @@ export default function SignupPage() {
     setLoading(true)
     setMessage('')
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-
-    if (error || !data.user) {
-      setLoading(false)
-      setMessage(error?.message || 'Signup failed.')
-      return
-    }
-
-    const { error: customerError } = await supabase
-      .from('customers')
-      .insert({
-        user_id: data.user.id,
-        business_name: businessName,
-        contact_name: contactName,
-        phone,
-        approved: false,
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          businessName,
+          contactName,
+          email,
+          phone,
+          password,
+        }),
       })
 
-    setLoading(false)
+      const result = await res.json()
 
-    if (customerError) {
-      setMessage(
-        `Account created, but business profile failed: ${customerError.message}`
-      )
-      return
+      if (!res.ok) {
+        setMessage(result.error || 'Signup failed.')
+        return
+      }
+
+      setMessage('Account created. Your buyer account is pending approval.')
+
+      setBusinessName('')
+      setContactName('')
+      setEmail('')
+      setPhone('')
+      setPassword('')
+    } catch (error) {
+      setMessage('Signup failed. Please try again.')
+    } finally {
+      setLoading(false)
     }
-
-    setMessage('Account created. Your buyer account is pending approval.')
   }
 
   return (
@@ -181,15 +183,15 @@ export default function SignupPage() {
               Already have an account? Sign in
             </Link>
 
-             <p className="mt-5 text-center text-xs text-[#6f675c] leading-6">
-            For questions, please contact your Local Connect rep or{' '}
-            <a
-              href="mailto:liam@localconnectfood.ca"
-              className="underline hover:text-[#244f3d]"
-            >
-              liam@localconnectfood.ca
-            </a>
-          </p>
+            <p className="mt-5 text-center text-xs leading-6 text-[#6f675c]">
+              For questions, please contact your Local Connect rep or{' '}
+              <a
+                href="mailto:liam@localconnectfood.ca"
+                className="underline hover:text-[#244f3d]"
+              >
+                liam@localconnectfood.ca
+              </a>
+            </p>
 
             {message && (
               <div className="mt-6 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm text-[#6f675c]">

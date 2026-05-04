@@ -18,7 +18,7 @@ const productLines = [
     href: '/products?category=Bread',
     eyebrow: 'Specialty Bakery',
     description:
-      'Our frozen bread program features premium products from Specialty Bakery, giving restaurants access to high-quality, artisan bread with the convenience of frozen inventory. Each product is crafted for consistency, easy storage, and bake-off performance—so kitchens can serve fresh, great-tasting bread on demand without the waste or unpredictability of daily deliveries.',
+      'Our frozen bread program features premium products from Specialty Bakery, giving restaurants access to high-quality, artisan bread with the convenience of frozen inventory. Each product is crafted for consistency, easy storage, and bake-off performance so kitchens can serve fresh, great-tasting bread on demand without the waste or unpredictability of daily deliveries.',
     items: ['Buns', 'Loaves', 'Pastries', 'Specialty'],
     image: '/images/bread.jpg',
   },
@@ -59,6 +59,15 @@ const steps = [
     title: 'We coordinate',
     text: 'Your dedicated account representative handles supplier coordination, delivery planning, and communication.',
   },
+]
+
+const emergencyItems = [
+  'Paper products',
+  'Dairy essentials',
+  'Eggs',
+  'Core produce',
+  'Kitchen staples',
+  'Select urgent items',
 ]
 
 export default function WholesaleLandingPage() {
@@ -164,7 +173,7 @@ export default function WholesaleLandingPage() {
                 Local Connect was built inside kitchens to solve a simple problem: great local products weren’t reaching restaurants easily. We bring local produce, poultry, bread, paper, and janitorial products into one reliable, centralized wholesale system.
               </p>
               <p className="mt-4 text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
-                We source directly, warehouse, and deliver ourselves—making buying local as seamless and dependable as traditional distribution while strengthening the local food system.
+                We source directly, warehouse, and deliver ourselves, making buying local as seamless and dependable as traditional distribution while strengthening the local food system.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
@@ -262,6 +271,141 @@ export default function WholesaleLandingPage() {
         </div>
       </section>
 
+      {/* PAPER CREDIT PROGRAM */}
+      <section className="border-b border-[#1d1d1b]/25 bg-[#f4f1ea] px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-12">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
+              Paper products rebate
+            </p>
+
+            <h2 className="mt-3 max-w-3xl text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-5xl md:text-6xl">
+              Turn paper into profit.
+            </h2>
+
+            <p className="mt-5 max-w-2xl text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
+              Run your paper, takeout, and janitorial orders through Local Connect and earn monthly LC Credit on the products your kitchen already buys.
+            </p>
+
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              {['Earn monthly LC Credit', 'Use credit on future orders', 'No contracts or commitments', 'Simple ordering through one system'].map((item) => (
+                <div
+                  key={item}
+                  className="border border-[#1d1d1b]/25 bg-white px-4 py-4 text-sm font-black uppercase tracking-[0.06em] text-[#1d1d1b]"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link
+                href="/products?category=Paper"
+                className="inline-flex justify-center border border-[#244f3d] bg-[#244f3d] px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#1d1d1b]"
+              >
+                Get paid for paper →
+              </Link>
+
+              <p className="text-sm font-bold text-[#5f5f57]">
+                Save on top-quality ingredients every order.
+              </p>
+            </div>
+          </div>
+
+          <div className="border border-[#1d1d1b] bg-white p-3 shadow-[7px_7px_0_#244f3d] sm:shadow-[12px_12px_0_#244f3d]">
+            <div className="border border-[#1d1d1b]/20 bg-[#fffaf1] p-6 sm:p-8">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
+                Example monthly credit
+              </p>
+
+              <div className="mt-7 grid gap-4">
+                <div className="border border-[#1d1d1b]/20 bg-white p-5">
+                  <p className="text-sm font-black uppercase tracking-[0.08em] text-[#5f5f57]">
+                    Monthly paper spend
+                  </p>
+                  <p className="mt-2 text-4xl font-black tracking-[-0.05em] sm:text-5xl">
+                    $1,200
+                  </p>
+                </div>
+
+                <div className="flex justify-center text-3xl font-black text-[#244f3d]">
+                  ↓
+                </div>
+
+                <div className="border border-[#244f3d] bg-[#244f3d] p-5 text-white">
+                  <p className="text-sm font-black uppercase tracking-[0.08em] text-white/70">
+                    LC Credit earned
+                  </p>
+                  <p className="mt-2 text-4xl font-black tracking-[-0.05em] sm:text-5xl">
+                    $60
+                  </p>
+                </div>
+
+                <div className="flex justify-center text-3xl font-black text-[#244f3d]">
+                  ↓
+                </div>
+
+                <div className="border border-[#1d1d1b]/20 bg-white p-5">
+                  <p className="text-sm font-black uppercase tracking-[0.08em] text-[#5f5f57]">
+                    Put it toward
+                  </p>
+                  <p className="mt-2 text-2xl font-black tracking-[-0.04em]">
+                    Produce, bread, poultry, dairy, and more.
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-6 text-xs leading-5 text-[#6b6b62]">
+                LC Credit is applied monthly and can be used toward future Local Connect purchases. Credit rates may vary by account and product mix.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+   {/* LOCAL CONNECT 911 */}
+<section className="border-b border-[#1d1d1b]/25 bg-[#244f3d] px-4 py-14 text-center text-white sm:px-6 sm:py-20 lg:px-10">
+  <div className="mx-auto max-w-4xl">
+    <p className="inline-flex border border-white/30 bg-white/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-white/75">
+      Emergency delivery
+    </p>
+
+    <h2 className="mt-5 text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-5xl md:text-7xl">
+      Local Connect 911
+    </h2>
+
+    <p className="mx-auto mt-5 max-w-2xl text-xl font-black leading-tight tracking-[-0.03em] sm:text-2xl">
+      Ran out mid-service? Call us.
+    </p>
+
+    <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
+      Emergency support for missed orders, slammed weekends, and essential products that didn’t show up.
+    </p>
+
+    <p className="mt-5 text-sm font-bold uppercase tracking-[0.08em] text-white/70">
+      $60 emergency fee · $200 minimum · Essentials only
+    </p>
+
+    <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+     <a
+  href="#"
+  data-open-clickbooks
+  data-service="911-order"
+  className="border border-[#b4472c] bg-[#b4472c] px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-transparent hover:text-[#b4472c]"
+>
+  Call LC 911
+</a>
+
+      <Link
+        href="/products"
+        className="border border-white/40 bg-transparent px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-white hover:text-[#244f3d]"
+      >
+        Browse essentials
+      </Link>
+    </div>
+  </div>
+</section>
+
       {/* HOW IT WORKS */}
       <section className="border-b border-[#1d1d1b]/25 px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
         <div className="mx-auto max-w-7xl">
@@ -335,7 +479,17 @@ export default function WholesaleLandingPage() {
             <p className="mt-2 text-sm text-[#5f5f57]">liam@localconnect.ca</p>
           </div>
 
-        
+          <div>
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
+              Programs
+            </h3>
+            <div className="grid gap-2 text-sm text-[#5f5f57]">
+              <p>Paper Product Credit</p>
+              <p>Local Connect 911</p>
+              <p>Wholesale Marketplace</p>
+              <p>Dedicated Account Support</p>
+            </div>
+          </div>
 
           <div>
             <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
