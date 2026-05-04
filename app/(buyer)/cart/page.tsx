@@ -117,18 +117,27 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-6 py-6 text-[#1e1e1e]">
+    <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 border border-[#d6cec0] bg-white px-5 py-5">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#244f3d]">
+        <div className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
             Local Connect Wholesale
           </p>
 
-          <div className="mt-2">
-            <h1 className="text-2xl font-semibold">Cart</h1>
-            <p className="mt-1 text-sm text-[#6f675c]">
-              {itemCount} items in your wholesale order
-            </p>
+          <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-black tracking-[-0.04em]">Cart</h1>
+              <p className="mt-1 text-sm font-medium text-[#6f675c]">
+                {itemCount} items in your wholesale order
+              </p>
+            </div>
+
+            <Link
+              href="/products"
+              className="mt-3 inline-flex w-fit border border-[#244f3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-[#244f3d] hover:bg-[#244f3d] hover:text-white sm:mt-0"
+            >
+              Keep Shopping
+            </Link>
           </div>
         </div>
 
@@ -137,114 +146,217 @@ export default function CartPage() {
             {message || 'No items in cart.'}
           </div>
         ) : (
-          <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
-            <div className="border border-[#d6cec0] bg-white">
-              <div className="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_80px] border-b border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-                <div>Product</div>
-                <div>Unit</div>
-                <div>Price</div>
-                <div>Qty</div>
-                <div></div>
+          <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
+            <div>
+              {/* DESKTOP TABLE */}
+              <div className="hidden overflow-hidden border border-[#d6cec0] bg-white shadow-sm md:block">
+                <div className="grid grid-cols-[1.7fr_0.65fr_0.65fr_0.75fr_0.8fr] border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
+                  <div>Product</div>
+                  <div>Unit</div>
+                  <div>Price</div>
+                  <div>Qty</div>
+                  <div className="text-right">Total</div>
+                </div>
+
+                {items.map((item) => {
+                  const lineTotal =
+                    Number(item.product.price ?? 0) * item.quantity
+
+                  return (
+                    <div
+                      key={item.product.id}
+                      className="grid grid-cols-[1.7fr_0.65fr_0.65fr_0.75fr_0.8fr] items-center border-b border-[#eee7da] px-4 py-4 text-sm last:border-b-0"
+                    >
+                      <div className="min-w-0 pr-4">
+                        <p className="font-bold leading-snug">
+                          {item.product.name}
+                        </p>
+                        <p className="mt-1 break-all font-mono text-xs text-[#6f675c]">
+                          {item.product.sku}
+                        </p>
+                      </div>
+
+                      <div className="font-medium text-[#6f675c]">
+                        {item.product.unit || '—'}
+                      </div>
+
+                      <div className="font-bold">
+                        ${Number(item.product.price ?? 0).toFixed(2)}
+                      </div>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateCartItem(item.product.id, item.quantity - 1)
+                            refreshCart()
+                          }}
+                          className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 font-bold hover:border-[#244f3d]"
+                        >
+                          -
+                        </button>
+
+                        <span className="w-11 border-y border-[#d6cec0] bg-white py-1 text-center font-bold">
+                          {item.quantity}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateCartItem(item.product.id, item.quantity + 1)
+                            refreshCart()
+                          }}
+                          className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 font-bold hover:border-[#244f3d]"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="font-black">${lineTotal.toFixed(2)}</p>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            removeFromCart(item.product.id)
+                            refreshCart()
+                          }}
+                          className="mt-1 text-xs font-bold text-red-700 hover:text-red-900"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
 
-              {items.map((item) => {
-                const lineTotal =
-                  Number(item.product.price ?? 0) * item.quantity
+              {/* MOBILE CARDS */}
+              <div className="space-y-3 md:hidden">
+                {items.map((item) => {
+                  const lineTotal =
+                    Number(item.product.price ?? 0) * item.quantity
 
-                return (
-                  <div
-                    key={item.product.id}
-                    className="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_80px] items-center border-b border-[#eee7da] px-4 py-4 text-sm last:border-b-0"
-                  >
-                    <div>
-                      <p className="font-semibold">{item.product.name}</p>
-                      <p className="mt-1 font-mono text-xs text-[#6f675c]">
-                        {item.product.sku}
-                      </p>
+                  return (
+                    <div
+                      key={item.product.id}
+                      className="border border-[#d6cec0] bg-white p-4 shadow-sm"
+                    >
+                      <div className="flex items-start justify-between gap-3 border-b border-[#eee7da] pb-3">
+                        <div className="min-w-0">
+                          <p className="text-base font-black leading-snug">
+                            {item.product.name}
+                          </p>
+                          <p className="mt-1 break-all font-mono text-[11px] font-medium text-[#6f675c]">
+                            {item.product.sku}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            removeFromCart(item.product.id)
+                            refreshCart()
+                          }}
+                          className="shrink-0 text-xs font-black uppercase tracking-wide text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                        <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
+                          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+                            Unit
+                          </p>
+                          <p className="mt-1 font-bold">
+                            {item.product.unit || '—'}
+                          </p>
+                        </div>
+
+                        <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
+                          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+                            Price
+                          </p>
+                          <p className="mt-1 font-bold">
+                            ${Number(item.product.price ?? 0).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex items-center justify-between gap-4">
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              updateCartItem(item.product.id, item.quantity - 1)
+                              refreshCart()
+                            }}
+                            className="h-10 w-10 border border-[#d6cec0] bg-[#f4f1ea] text-lg font-black"
+                          >
+                            -
+                          </button>
+
+                          <span className="h-10 w-12 border-y border-[#d6cec0] bg-white pt-2 text-center font-black">
+                            {item.quantity}
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              updateCartItem(item.product.id, item.quantity + 1)
+                              refreshCart()
+                            }}
+                            className="h-10 w-10 border border-[#d6cec0] bg-[#f4f1ea] text-lg font-black"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+                            Line Total
+                          </p>
+                          <p className="text-lg font-black text-[#244f3d]">
+                            ${lineTotal.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-
-                    <div className="text-[#6f675c]">
-                      {item.product.unit || '—'}
-                    </div>
-
-                    <div className="font-semibold">
-                      ${Number(item.product.price ?? 0).toFixed(2)}
-                    </div>
-
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          updateCartItem(item.product.id, item.quantity - 1)
-                          refreshCart()
-                        }}
-                        className="border border-[#d6cec0] px-2 py-1"
-                      >
-                        -
-                      </button>
-
-                      <span className="w-10 border-y border-[#d6cec0] py-1 text-center">
-                        {item.quantity}
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          updateCartItem(item.product.id, item.quantity + 1)
-                          refreshCart()
-                        }}
-                        className="border border-[#d6cec0] px-2 py-1"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <div className="text-right">
-                      <p className="font-bold">${lineTotal.toFixed(2)}</p>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          removeFromCart(item.product.id)
-                          refreshCart()
-                        }}
-                        className="mt-1 text-xs font-semibold text-[#6f675c] hover:text-red-600"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
 
-            <aside className="border border-[#d6cec0] bg-white p-5">
-              <h2 className="text-lg font-semibold">Order Summary</h2>
+            <aside className="border border-[#d6cec0] bg-white p-5 shadow-sm lg:sticky lg:top-5 lg:self-start">
+              <h2 className="text-xl font-black tracking-[-0.03em]">
+                Order Summary
+              </h2>
 
               <div className="mt-5 space-y-3 border-b border-[#d6cec0] pb-5 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[#6f675c]">Items</span>
-                  <span>{itemCount}</span>
+                  <span className="font-medium text-[#6f675c]">Items</span>
+                  <span className="font-bold">{itemCount}</span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-[#6f675c]">Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span className="font-medium text-[#6f675c]">Subtotal</span>
+                  <span className="font-bold">${subtotal.toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-[#6f675c]">Delivery</span>
-                  <span>Calculated later</span>
+                  <span className="font-medium text-[#6f675c]">Delivery</span>
+                  <span className="font-bold">Calculated later</span>
                 </div>
               </div>
 
-              <div className="mt-5 flex justify-between text-lg font-bold">
+              <div className="mt-5 flex justify-between text-lg font-black">
                 <span>Estimated Total</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span className="text-[#244f3d]">${subtotal.toFixed(2)}</span>
               </div>
 
               <div className="mt-5">
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                <label className="mb-2 block text-xs font-black uppercase tracking-wide text-[#6f675c]">
                   Order Notes
                 </label>
 
@@ -259,13 +371,13 @@ export default function CartPage() {
 
               <Link
                 href="/checkout"
-                className="mt-6 block w-full bg-[#244f3d] px-5 py-3 text-center text-sm font-bold text-white hover:bg-[#2f5d46]"
+                className="mt-6 block w-full bg-[#244f3d] px-5 py-3 text-center text-sm font-black text-white hover:bg-[#2f5d46]"
               >
                 Continue to Checkout
               </Link>
 
               <div className="mt-3 border border-[#d6cec0] bg-[#f4f1ea] p-3">
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                <label className="mb-2 block text-xs font-black uppercase tracking-wide text-[#6f675c]">
                   Save Cart as Order Guide
                 </label>
 
@@ -280,7 +392,7 @@ export default function CartPage() {
                   type="button"
                   onClick={createOrderGuide}
                   disabled={savingGuide}
-                  className="mt-3 w-full border border-[#244f3d] bg-white px-5 py-3 text-sm font-bold text-[#244f3d] hover:bg-white/70 disabled:opacity-60"
+                  className="mt-3 w-full border border-[#244f3d] bg-white px-5 py-3 text-sm font-black text-[#244f3d] hover:bg-white/70 disabled:opacity-60"
                 >
                   {savingGuide ? 'Creating Order Guide...' : 'Create Order Guide'}
                 </button>
@@ -292,13 +404,13 @@ export default function CartPage() {
                   clearCart()
                   refreshCart()
                 }}
-                className="mt-3 w-full border border-[#d6cec0] px-5 py-3 text-sm font-bold text-[#6f675c] hover:border-[#244f3d] hover:text-[#244f3d]"
+                className="mt-3 w-full border border-[#d6cec0] px-5 py-3 text-sm font-black text-[#6f675c] hover:border-[#244f3d] hover:text-[#244f3d]"
               >
                 Clear Cart
               </button>
 
               {message && (
-                <p className="mt-4 border border-[#d6cec0] bg-[#f4f1ea] p-3 text-sm text-[#6f675c]">
+                <p className="mt-4 border border-[#d6cec0] bg-[#f4f1ea] p-3 text-sm font-medium text-[#6f675c]">
                   {message}
                 </p>
               )}

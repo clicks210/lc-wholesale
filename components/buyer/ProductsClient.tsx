@@ -67,15 +67,13 @@ export default function ProductsClient({
   }, [products, category, search, sort])
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-4 py-6 text-[#1d1d1b] md:px-6">
+    <div className="min-h-screen bg-[#f4f1ea] px-3 py-5 text-[#1d1d1b] sm:px-4 md:px-6">
       <div className="mx-auto max-w-[1500px]">
-        <section className="mb-6 border border-[#1d1d1b]/15 bg-white shadow-[8px_8px_0_#244f3d]/10">
-          <div className="border-b border-[#1d1d1b]/10 bg-[#244f3d] px-5 py-6 text-white md:px-7">
-            
-
-            <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <section className="mb-5 border border-[#1d1d1b]/15 bg-white shadow-[8px_8px_0_#244f3d]/10 sm:mb-6">
+          <div className="border-b border-[#1d1d1b]/10 bg-[#244f3d] px-4 py-5 text-white md:px-7 md:py-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <h1 className="text-4xl font-black leading-tight tracking-[-0.04em] md:text-5xl">
+                <h1 className="text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
                   {category === 'All' ? 'All Products' : category}
                 </h1>
 
@@ -90,7 +88,7 @@ export default function ProductsClient({
             </div>
           </div>
 
-          <div className="grid gap-3 bg-white p-4 md:grid-cols-[1fr_190px_190px]">
+          <div className="grid gap-3 bg-white p-3 sm:p-4 md:grid-cols-[1fr_190px_190px]">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -132,30 +130,18 @@ export default function ProductsClient({
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="group relative border border-[#1d1d1b]/15 bg-white transition hover:border-[#244f3d] hover:shadow-[7px_7px_0_#244f3d]/20"
-              >
-                <ProductCard product={product} />
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+  {filteredProducts.map((product) => (
+    <div
+      key={product.id}
+      className="group relative overflow-hidden border border-[#1d1d1b]/15 bg-white transition hover:border-[#244f3d] hover:shadow-[7px_7px_0_#244f3d]/20"
+    >
+      <ProductCard product={product} />
 
-                <div className="border-t border-[#1d1d1b]/10 bg-[#fbfaf7] p-3">
-                  <button
-                    type="button"
-                    onClick={() => quickAddToCart(product)}
-                    className={`w-full px-4 py-3 text-xs font-black uppercase tracking-[0.1em] transition ${
-                      addedId === product.id
-                        ? 'bg-[#79dd52] text-[#102011]'
-                        : 'bg-[#244f3d] text-white hover:bg-[#1d1d1b]'
-                    }`}
-                  >
-                    {addedId === product.id ? 'Added to Cart' : 'Quick Add'}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+      
+    </div>
+  ))}
+</div>
         )}
       </div>
     </div>
