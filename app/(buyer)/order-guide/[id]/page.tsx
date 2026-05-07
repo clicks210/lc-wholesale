@@ -17,6 +17,7 @@ type Guide = {
 type GuideItem = {
   id: string
   quantity: number
+  sort_order?: number | null
   product: Product & {
     image_url?: string | null
     supplier?: string | null
@@ -34,6 +35,8 @@ export default function SingleOrderGuidePage() {
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null)
+  const [savingOrder, setSavingOrder] = useState(false)
 
   useEffect(() => {
     loadGuide()
@@ -71,9 +74,11 @@ export default function SingleOrderGuidePage() {
       .select(`
         id,
         quantity,
+        sort_order,
         product:products (*)
       `)
       .eq('guide_id', guideId)
+      .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: true })
 
     if (itemError) {
@@ -96,6 +101,51 @@ export default function SingleOrderGuidePage() {
     setItems(guideItems)
     setQuantities(startingQuantities)
     setLoading(false)
+  }
+
+  function reorderItems(fromId: string, toId: string) {
+    if (fromId === toId) return
+
+    setItems((currentItems) => {
+      const fromIndex = currentItems.findIndex((item) => item.id === fromId)
+      const toIndex = currentItems.findIndex((item) => item.id === toId)
+
+      if (fromIndex === -1 || toIndex === -1) return currentItems
+
+      const nextItems = [...currentItems]
+      const [movedItem] = nextItems.splice(fromIndex, 1)
+      nextItems.splice(toIndex, 0, movedItem)
+
+      saveItemOrder(nextItems)
+
+      return nextItems
+    })
+  }
+
+  async function saveItemOrder(nextItems: GuideItem[]) {
+    setSavingOrder(true)
+    setMessage('Saving order...')
+
+    const updates = nextItems.map((item, index) =>
+      supabase
+        .from('order_guide_items')
+        .update({ sort_order: index + 1 })
+        .eq('id', item.id)
+        .eq('guide_id', guideId)
+    )
+
+    const results = await Promise.all(updates)
+    const failed = results.find((result) => result.error)
+
+    if (failed?.error) {
+      console.error('Save item order error:', failed.error)
+      setMessage('Could not save product order.')
+      setSavingOrder(false)
+      return
+    }
+
+    setMessage('Product order saved.')
+    setSavingOrder(false)
   }
 
   function updateQuantity(productId: string, nextQuantity: number) {
@@ -207,6 +257,10 @@ export default function SingleOrderGuidePage() {
                   Created {formatDate(guide.created_at)}
                 </p>
               )}
+
+              <p className="mt-3 text-xs font-bold text-[#6f675c]">
+                Drag products to reorder them. Changes save automatically.
+              </p>
             </div>
 
             <button
@@ -226,7 +280,8 @@ export default function SingleOrderGuidePage() {
         ) : (
           <section className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
             <div className="hidden lg:block">
-              <div className="grid grid-cols-[110px_2fr_1.2fr_1fr_1fr_0.8fr_1.2fr] bg-[#244f3d] px-5 py-4 text-sm font-black text-white">
+              <div className="grid grid-cols-[70px_110px_2fr_1.2fr_1fr_1fr_0.8fr_1.2fr] bg-[#244f3d] px-5 py-4 text-sm font-black text-white">
+                <div>Move</div>
                 <div>SKU</div>
                 <div>Product</div>
                 <div>Supplier</div>
@@ -239,12 +294,25 @@ export default function SingleOrderGuidePage() {
               {items.map((item) => {
                 const product = item.product
                 const qty = quantities[product.id] || 0
+                const isDragging = draggedItemId === item.id
 
                 return (
                   <div
                     key={item.id}
-                    className="grid grid-cols-[110px_2fr_1.2fr_1fr_1fr_0.8fr_1.2fr] items-center border-b border-[#eee7da] px-5 py-5 text-sm last:border-b-0"
+                    draggable
+                    onDragStart={() => setDraggedItemId(item.id)}
+                    onDragEnd={() => setDraggedItemId(null)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => {
+                      if (draggedItemId) reorderItems(draggedItemId, item.id)
+                      setDraggedItemId(null)
+                    }}
+                    className={`grid cursor-move grid-cols-[70px_110px_2fr_1.2fr_1fr_1fr_0.8fr_1.2fr] items-center border-b border-[#eee7da] px-5 py-5 text-sm last:border-b-0 ${
+                      isDragging ? 'bg-[#f4f1ea] opacity-50' : 'bg-white'
+                    }`}
                   >
+                    <div className="text-xl font-black text-[#244f3d]">☰</div>
+
                     <div className="break-all font-mono text-xs text-[#6f675c]">
                       {product.sku || '—'}
                     </div>
@@ -299,12 +367,30 @@ export default function SingleOrderGuidePage() {
                 const product = item.product
                 const qty = quantities[product.id] || 0
                 const lineTotal = Number(product.price ?? 0) * qty
+                const isDragging = draggedItemId === item.id
 
                 return (
                   <div
                     key={item.id}
-                    className="border border-[#d6cec0] bg-white p-4 shadow-sm"
+                    draggable
+                    onDragStart={() => setDraggedItemId(item.id)}
+                    onDragEnd={() => setDraggedItemId(null)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => {
+                      if (draggedItemId) reorderItems(draggedItemId, item.id)
+                      setDraggedItemId(null)
+                    }}
+                    className={`cursor-move border border-[#d6cec0] bg-white p-4 shadow-sm ${
+                      isDragging ? 'opacity-50' : ''
+                    }`}
                   >
+                    <div className="mb-3 flex items-center justify-between border border-[#eee7da] bg-[#f4f1ea] px-3 py-2">
+                      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+                        Drag to reorder
+                      </p>
+                      <span className="text-lg font-black text-[#244f3d]">☰</span>
+                    </div>
+
                     <div className="flex gap-4">
                       <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea]">
                         {product.image_url ? (
@@ -336,10 +422,7 @@ export default function SingleOrderGuidePage() {
                     </div>
 
                     <div className="mt-4 grid grid-cols-2 gap-2">
-                      <MiniStat
-                        label="Category"
-                        value={product.category || '—'}
-                      />
+                      <MiniStat label="Category" value={product.category || '—'} />
                       <MiniStat
                         label="Unit"
                         value={product.case_size || product.unit || '—'}
@@ -379,7 +462,9 @@ export default function SingleOrderGuidePage() {
                     {selectedCount} total units selected
                   </p>
                   <p className="mt-1 text-sm font-medium text-[#4f4f4f]">
-                    Adjust quantities, then add this guide to your cart.
+                    {savingOrder
+                      ? 'Saving product order...'
+                      : 'Adjust quantities, then add this guide to your cart.'}
                   </p>
                 </div>
 

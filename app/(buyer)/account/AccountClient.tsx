@@ -377,7 +377,6 @@ function Finance({
     </div>
   )
 }
-
 function Orders({ orders }: { orders: Order[] }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
@@ -537,6 +536,7 @@ function AccountInfo({
       <EditableDeliverySection customer={customer} onUpdated={setCustomer} />
     </div>
   )
+
 }
 
 function EditableDeliverySection({
