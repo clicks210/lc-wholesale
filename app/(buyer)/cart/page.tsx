@@ -28,6 +28,17 @@ export default function CartPage() {
     notifyCartUpdated()
   }
 
+  function getProductImage(product: any) {
+    return (
+      product?.image_url ||
+      product?.image ||
+      product?.photo_url ||
+      product?.thumbnail_url ||
+      product?.product_image ||
+      null
+    )
+  }
+
   useEffect(() => {
     async function loadCart() {
       refreshCart()
@@ -177,9 +188,8 @@ export default function CartPage() {
         ) : (
           <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
             <div>
-              {/* DESKTOP TABLE */}
               <div className="hidden overflow-hidden border border-[#d6cec0] bg-white shadow-sm md:block">
-                <div className="grid grid-cols-[1.7fr_0.65fr_0.65fr_0.75fr_0.8fr] border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
+                <div className="grid grid-cols-[2fr_0.55fr_0.6fr_0.7fr_0.75fr] border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
                   <div>Product</div>
                   <div>Unit</div>
                   <div>Price</div>
@@ -190,19 +200,36 @@ export default function CartPage() {
                 {items.map((item) => {
                   const lineTotal =
                     Number(item.product.price ?? 0) * item.quantity
+                  const imageUrl = getProductImage(item.product)
 
                   return (
                     <div
                       key={item.product.id}
-                      className="grid grid-cols-[1.7fr_0.65fr_0.65fr_0.75fr_0.8fr] items-center border-b border-[#eee7da] px-4 py-4 text-sm last:border-b-0"
+                      className="grid grid-cols-[2fr_0.55fr_0.6fr_0.7fr_0.75fr] items-center border-b border-[#eee7da] px-4 py-4 text-sm last:border-b-0"
                     >
-                      <div className="min-w-0 pr-4">
-                        <p className="font-bold leading-snug">
-                          {item.product.name}
-                        </p>
-                        <p className="mt-1 break-all font-mono text-xs text-[#6f675c]">
-                          {item.product.sku}
-                        </p>
+                      <div className="flex min-w-0 items-center gap-4 pr-4">
+                        <div className="h-20 w-20 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea]">
+                          {imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={item.product.name || 'Product image'}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center px-2 text-center text-[10px] font-black uppercase tracking-wide text-[#8a8173]">
+                              No Image
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="min-w-0">
+                          <p className="font-bold leading-snug">
+                            {item.product.name}
+                          </p>
+                          <p className="mt-1 break-all font-mono text-xs text-[#6f675c]">
+                            {item.product.sku}
+                          </p>
+                        </div>
                       </div>
 
                       <div className="font-medium text-[#6f675c]">
@@ -260,37 +287,55 @@ export default function CartPage() {
                 })}
               </div>
 
-              {/* MOBILE CARDS */}
               <div className="space-y-3 md:hidden">
                 {items.map((item) => {
                   const lineTotal =
                     Number(item.product.price ?? 0) * item.quantity
+                  const imageUrl = getProductImage(item.product)
 
                   return (
                     <div
                       key={item.product.id}
                       className="border border-[#d6cec0] bg-white p-4 shadow-sm"
                     >
-                      <div className="flex items-start justify-between gap-3 border-b border-[#eee7da] pb-3">
-                        <div className="min-w-0">
-                          <p className="text-base font-black leading-snug">
-                            {item.product.name}
-                          </p>
-                          <p className="mt-1 break-all font-mono text-[11px] font-medium text-[#6f675c]">
-                            {item.product.sku}
-                          </p>
+                      <div className="flex items-start gap-3 border-b border-[#eee7da] pb-3">
+                        <div className="h-20 w-20 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea]">
+                          {imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={item.product.name || 'Product image'}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center px-2 text-center text-[10px] font-black uppercase tracking-wide text-[#8a8173]">
+                              No Image
+                            </div>
+                          )}
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => {
-                            removeFromCart(item.product.id)
-                            refreshCart()
-                          }}
-                          className="shrink-0 text-xs font-black uppercase tracking-wide text-red-700"
-                        >
-                          Remove
-                        </button>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-base font-black leading-snug">
+                                {item.product.name}
+                              </p>
+                              <p className="mt-1 break-all font-mono text-[11px] font-medium text-[#6f675c]">
+                                {item.product.sku}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                removeFromCart(item.product.id)
+                                refreshCart()
+                              }}
+                              className="shrink-0 text-xs font-black uppercase tracking-wide text-red-700"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="mt-4 grid grid-cols-2 gap-3 text-sm">

@@ -37,6 +37,7 @@ export default function SingleOrderGuidePage() {
   const [message, setMessage] = useState('')
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null)
   const [savingOrder, setSavingOrder] = useState(false)
+  const [deletingItemId, setDeletingItemId] = useState<string | null>(null)
 
   useEffect(() => {
     loadGuide()
@@ -88,12 +89,17 @@ export default function SingleOrderGuidePage() {
       return
     }
 
-    const guideItems = (itemData || []) as any[]
+    const guideItems: GuideItem[] = (itemData || []).map((item: any) => ({
+  ...item,
+  product: Array.isArray(item.product)
+    ? item.product[0]
+    : item.product,
+}))
     const startingQuantities: Record<string, number> = {}
 
     guideItems.forEach((item) => {
       if (item.product?.id) {
-        startingQuantities[item.product.id] = item.quantity || 0
+        startingQuantities[item.product.id] = 0
       }
     })
 
@@ -101,6 +107,13 @@ export default function SingleOrderGuidePage() {
     setItems(guideItems)
     setQuantities(startingQuantities)
     setLoading(false)
+  }
+
+  function updateQuantity(productId: string, nextQuantity: number) {
+    setQuantities((current) => ({
+      ...current,
+      [productId]: Math.max(0, nextQuantity),
+    }))
   }
 
   function reorderItems(fromId: string, toId: string) {
@@ -126,15 +139,16 @@ export default function SingleOrderGuidePage() {
     setSavingOrder(true)
     setMessage('Saving order...')
 
-    const updates = nextItems.map((item, index) =>
-      supabase
-        .from('order_guide_items')
-        .update({ sort_order: index + 1 })
-        .eq('id', item.id)
-        .eq('guide_id', guideId)
+    const results = await Promise.all(
+      nextItems.map((item, index) =>
+        supabase
+          .from('order_guide_items')
+          .update({ sort_order: index + 1 })
+          .eq('id', item.id)
+          .eq('guide_id', guideId)
+      )
     )
 
-    const results = await Promise.all(updates)
     const failed = results.find((result) => result.error)
 
     if (failed?.error) {
@@ -148,11 +162,35 @@ export default function SingleOrderGuidePage() {
     setSavingOrder(false)
   }
 
-  function updateQuantity(productId: string, nextQuantity: number) {
-    setQuantities((current) => ({
-      ...current,
-      [productId]: Math.max(0, nextQuantity),
-    }))
+  async function removeGuideItem(itemId: string, productId: string) {
+    const confirmed = window.confirm('Remove this product from the guide?')
+    if (!confirmed) return
+
+    setDeletingItemId(itemId)
+
+    const { error } = await supabase
+      .from('order_guide_items')
+      .delete()
+      .eq('id', itemId)
+      .eq('guide_id', guideId)
+
+    if (error) {
+      console.error('Remove guide item error:', error)
+      setMessage('Could not remove product from guide.')
+      setDeletingItemId(null)
+      return
+    }
+
+    setItems((current) => current.filter((item) => item.id !== itemId))
+
+    setQuantities((current) => {
+      const next = { ...current }
+      delete next[productId]
+      return next
+    })
+
+    setMessage('Product removed from guide.')
+    setDeletingItemId(null)
   }
 
   function addSelectedToCart() {
@@ -175,7 +213,9 @@ export default function SingleOrderGuidePage() {
     window.dispatchEvent(new Event('cartUpdated'))
     window.dispatchEvent(new Event('cart-updated'))
 
-    setMessage(`${count} items added to cart.`)
+    setMessage(
+      count > 0 ? `${count} items added to cart.` : 'Choose quantities first.'
+    )
   }
 
   async function deleteGuide() {
@@ -193,7 +233,7 @@ export default function SingleOrderGuidePage() {
       return
     }
 
-    window.location.href = '/order-guides'
+    window.location.href = '/order-guide'
   }
 
   const selectedCount = useMemo(() => {
@@ -217,8 +257,8 @@ export default function SingleOrderGuidePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-7xl border border-[#d6cec0] bg-white p-6 text-sm font-medium text-[#6f675c] shadow-sm sm:p-8">
+      <div className="min-h-screen bg-[#f4f1ea] px-3 py-4 sm:px-6 sm:py-5 lg:px-10">
+        <div className="mx-auto max-w-7xl border border-[#d6cec0] bg-white p-5 text-sm font-medium text-[#6f675c] shadow-sm sm:p-8">
           Loading order guide...
         </div>
       </div>
@@ -226,23 +266,23 @@ export default function SingleOrderGuidePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-[#f4f1ea] px-3 py-4 text-[#1e1e1e] sm:px-6 sm:py-5 lg:px-10">
       <div className="mx-auto max-w-7xl">
         <Link
-          href="/order-guides"
-          className="mb-5 inline-flex text-sm font-black text-[#244f3d]"
+          href="/order-guide"
+          className="mb-4 inline-flex text-sm font-black text-[#244f3d] sm:mb-5"
         >
           ← Back to Order Guides
         </Link>
 
-        <section className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm sm:p-6">
+        <section className="mb-5 border border-[#d6cec0] bg-white p-4 shadow-sm sm:p-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#244f3d] sm:text-[11px]">
                 Saved Order Guide
               </p>
 
-              <h1 className="mt-2 break-words text-3xl font-black tracking-[-0.04em] sm:text-4xl">
+              <h1 className="mt-2 break-words text-2xl font-black tracking-[-0.04em] sm:text-4xl">
                 {guide?.name || 'Untitled Guide'}
               </h1>
 
@@ -258,8 +298,9 @@ export default function SingleOrderGuidePage() {
                 </p>
               )}
 
-              <p className="mt-3 text-xs font-bold text-[#6f675c]">
-                Drag products to reorder them. Changes save automatically.
+              <p className="mt-3 text-xs font-bold leading-5 text-[#6f675c]">
+                Quantities start at zero. Pick what you need, remove old
+                products, or drag products to reorder them.
               </p>
             </div>
 
@@ -280,7 +321,7 @@ export default function SingleOrderGuidePage() {
         ) : (
           <section className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
             <div className="hidden lg:block">
-              <div className="grid grid-cols-[70px_110px_2fr_1.2fr_1fr_1fr_0.8fr_1.2fr] bg-[#244f3d] px-5 py-4 text-sm font-black text-white">
+              <div className="grid grid-cols-[60px_90px_2fr_1fr_1fr_0.9fr_0.8fr_1.2fr_110px] bg-[#244f3d] px-5 py-4 text-sm font-black text-white">
                 <div>Move</div>
                 <div>SKU</div>
                 <div>Product</div>
@@ -289,6 +330,7 @@ export default function SingleOrderGuidePage() {
                 <div>Unit</div>
                 <div>Price</div>
                 <div>Quantity</div>
+                <div className="text-right">Remove</div>
               </div>
 
               {items.map((item) => {
@@ -307,7 +349,7 @@ export default function SingleOrderGuidePage() {
                       if (draggedItemId) reorderItems(draggedItemId, item.id)
                       setDraggedItemId(null)
                     }}
-                    className={`grid cursor-move grid-cols-[70px_110px_2fr_1.2fr_1fr_1fr_0.8fr_1.2fr] items-center border-b border-[#eee7da] px-5 py-5 text-sm last:border-b-0 ${
+                    className={`grid cursor-move grid-cols-[60px_90px_2fr_1fr_1fr_0.9fr_0.8fr_1.2fr_110px] items-center border-b border-[#eee7da] px-5 py-5 text-sm last:border-b-0 ${
                       isDragging ? 'bg-[#f4f1ea] opacity-50' : 'bg-white'
                     }`}
                   >
@@ -317,22 +359,10 @@ export default function SingleOrderGuidePage() {
                       {product.sku || '—'}
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea]">
-                        {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            alt={product.name || 'Product image'}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-xs text-[#6f675c]">
-                            No img
-                          </div>
-                        )}
-                      </div>
+                    <div className="flex min-w-0 items-center gap-4">
+                      <ProductImage product={product} size="desktop" />
 
-                      <span className="font-black leading-snug">
+                      <span className="min-w-0 break-words font-black leading-snug">
                         {product.name}
                       </span>
                     </div>
@@ -357,12 +387,23 @@ export default function SingleOrderGuidePage() {
                       onIncrease={() => updateQuantity(product.id, qty + 1)}
                       onChange={(value) => updateQuantity(product.id, value)}
                     />
+
+                    <div className="text-right">
+                      <button
+                        type="button"
+                        onClick={() => removeGuideItem(item.id, product.id)}
+                        disabled={deletingItemId === item.id}
+                        className="text-xs font-black uppercase tracking-wide text-red-700 hover:text-red-900 disabled:opacity-50"
+                      >
+                        {deletingItemId === item.id ? 'Removing...' : 'Remove'}
+                      </button>
+                    </div>
                   </div>
                 )
               })}
             </div>
 
-            <div className="space-y-3 p-4 lg:hidden">
+            <div className="space-y-3 p-3 sm:p-4 lg:hidden">
               {items.map((item) => {
                 const product = item.product
                 const qty = quantities[product.id] || 0
@@ -380,7 +421,7 @@ export default function SingleOrderGuidePage() {
                       if (draggedItemId) reorderItems(draggedItemId, item.id)
                       setDraggedItemId(null)
                     }}
-                    className={`cursor-move border border-[#d6cec0] bg-white p-4 shadow-sm ${
+                    className={`border border-[#d6cec0] bg-white p-3 shadow-sm sm:p-4 ${
                       isDragging ? 'opacity-50' : ''
                     }`}
                   >
@@ -388,30 +429,21 @@ export default function SingleOrderGuidePage() {
                       <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
                         Drag to reorder
                       </p>
-                      <span className="text-lg font-black text-[#244f3d]">☰</span>
+
+                      <span className="text-lg font-black text-[#244f3d]">
+                        ☰
+                      </span>
                     </div>
 
-                    <div className="flex gap-4">
-                      <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea]">
-                        {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            alt={product.name || 'Product image'}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-[10px] text-[#6f675c]">
-                            No img
-                          </div>
-                        )}
-                      </div>
+                    <div className="flex gap-3 sm:gap-4">
+                      <ProductImage product={product} size="mobile" />
 
                       <div className="min-w-0 flex-1">
-                        <p className="break-words text-base font-black leading-snug">
+                        <p className="line-clamp-2 text-sm font-black leading-snug sm:text-base">
                           {product.name}
                         </p>
 
-                        <p className="mt-1 break-all font-mono text-[11px] font-medium text-[#6f675c]">
+                        <p className="mt-1 break-all font-mono text-[10px] font-medium text-[#6f675c] sm:text-[11px]">
                           {product.sku || '—'}
                         </p>
 
@@ -438,7 +470,7 @@ export default function SingleOrderGuidePage() {
                       />
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between gap-4 border border-[#eee7da] bg-[#f4f1ea] p-3">
+                    <div className="mt-4 flex flex-col gap-3 border border-[#eee7da] bg-[#f4f1ea] p-3 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
                         Quantity
                       </p>
@@ -450,6 +482,17 @@ export default function SingleOrderGuidePage() {
                         onChange={(value) => updateQuantity(product.id, value)}
                       />
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeGuideItem(item.id, product.id)}
+                      disabled={deletingItemId === item.id}
+                      className="mt-3 w-full border border-red-500 px-4 py-3 text-sm font-black text-red-600 hover:bg-red-50 disabled:opacity-50"
+                    >
+                      {deletingItemId === item.id
+                        ? 'Removing Product...'
+                        : 'Remove Product From Guide'}
+                    </button>
                   </div>
                 )
               })}
@@ -473,7 +516,7 @@ export default function SingleOrderGuidePage() {
                     <p className="text-sm font-medium text-[#4f4f4f]">
                       Order Total
                     </p>
-                    <p className="text-3xl font-black tracking-[-0.04em] text-[#244f3d]">
+                    <p className="text-2xl font-black tracking-[-0.04em] text-[#244f3d] sm:text-3xl">
                       ${orderTotal.toFixed(2)}
                     </p>
                   </div>
@@ -502,6 +545,36 @@ export default function SingleOrderGuidePage() {
   )
 }
 
+function ProductImage({
+  product,
+  size,
+}: {
+  product: GuideItem['product']
+  size: 'desktop' | 'mobile'
+}) {
+  const imageUrl = product.image_url
+
+  return (
+    <div
+      className={`shrink-0 overflow-hidden border border-[#e5ded2] bg-[#f4f1ea] ${
+        size === 'desktop' ? 'h-12 w-12' : 'h-16 w-16 sm:h-20 sm:w-20'
+      }`}
+    >
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={product.name || 'Product image'}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center px-1 text-center text-[9px] font-black uppercase tracking-wide text-[#8a8173]">
+          No Image
+        </div>
+      )}
+    </div>
+  )
+}
+
 function QuantityControl({
   qty,
   onDecrease,
@@ -514,25 +587,27 @@ function QuantityControl({
   onChange: (value: number) => void
 }) {
   return (
-    <div className="flex items-center">
+    <div className="flex w-full items-center sm:w-auto">
       <button
         type="button"
         onClick={onDecrease}
-        className="h-10 w-10 border border-[#d6cec0] bg-white text-lg font-black hover:border-[#244f3d]"
+        className="h-10 w-10 shrink-0 border border-[#d6cec0] bg-white text-lg font-black hover:border-[#244f3d]"
       >
         −
       </button>
 
       <input
         value={qty}
+        min={0}
+        inputMode="numeric"
         onChange={(e) => onChange(Number(e.target.value) || 0)}
-        className="h-10 w-14 border-y border-[#d6cec0] bg-white text-center font-black outline-none"
+        className="h-10 min-w-0 flex-1 border-y border-[#d6cec0] bg-white text-center font-black outline-none sm:w-14 sm:flex-none"
       />
 
       <button
         type="button"
         onClick={onIncrease}
-        className="h-10 w-10 border border-[#d6cec0] bg-white text-lg font-black hover:border-[#244f3d]"
+        className="h-10 w-10 shrink-0 border border-[#d6cec0] bg-white text-lg font-black hover:border-[#244f3d]"
       >
         +
       </button>
@@ -554,8 +629,9 @@ function MiniStat({
       <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
         {label}
       </p>
+
       <p
-        className={`mt-1 break-words font-black ${
+        className={`mt-1 break-words text-sm font-black ${
           highlight ? 'text-[#244f3d]' : ''
         }`}
       >

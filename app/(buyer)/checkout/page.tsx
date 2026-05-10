@@ -14,6 +14,17 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
 
+  function getProductImage(product: any) {
+    return (
+      product?.image_url ||
+      product?.image ||
+      product?.photo_url ||
+      product?.thumbnail_url ||
+      product?.product_image ||
+      null
+    )
+  }
+
   useEffect(() => {
     async function loadCheckout() {
       setItems([...getCart()])
@@ -138,13 +149,13 @@ Total: ${formatMoney(total)}`.trim(),
 
   if (items.length === 0 && !message) {
     return (
-      <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-4xl border border-[#d6cec0] bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
+      <div className="min-h-screen bg-[#f4f1ea] px-3 py-4 text-[#1e1e1e] sm:px-6 sm:py-5 lg:px-10">
+        <div className="mx-auto max-w-4xl border border-[#d6cec0] bg-white p-5 shadow-sm sm:p-8">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#244f3d] sm:text-[11px]">
             Local Connect Wholesale
           </p>
 
-          <h1 className="mt-2 text-3xl font-black tracking-[-0.04em]">
+          <h1 className="mt-2 text-2xl font-black tracking-[-0.04em] sm:text-3xl">
             Checkout
           </h1>
 
@@ -164,43 +175,43 @@ Total: ${formatMoney(total)}`.trim(),
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-[#f4f1ea] px-3 py-4 text-[#1e1e1e] sm:px-6 sm:py-5 lg:px-10">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
+        <div className="mb-4 border border-[#d6cec0] bg-white p-4 shadow-sm sm:mb-5 sm:p-6">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#244f3d] sm:text-[11px]">
             Local Connect Wholesale
           </p>
 
-          <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-black tracking-[-0.04em]">
+              <h1 className="text-2xl font-black tracking-[-0.04em] sm:text-3xl">
                 Checkout
               </h1>
 
-              <p className="mt-1 text-sm font-medium text-[#6f675c]">
+              <p className="mt-1 text-sm font-medium leading-5 text-[#6f675c]">
                 Review your account, delivery schedule, and order total.
               </p>
             </div>
 
             <Link
               href="/cart"
-              className="mt-3 inline-flex w-fit border border-[#244f3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-[#244f3d] hover:bg-[#244f3d] hover:text-white sm:mt-0"
+              className="inline-flex w-fit border border-[#244f3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-[#244f3d] hover:bg-[#244f3d] hover:text-white"
             >
               Back to Cart
             </Link>
           </div>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
-          <section className="space-y-5">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <section className="min-w-0 space-y-5">
             <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
+              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
                 <h2 className="text-base font-black text-white sm:text-lg">
                   Account Information
                 </h2>
               </div>
 
-              <div className="p-5 sm:p-6">
+              <div className="p-4 sm:p-6">
                 <div className="grid gap-3 text-sm sm:grid-cols-2">
                   <Info label="Business" value={customer?.business_name} />
                   <Info label="Contact" value={customer?.contact_name} />
@@ -223,7 +234,7 @@ Total: ${formatMoney(total)}`.trim(),
                 </div>
 
                 <div className="mt-5 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm">
-                  <p className="text-[11px] font-black uppercase tracking-wide text-[#6f675c]">
+                  <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:text-[11px]">
                     Delivery Address
                   </p>
 
@@ -251,7 +262,7 @@ Total: ${formatMoney(total)}`.trim(),
             </div>
 
             <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
+              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
                 <h2 className="text-base font-black text-white sm:text-lg">
                   Delivery Schedule & Items
                 </h2>
@@ -259,18 +270,18 @@ Total: ${formatMoney(total)}`.trim(),
 
               <div className="divide-y divide-[#eee7da]">
                 {deliveryGroups.map((group: any) => (
-                  <div key={group.deliveryLabel} className="p-4">
+                  <div key={group.deliveryLabel} className="p-3 sm:p-4">
                     <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="font-black text-[#244f3d]">
                           {group.deliveryLabel}
                         </p>
-                        <p className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#6f675c] sm:text-xs">
                           {[...new Set(group.categories)].join(' / ')}
                         </p>
                       </div>
 
-                      <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
+                      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:text-xs">
                         {group.items.length} products
                       </p>
                     </div>
@@ -279,28 +290,57 @@ Total: ${formatMoney(total)}`.trim(),
                       {group.items.map((item: any) => {
                         const lineTotal =
                           Number(item.product.price ?? 0) * item.quantity
+                        const imageUrl = getProductImage(item.product)
 
                         return (
                           <div
                             key={item.product.id}
-                            className="flex items-start justify-between gap-3 border border-[#eee7da] bg-[#f9f7f1] px-3 py-2 text-sm"
+                            className="flex gap-3 border border-[#eee7da] bg-[#f9f7f1] p-3 text-sm sm:items-center sm:justify-between"
                           >
-                            <div className="min-w-0">
-                              <p className="truncate font-bold">
-                                {item.product.name}
-                              </p>
-                              <p className="mt-0.5 truncate text-[11px] font-medium text-[#6f675c]">
-                                {item.quantity} ×{' '}
-                                {formatMoney(item.product.price)}
-                                {item.product.category
-                                  ? ` · ${item.product.category}`
-                                  : ''}
-                              </p>
+                            <div className="flex min-w-0 flex-1 gap-3">
+                              <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea] sm:h-20 sm:w-20">
+                                {imageUrl ? (
+                                  <img
+                                    src={imageUrl}
+                                    alt={item.product.name || 'Product image'}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center px-1 text-center text-[9px] font-black uppercase tracking-wide text-[#8a8173] sm:text-[10px]">
+                                    No Image
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <p className="line-clamp-2 text-sm font-black leading-snug sm:text-base">
+                                  {item.product.name}
+                                </p>
+
+                                <p className="mt-1 text-[11px] font-medium leading-4 text-[#6f675c] sm:text-xs">
+                                  {item.quantity} ×{' '}
+                                  {formatMoney(item.product.price)}
+                                  {item.product.category
+                                    ? ` · ${item.product.category}`
+                                    : ''}
+                                </p>
+
+                                {item.product.sku && (
+                                  <p className="mt-1 truncate font-mono text-[10px] text-[#8a8173] sm:text-[11px]">
+                                    {item.product.sku}
+                                  </p>
+                                )}
+                              </div>
                             </div>
 
-                            <p className="shrink-0 font-black text-[#244f3d]">
-                              {formatMoney(lineTotal)}
-                            </p>
+                            <div className="shrink-0 text-right">
+                              <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:hidden">
+                                Total
+                              </p>
+                              <p className="text-sm font-black text-[#244f3d] sm:text-base">
+                                {formatMoney(lineTotal)}
+                              </p>
+                            </div>
                           </div>
                         )
                       })}
@@ -311,13 +351,13 @@ Total: ${formatMoney(total)}`.trim(),
             </div>
 
             <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
+              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
                 <h2 className="text-base font-black text-white sm:text-lg">
                   Order Notes
                 </h2>
               </div>
 
-              <div className="p-5 sm:p-6">
+              <div className="p-4 sm:p-6">
                 <label className="mb-2 block text-xs font-black uppercase tracking-wide text-[#6f675c]">
                   Notes for Local Connect
                 </label>
@@ -333,28 +373,28 @@ Total: ${formatMoney(total)}`.trim(),
             </div>
           </section>
 
-          <aside className="h-fit border border-[#d6cec0] bg-white p-5 shadow-sm lg:sticky lg:top-5">
-            <h2 className="text-xl font-black tracking-[-0.03em]">
+          <aside className="h-fit border border-[#d6cec0] bg-white p-4 shadow-sm sm:p-5 lg:sticky lg:top-5">
+            <h2 className="text-lg font-black tracking-[-0.03em] sm:text-xl">
               Order Summary
             </h2>
 
             <div className="mt-5 space-y-3 border-b border-[#d6cec0] pb-5 text-sm">
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-4">
                 <span className="font-medium text-[#6f675c]">Items</span>
                 <span className="font-bold">{itemCount}</span>
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-4">
                 <span className="font-medium text-[#6f675c]">Subtotal</span>
                 <span className="font-bold">{formatMoney(subtotal)}</span>
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-4">
                 <span className="font-medium text-[#6f675c]">Deliveries</span>
                 <span className="font-bold">{deliveryGroups.length}</span>
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-4">
                 <span className="font-medium text-[#6f675c]">
                   Order Minimum
                 </span>
@@ -363,7 +403,7 @@ Total: ${formatMoney(total)}`.trim(),
 
               {freightApplied > 0 ? (
                 <div className="border border-orange-200 bg-orange-50 p-3">
-                  <div className="flex justify-between text-orange-800">
+                  <div className="flex justify-between gap-4 text-orange-800">
                     <span className="font-black">Freight</span>
                     <span className="font-black">
                       {formatMoney(freightApplied)}
@@ -376,7 +416,7 @@ Total: ${formatMoney(total)}`.trim(),
                 </div>
               ) : (
                 <div className="border border-green-200 bg-green-50 p-3">
-                  <div className="flex justify-between text-green-800">
+                  <div className="flex justify-between gap-4 text-green-800">
                     <span className="font-black">Freight</span>
                     <span className="font-black">Free</span>
                   </div>
@@ -387,7 +427,7 @@ Total: ${formatMoney(total)}`.trim(),
               )}
             </div>
 
-            <div className="mt-5 flex justify-between text-lg font-black">
+            <div className="mt-5 flex justify-between gap-4 text-base font-black sm:text-lg">
               <span>Total</span>
               <span className="text-[#244f3d]">{formatMoney(total)}</span>
             </div>
@@ -442,7 +482,9 @@ function Info({
       <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
         {label}
       </p>
-      <p className="mt-1 break-words font-black">{value || '—'}</p>
+      <p className="mt-1 break-words text-sm font-black sm:text-base">
+        {value || '—'}
+      </p>
     </div>
   )
 }
@@ -453,7 +495,9 @@ function MiniStat({ label, value }: { label: string; value: string }) {
       <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
         {label}
       </p>
-      <p className="mt-1 break-words font-bold">{value}</p>
+      <p className="mt-1 break-words text-sm font-bold sm:text-base">
+        {value}
+      </p>
     </div>
   )
 }

@@ -127,6 +127,32 @@ export default function OrderGuidesPage() {
           </p>
         </div>
 
+        <div className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
+                Produce Planning
+              </p>
+
+              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">
+                Standard Weekly Produce Profile
+              </h2>
+
+              <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#6f675c]">
+                Set your standard weekly produce usage so Local Connect can better
+                forecast inventory and source from local farms for your deliveries.
+              </p>
+            </div>
+
+            <Link
+              href="/produce-planner"
+              className="inline-flex w-full items-center justify-center bg-[#244f3d] px-5 py-3 text-sm font-black text-white transition hover:bg-[#2f5d46] md:w-auto"
+            >
+              Open Produce Planner
+            </Link>
+          </div>
+        </div>
+
         {message && (
           <div className="mb-5 border border-[#d6cec0] bg-white p-4 text-sm font-medium text-[#6f675c] shadow-sm">
             {message}
