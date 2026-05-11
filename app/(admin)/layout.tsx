@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-const APP_VERSION = 'v0.9.4'
+const APP_VERSION = 'v0.9.5'
 
 const navItems = [
   { label: 'Dashboard', href: '/admin/dashboard' },
@@ -12,6 +12,7 @@ const navItems = [
   { label: 'Products', href: '/admin/products' },
   { label: 'Customers', href: '/admin/customers' },
   { label: 'Produce Planner', href: '/admin/produce-planner' },
+  { label: 'Order Guides', href: '/admin/order-guides' },
 ]
 
 export default function AdminLayout({

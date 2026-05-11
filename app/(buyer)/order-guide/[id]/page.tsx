@@ -56,12 +56,25 @@ export default function SingleOrderGuidePage() {
       return
     }
 
-    const { data: guideData, error: guideError } = await supabase
-      .from('customer_order_guides')
-      .select('id, name, description, created_at')
-      .eq('id', guideId)
-      .eq('user_id', user.id)
-      .single()
+   const { data: customerData, error: customerError } = await supabase
+  .from('customers')
+  .select('id')
+  .eq('user_id', user.id)
+  .single()
+
+if (customerError || !customerData) {
+  console.error('Customer fetch error:', customerError)
+  setMessage('Could not find your customer account.')
+  setLoading(false)
+  return
+}
+
+const { data: guideData, error: guideError } = await supabase
+  .from('customer_order_guides')
+  .select('id, name, description, created_at')
+  .eq('id', guideId)
+  .eq('customer_id', customerData.id)
+  .single()
 
     if (guideError || !guideData) {
       console.error('Guide fetch error:', guideError)
@@ -304,13 +317,6 @@ export default function SingleOrderGuidePage() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={deleteGuide}
-              className="w-full border border-red-500 px-5 py-3 text-sm font-black text-red-600 hover:bg-red-50 md:w-auto"
-            >
-              Delete Guide
-            </button>
           </div>
         </section>
 
