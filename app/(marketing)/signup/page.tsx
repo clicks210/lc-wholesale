@@ -16,15 +16,18 @@ export default function SignupPage() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
+
     setLoading(true)
     setMessage('')
 
     try {
       const res = await fetch('/api/signup', {
         method: 'POST',
+
         headers: {
           'Content-Type': 'application/json',
         },
+
         body: JSON.stringify({
           businessName,
           contactName,
@@ -43,6 +46,7 @@ export default function SignupPage() {
       }
 
       setSuccess(true)
+
       setMessage(
         'Account created. Please check your email to verify your account before signing in.'
       )
@@ -62,22 +66,7 @@ export default function SignupPage() {
 
   return (
     <main className="min-h-screen bg-[#f4f1ea] text-[#1e1e1e]">
-      <header className="border-b border-[#d6cec0] bg-white">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="text-xl font-bold text-[#244f3d]">
-            Local Connect
-          </Link>
-
-          <Link
-            href="/login"
-            className="text-sm font-semibold text-[#6f675c] hover:text-[#244f3d]"
-          >
-            Sign In
-          </Link>
-        </div>
-      </header>
-
-      <section className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl grid-cols-1 px-6 py-12 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 px-6 py-12 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="flex items-center bg-[#244f3d] px-8 py-14 text-white md:px-12">
           <div className="max-w-xl">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-white/70">
@@ -106,15 +95,20 @@ export default function SignupPage() {
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-[#6f675c]">
-              Fill out your business details to create a wholesale buyer account.
+              Fill out your business details to create a wholesale buyer
+              account.
             </p>
 
             <form onSubmit={handleSignup} className="mt-8 space-y-5">
-              <fieldset disabled={success} className="space-y-5 disabled:opacity-60">
+              <fieldset
+                disabled={success}
+                className="space-y-5 disabled:opacity-60"
+              >
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                     Business Name
                   </label>
+
                   <input
                     required
                     value={businessName}
@@ -127,6 +121,7 @@ export default function SignupPage() {
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                     Contact Name
                   </label>
+
                   <input
                     required
                     value={contactName}
@@ -140,6 +135,7 @@ export default function SignupPage() {
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                       Email
                     </label>
+
                     <input
                       type="email"
                       required
@@ -153,6 +149,7 @@ export default function SignupPage() {
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                       Phone
                     </label>
+
                     <input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -165,12 +162,14 @@ export default function SignupPage() {
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                     Access Code
                   </label>
+
                   <input
                     value={accessCode}
                     onChange={(e) => setAccessCode(e.target.value)}
                     placeholder="Optional"
                     className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
                   />
+
                   <p className="mt-2 text-xs leading-5 text-[#6f675c]">
                     Have a Local Connect access code? Enter it to auto-approve
                     your buyer account after email verification.
@@ -181,6 +180,7 @@ export default function SignupPage() {
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                     Password
                   </label>
+
                   <input
                     type="password"
                     required
@@ -196,7 +196,9 @@ export default function SignupPage() {
                   disabled={loading}
                   className="w-full bg-[#244f3d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#2f5d46] disabled:opacity-60"
                 >
-                  {loading ? 'Creating account...' : 'Create Buyer Account'}
+                  {loading
+                    ? 'Creating account...'
+                    : 'Create Buyer Account'}
                 </button>
               </fieldset>
             </form>
@@ -229,6 +231,7 @@ export default function SignupPage() {
                 <p className="font-bold">
                   {success ? 'Check your email' : 'Signup issue'}
                 </p>
+
                 <p className="mt-1">{message}</p>
               </div>
             )}

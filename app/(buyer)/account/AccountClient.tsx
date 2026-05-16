@@ -50,6 +50,7 @@ export default function AccountPage() {
   const [invoiceError, setInvoiceError] = useState('')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(true)
+  const [memberRole, setMemberRole] = useState('staff')
 
   async function loadInvoices() {
     try {
@@ -87,23 +88,49 @@ export default function AccountPage() {
 
       setEmail(user.email || '')
 
-      const { data: customerData } = await supabase
-        .from('customers')
-        .select('*')
+      const { data: membership, error: membershipError } = await supabase
+        .from('customer_members')
+        .select('customer_id, role')
         .eq('user_id', user.id)
         .single()
 
+      if (membershipError || !membership) {
+        console.error('Membership lookup failed:', membershipError)
+        setLoading(false)
+        return
+      }
+
+      setMemberRole(membership.role)
+
+      const { data: customerData, error: customerError } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', membership.customer_id)
+        .single()
+
+      if (customerError || !customerData) {
+        console.error('Customer lookup failed:', customerError)
+        setLoading(false)
+        return
+      }
+
       setCustomer(customerData)
 
-      const { data: orderData } = await supabase
+      const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .select('*, order_items(*)')
-        .eq('user_id', user.id)
+        .eq('customer_id', membership.customer_id)
         .order('created_at', { ascending: false })
+
+      if (orderError) {
+        console.error('Orders lookup failed:', orderError)
+      }
 
       setOrders(orderData || [])
 
-      await loadInvoices()
+      if (membership.role === 'owner') {
+        await loadInvoices()
+      }
 
       setLoading(false)
     }
@@ -141,47 +168,63 @@ export default function AccountPage() {
         </div>
 
         <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-          <div className="grid grid-cols-1 border-b border-[#d6cec0] sm:grid-cols-3">
-            <TabButton
-              label="$ Finance"
-              active={tab === 'finance'}
-              onClick={() => setTab('finance')}
-            />
-            <TabButton
-              label="Account Information"
-              active={tab === 'account'}
-              onClick={() => setTab('account')}
-            />
-            <TabButton
-              label="Orders"
-              active={tab === 'orders'}
-              onClick={() => setTab('orders')}
-            />
-          </div>
+   <div className="grid grid-cols-1 border-b border-[#d6cec0] sm:grid-cols-3">
+  <TabButton
+    label="$ Finance"
+    active={tab === 'finance'}
+    disabled={
+      memberRole !== 'owner' &&
+      memberRole !== 'accounting'
+    }
+    onClick={() => {
+      if (
+        memberRole === 'owner' ||
+        memberRole === 'accounting'
+      ) {
+        setTab('finance')
+      }
+    }}
+  />
 
-          <div className="p-4 sm:p-6">
-            {tab === 'account' && (
-              <AccountInfo
-                customer={customer}
-                setCustomer={setCustomer}
-                email={email}
-                firstName={firstName}
-                lastName={lastName}
-              />
-            )}
+  <TabButton
+    label="Account Information"
+    active={tab === 'account'}
+    onClick={() => setTab('account')}
+  />
 
-            {tab === 'finance' && (
-              <Finance
-                customer={customer}
-                invoices={invoices}
-                loading={invoiceLoading}
-                error={invoiceError}
-                onRefresh={loadInvoices}
-              />
-            )}
+  <TabButton
+    label="Orders"
+    active={tab === 'orders'}
+    onClick={() => setTab('orders')}
+  />
+</div>
 
-            {tab === 'orders' && <Orders orders={orders} />}
-          </div>
+<div className="p-4 sm:p-6">
+  {tab === 'account' && (
+    <AccountInfo
+      customer={customer}
+      setCustomer={setCustomer}
+      email={email}
+      firstName={firstName}
+      lastName={lastName}
+      memberRole={memberRole}
+    />
+  )}
+
+  {tab === 'finance' && (
+    <Finance
+      customer={customer}
+      invoices={invoices}
+      loading={invoiceLoading}
+      error={invoiceError}
+      onRefresh={loadInvoices}
+    />
+  )}
+
+  {tab === 'orders' && (
+    <Orders orders={orders} />
+  )}
+</div>
         </div>
       </div>
     </div>
@@ -377,6 +420,7 @@ function Finance({
     </div>
   )
 }
+
 function Orders({ orders }: { orders: Order[] }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
@@ -497,12 +541,14 @@ function AccountInfo({
   email,
   firstName,
   lastName,
+  memberRole = 'staff',
 }: {
   customer: Customer | null
   setCustomer: (customer: Customer) => void
   email: string
   firstName: string
   lastName: string
+  memberRole?: string
 }) {
   return (
     <div className="space-y-5">
@@ -529,22 +575,367 @@ function AccountInfo({
                 ? new Date(customer.created_at).toLocaleDateString()
                 : '—',
             ],
+            ['Role', memberRole],
           ]}
         />
       </Section>
 
-      <EditableDeliverySection customer={customer} onUpdated={setCustomer} />
+      <EditableDeliverySection
+        customer={customer}
+        onUpdated={setCustomer}
+        memberRole={memberRole}
+      />
+
+      <PasswordResetSection email={email} />
+
+      <TeamAccessSection customer={customer} memberRole={memberRole} />
     </div>
   )
+}
 
+function PasswordResetSection({ email }: { email: string }) {
+  const [sending, setSending] = useState(false)
+  const [success, setSuccess] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  async function sendPasswordReset() {
+    setSuccess('')
+    setErrorMessage('')
+
+    if (!email) {
+      setErrorMessage('No email found for this account.')
+      return
+    }
+
+    setSending(true)
+
+    const redirectTo =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/reset-password`
+        : undefined
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    })
+
+    setSending(false)
+
+    if (error) {
+      setErrorMessage(error.message)
+      return
+    }
+
+    setSuccess('Password reset email sent. Check your inbox.')
+  }
+
+  return (
+    <Section title="Password & Security">
+      <div className="space-y-4">
+        <p className="text-sm font-medium leading-6 text-[#6f675c]">
+          Send yourself a secure password reset email. You’ll receive a link to
+          create a new password.
+        </p>
+
+        <div className="border border-[#eee7da] bg-[#f4f1ea] p-4">
+          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+            Account Email
+          </p>
+          <p className="mt-1 break-words font-black">{email || '—'}</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={sendPasswordReset}
+          disabled={sending || !email}
+          className="w-full bg-[#244f3d] px-4 py-3 text-sm font-black text-white disabled:opacity-60 sm:w-auto"
+        >
+          {sending ? 'Sending Reset Email...' : 'Send Password Reset Email'}
+        </button>
+
+        {success && (
+          <div className="border border-[#244f3d] bg-[#eef5f0] p-4 text-sm font-bold text-[#244f3d]">
+            {success}
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="border border-red-300 bg-red-50 p-4 text-sm font-bold text-red-700">
+            {errorMessage}
+          </div>
+        )}
+      </div>
+    </Section>
+  )
+}
+
+
+
+function TeamAccessSection({
+  customer,
+  memberRole,
+}: {
+  customer: Customer | null
+  memberRole: string
+}) {
+  const [email, setEmail] = useState('')
+  const [role, setRole] = useState('purchaser')
+  const [sending, setSending] = useState(false)
+  const [success, setSuccess] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [members, setMembers] = useState<any[]>([])
+  const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null)
+
+  const canManageTeam = memberRole === 'owner' || memberRole === 'manager'
+
+  async function loadMembers() {
+    if (!customer) return
+
+    const { data, error } = await supabase
+      .from('customer_members')
+      .select(`
+        id,
+        role,
+        created_at,
+        user_id,
+        email,
+        full_name
+      `)
+      .eq('customer_id', customer.id)
+      .order('created_at', { ascending: true })
+
+    if (error) {
+      console.error('Team members fetch error:', error)
+      return
+    }
+
+    setMembers(data || [])
+  }
+
+  useEffect(() => {
+    loadMembers()
+  }, [customer])
+
+  async function handleInvite() {
+    if (!customer) return
+
+    setSuccess('')
+    setErrorMessage('')
+
+    if (!email.trim()) {
+      setErrorMessage('Please enter an email address.')
+      return
+    }
+
+    setSending(true)
+
+    const { data: userData } = await supabase.auth.getUser()
+    const user = userData?.user
+
+    if (!user) {
+      setSending(false)
+      setErrorMessage('You must be logged in to send invites.')
+      return
+    }
+
+    const { data: invite, error } = await supabase
+      .from('customer_invites')
+      .insert({
+        customer_id: customer.id,
+        email: email.trim().toLowerCase(),
+        role,
+        invited_by: user.id,
+      })
+      .select('*')
+      .single()
+
+    if (error) {
+      setSending(false)
+      setErrorMessage(error.message)
+      return
+    }
+
+    const response = await fetch('/api/team/send-invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inviteId: invite.id }),
+    })
+
+    setSending(false)
+
+    if (!response.ok) {
+      setErrorMessage('Invite created but email failed to send.')
+      return
+    }
+
+    setEmail('')
+    setRole('purchaser')
+    setSuccess('Invite sent successfully.')
+    await loadMembers()
+  }
+
+  async function deleteMember(member: any) {
+    if (!customer) return
+
+    setSuccess('')
+    setErrorMessage('')
+
+    if (member.role === 'owner') {
+      setErrorMessage('You cannot remove the account owner.')
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Remove ${member.email || member.full_name || 'this user'} from this account?`
+    )
+
+    if (!confirmed) return
+
+    setDeletingMemberId(member.id)
+
+    const { error } = await supabase
+      .from('customer_members')
+      .delete()
+      .eq('id', member.id)
+      .eq('customer_id', customer.id)
+
+    setDeletingMemberId(null)
+
+    if (error) {
+      setErrorMessage(error.message)
+      return
+    }
+
+    setMembers((current) => current.filter((item) => item.id !== member.id))
+    setSuccess('Team member removed.')
+  }
+
+  return (
+    <Section title="Team Access">
+      <div className="space-y-5">
+        <p className="text-sm font-medium leading-6 text-[#6f675c]">
+          Invite team members to access this business account.
+        </p>
+
+        {!canManageTeam ? (
+          <div className="border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm font-bold text-[#6f675c]">
+            Only owners and managers can invite or remove team members.
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            <div className="grid gap-4 md:grid-cols-[1fr_220px]">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="chef@restaurant.com"
+                className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+              />
+
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm font-bold outline-none focus:border-[#244f3d]"
+              >
+                <option value="purchaser">Purchaser</option>
+                <option value="accounting">Accounting</option>
+              </select>
+            </div>
+
+            <button
+              onClick={handleInvite}
+              disabled={sending || !customer}
+              className="w-full bg-[#244f3d] px-4 py-3 text-sm font-black text-white disabled:opacity-60 sm:w-auto"
+            >
+              {sending ? 'Sending Invite...' : 'Send Invite'}
+            </button>
+
+            {success && (
+              <div className="border border-[#244f3d] bg-[#eef5f0] p-4 text-sm font-bold text-[#244f3d]">
+                {success}
+              </div>
+            )}
+
+            {errorMessage && (
+              <div className="border border-red-300 bg-red-50 p-4 text-sm font-bold text-red-700">
+                {errorMessage}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="border border-[#d6cec0] bg-white">
+          <div className="border-b border-[#d6cec0] bg-[#f4f1ea] px-4 py-3">
+            <h3 className="text-sm font-black uppercase tracking-wide text-[#6f675c]">
+              Current Team Members
+            </h3>
+          </div>
+
+          {members.length === 0 ? (
+            <div className="p-4 text-sm text-[#6f675c]">
+              No team members found.
+            </div>
+          ) : (
+            <div className="divide-y divide-[#eee7da]">
+              {members.map((member) => {
+                const canDeleteMember =
+                  canManageTeam && member.role !== 'owner'
+
+                return (
+                  <div
+                    key={member.id}
+                    className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-black">
+                        {member.full_name || 'Unnamed User'}
+                      </p>
+
+                      <p className="mt-1 text-xs text-[#6f675c]">
+                        {member.email || `User ${member.user_id.slice(0, 8).toUpperCase()}`}
+                      </p>
+
+                      <p className="mt-1 text-xs font-medium text-[#6f675c]">
+                        Added {new Date(member.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-black uppercase text-[#6f675c]">
+                        {member.role}
+                      </span>
+
+                      {canDeleteMember && (
+                        <button
+                          type="button"
+                          onClick={() => deleteMember(member)}
+                          disabled={deletingMemberId === member.id}
+                          className="border border-red-300 bg-red-50 px-3 py-1 text-xs font-black uppercase text-red-700 disabled:opacity-50"
+                        >
+                          {deletingMemberId === member.id
+                            ? 'Removing...'
+                            : 'Remove'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </Section>
+  )
 }
 
 function EditableDeliverySection({
   customer,
   onUpdated,
+  memberRole,
 }: {
   customer: Customer | null
   onUpdated: (customer: Customer) => void
+  memberRole: string
 }) {
   const [editing, setEditing] = useState(false)
   const [address, setAddress] = useState(customer?.delivery_address || '')
@@ -553,8 +944,10 @@ function EditableDeliverySection({
   const [notes, setNotes] = useState(customer?.delivery_notes || '')
   const [saving, setSaving] = useState(false)
 
+  const canEditDelivery = memberRole === 'owner'
+
   async function handleSave() {
-    if (!customer) return
+    if (!customer || !canEditDelivery) return
 
     setSaving(true)
 
@@ -599,17 +992,24 @@ function EditableDeliverySection({
             <p className="text-xs font-black uppercase tracking-wide">
               Delivery Instructions
             </p>
+
             <p className="mt-2 leading-5">
               {customer?.delivery_notes || 'No delivery notes added yet.'}
             </p>
           </div>
 
-          <button
-            onClick={() => setEditing(true)}
-            className="mt-4 w-full border border-[#244f3d] px-4 py-3 text-sm font-black text-[#244f3d] hover:bg-[#f4f1ea] sm:w-auto"
-          >
-            Edit Delivery Info
-          </button>
+          {canEditDelivery ? (
+            <button
+              onClick={() => setEditing(true)}
+              className="mt-4 w-full border border-[#244f3d] px-4 py-3 text-sm font-black text-[#244f3d] hover:bg-[#f4f1ea] sm:w-auto"
+            >
+              Edit Delivery Info
+            </button>
+          ) : (
+            <div className="mt-4 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm font-bold text-[#6f675c]">
+              Only account owners can edit delivery address and instructions.
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid gap-4">
@@ -665,6 +1065,29 @@ function EditableDeliverySection({
     </Section>
   )
 }
+
+function LockedSection({
+  title,
+  message,
+}: {
+  title: string
+  message: string
+}) {
+  return (
+    <div className="overflow-hidden border border-[#1e1e1e] bg-[#111] shadow-sm">
+      <div className="border-b border-white/10 bg-black px-5 py-4">
+        <h2 className="text-base font-black text-white sm:text-lg">{title}</h2>
+      </div>
+
+      <div className="p-6">
+        <div className="border border-white/10 bg-white/5 p-5">
+          <p className="text-sm font-bold leading-6 text-white/75">{message}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 
 function OrderDetailsModal({
   order,
@@ -898,19 +1321,24 @@ function FinanceCard({
 function TabButton({
   label,
   active,
+  disabled,
   onClick,
 }: {
   label: string
   active: boolean
+  disabled?: boolean
   onClick: () => void
 }) {
   return (
     <button
       onClick={onClick}
-      className={`border-b border-[#d6cec0] px-4 py-4 text-left text-sm font-black sm:text-center ${
-        active
-          ? 'bg-[#244f3d] text-white'
-          : 'bg-white text-[#6f675c] hover:bg-[#f4f1ea]'
+      disabled={disabled}
+      className={`border-b border-[#d6cec0] px-4 py-4 text-left text-sm font-black transition sm:text-center ${
+        disabled
+          ? 'cursor-not-allowed bg-[#f4f1ea] text-[#b0a79a] opacity-60'
+          : active
+            ? 'bg-[#244f3d] text-white'
+            : 'bg-white text-[#6f675c] hover:bg-[#f4f1ea]'
       }`}
     >
       {label}

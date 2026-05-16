@@ -35,16 +35,32 @@ export default function CheckoutPage() {
 
       if (!user) return
 
-      const { data } = await supabase
-        .from('customers')
-        .select('*')
+      const { data: membership, error: membershipError } = await supabase
+        .from('customer_members')
+        .select('customer_id, role')
         .eq('user_id', user.id)
         .single()
 
-      setCustomer(data)
+      if (membershipError || !membership) {
+        setMessage('Could not find your customer account.')
+        return
+      }
 
-      if (data?.delivery_notes) {
-        setNotes(data.delivery_notes)
+      const { data: customerData, error: customerError } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', membership.customer_id)
+        .single()
+
+      if (customerError || !customerData) {
+        setMessage('Could not load your customer account.')
+        return
+      }
+
+      setCustomer(customerData)
+
+      if (customerData.delivery_notes) {
+        setNotes(customerData.delivery_notes)
       }
     }
 

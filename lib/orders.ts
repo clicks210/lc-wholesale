@@ -15,10 +15,20 @@ export async function submitOrder({
 
   if (!user) throw new Error('Not logged in')
 
+  const { data: membership, error: membershipError } = await supabase
+    .from('customer_members')
+    .select('customer_id, role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (membershipError || !membership) {
+    throw new Error('Customer membership not found')
+  }
+
   const { data: customer, error: customerError } = await supabase
     .from('customers')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('id', membership.customer_id)
     .single()
 
   if (customerError || !customer) {

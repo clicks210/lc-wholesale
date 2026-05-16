@@ -56,14 +56,14 @@ export default function SingleOrderGuidePage() {
       return
     }
 
-   const { data: customerData, error: customerError } = await supabase
-  .from('customers')
-  .select('id')
+  const { data: membership, error: membershipError } = await supabase
+  .from('customer_members')
+  .select('customer_id, role')
   .eq('user_id', user.id)
   .single()
 
-if (customerError || !customerData) {
-  console.error('Customer fetch error:', customerError)
+if (membershipError || !membership) {
+  console.error('Membership fetch error:', membershipError)
   setMessage('Could not find your customer account.')
   setLoading(false)
   return
@@ -73,7 +73,7 @@ const { data: guideData, error: guideError } = await supabase
   .from('customer_order_guides')
   .select('id, name, description, created_at')
   .eq('id', guideId)
-  .eq('customer_id', customerData.id)
+  .eq('customer_id', membership.customer_id)
   .single()
 
     if (guideError || !guideData) {

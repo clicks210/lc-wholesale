@@ -1,160 +1,214 @@
 'use client'
 
 import Link from 'next/link'
-import Script from 'next/script'
 
 const productLines = [
+
   {
+
     name: 'Fresh Produce',
+
     href: '/products?category=Produce',
+
     eyebrow: 'BC Farms',
+
     description:
+
       'Our produce program is built in partnership with the Kamloops Farmers Market and a network of local farms, giving restaurants access to fresh, seasonal product sourced close to home. We focus on quality and consistency, aggregating supply and handling logistics so kitchens can rely on local produce without the usual friction.',
+
     items: ['Greens', 'Root veg', 'Fruit', 'Herbs'],
+
     image: '/images/produce.jpg',
+
   },
+
   {
+
     name: 'Frozen Bakery',
+
     href: '/products?category=Bread',
+
     eyebrow: 'Specialty Bakery',
+
     description:
-      'Our frozen bread program features premium products from Specialty Bakery, giving restaurants access to high-quality, artisan bread with the convenience of frozen inventory. Each product is crafted for consistency, easy storage, and bake-off performance so kitchens can serve fresh, great-tasting bread on demand without the waste or unpredictability of daily deliveries.',
+
+      'Our frozen bread program features premium products from Specialty Bakery, giving restaurants access to high-quality, artisan bread with the convenience of frozen inventory.',
+
     items: ['Buns', 'Loaves', 'Pastries', 'Specialty'],
+
     image: '/images/bread.jpg',
+
   },
+
   {
+
     name: 'Poultry',
+
     href: '/products?category=Protein',
+
     eyebrow: 'Colonial Farms',
+
     description:
-      'Our poultry program features high-quality product from Colonial Farms, with both fresh and frozen options available. We handle sourcing, storage, and delivery to ensure consistent supply and seamless integration into your kitchen.',
+
+      'Our poultry program features high-quality product from Colonial Farms, with both fresh and frozen options available.',
+
     items: ['Fresh', 'Frozen'],
+
     image: '/images/poultry.jpg',
+
   },
+
   {
+
     name: 'Paper & Janitorial',
+
     href: '/products?category=Paper',
+
     eyebrow: 'R3 Distribution',
+
     description:
-      'Our paper and janitorial program offers a full suite of products through R3 Redistribution, covering everything from essential disposables to cleaning supplies. We centralize sourcing and delivery so you can manage these core items alongside your food orders with ease and consistency.',
+
+      'Our paper and janitorial program offers a full suite of products through R3 Redistribution.',
+
     items: ['Takeout', 'Gloves', 'Chemicals', 'Paper'],
+
     image: '/images/paper.jpg',
+
   },
+
 ]
 
 const steps = [
-  {
-    title: 'Create account',
-    text: 'Set up your buyer profile and tell us what your kitchen usually orders.',
-  },
-  {
-    title: 'Browse supply',
-    text: 'View available product lines and build a clean weekly order guide.',
-  },
-  {
-    title: 'Submit order',
-    text: 'Send everything through one flow instead of chasing sheets and texts.',
-  },
-  {
-    title: 'We coordinate',
-    text: 'Your dedicated account representative handles supplier coordination, delivery planning, and communication.',
-  },
-]
 
-const emergencyItems = [
-  'Paper products',
-  'Dairy essentials',
-  'Eggs',
-  'Core produce',
-  'Kitchen staples',
-  'Select urgent items',
+  {
+
+    title: 'Create account',
+
+    text: 'Set up your buyer profile and tell us what your kitchen usually orders.',
+
+  },
+
+  {
+
+    title: 'Browse supply',
+
+    text: 'View available product lines and build a clean weekly order guide.',
+
+  },
+
+  {
+
+    title: 'Submit order',
+
+    text: 'Send everything through one flow instead of chasing sheets and texts.',
+
+  },
+
+  {
+
+    title: 'We coordinate',
+
+    text: 'Your dedicated account representative handles supplier coordination, delivery planning, and communication.',
+
+  },
+
 ]
 
 export default function WholesaleLandingPage() {
+
   return (
+
     <main className="min-h-screen bg-[#f4f1ea] text-[#1d1d1b]">
-      {/* TOP BAR / LOGO */}
-      <header className="border-b border-[#1d1d1b]/25 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
-          <Link href="/" className="flex items-center gap-4">
-            <img
-              src="/images/logo.png"
-              alt="Local Connect"
-              className="h-14 w-auto object-contain sm:h-20"
-            />
-          </Link>
-
-          <Link
-            href="/signup"
-            className="inline-flex border border-[#244f3d] bg-[#244f3d] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-transparent hover:text-[#244f3d] sm:px-5 sm:py-3 sm:text-xs"
-          >
-            Buyer access
-          </Link>
-        </div>
-      </header>
-
-      <Script
-        src="https://clickbooks-app-production.up.railway.app/embed.js"
-        strategy="afterInteractive"
-        data-slug="local-connect-91b5d7"
-        data-label="Get Set Up"
-        data-position="right"
-        data-color="#244f3d"
-        data-icon="none"
-      />
 
       {/* HERO */}
-<section className="relative min-h-[82vh] overflow-hidden border-b border-[#1d1d1b]/25 sm:min-h-[90vh]">
-  {/* Mobile clean fallback image */}
-  <img
-    src="/images/hero-mobile.jpg"
-    alt="Local Connect wholesale"
-    className="absolute inset-0 h-full w-full object-cover sm:hidden"
-  />
 
-  {/* Desktop video */}
-  <iframe
-    src="https://www.youtube.com/embed/NMhskDzU4hI?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=NMhskDzU4hI"
-    title="Local Connect supplier video"
-    className="pointer-events-none absolute inset-0 hidden h-full w-full scale-125 object-cover opacity-60 sm:block"
-    allow="autoplay; encrypted-media; picture-in-picture"
-  />
+      <section className="relative min-h-[82vh] overflow-hidden border-b border-[#1d1d1b]/25 sm:min-h-[90vh]">
 
-  <div className="absolute inset-0 bg-[#1d1d1b]/50 sm:bg-[#1d1d1b]/35" />
-  <div className="absolute inset-0 bg-gradient-to-b from-[#1d1d1b]/45 via-[#1d1d1b]/20 to-[#1d1d1b]" />
+        {/* Mobile clean fallback image */}
 
-  <div className="relative z-10 mx-auto flex min-h-[82vh] max-w-7xl items-center px-4 py-14 sm:min-h-[90vh] sm:px-6 sm:py-20 lg:px-10">
-    <div className="max-w-3xl text-white">
-      <div className="mb-5 inline-flex border border-white/40 bg-black/30 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] backdrop-blur sm:mb-6 sm:px-5 sm:text-xs">
-        Wholesale marketplace
-      </div>
+        <img
 
-      <h1 className="text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-6xl md:text-7xl lg:text-8xl">
-        Premium Food-Service Distribution.
-      </h1>
+          src="/images/hero-mobile.jpg"
 
-      <p className="mt-5 max-w-xl text-base leading-7 text-white/80 sm:mt-6 sm:text-lg sm:leading-8">
-        Local Connect provides your restaurant with affordable staples and top-quality local food through one reliable wholesale system.
-      </p>
+          alt="Local Connect wholesale"
 
-      <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap">
-        <Link
-          href="/signup"
-          className="border border-white bg-white px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white sm:px-7"
-        >
-          Request access
-        </Link>
+          className="absolute inset-0 h-full w-full object-cover sm:hidden"
 
-        <Link
-          href="/products"
-          className="border border-white/60 bg-black/20 px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white backdrop-blur transition hover:bg-white hover:text-[#1d1d1b] sm:px-7"
-        >
-          Browse marketplace
-        </Link>
-      </div>
-    </div>
-  </div>
-</section>
+        />
+
+        {/* Desktop video */}
+
+        <iframe
+
+          src="https://www.youtube.com/embed/NMhskDzU4hI?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=NMhskDzU4hI"
+
+          title="Local Connect supplier video"
+
+          className="pointer-events-none absolute inset-0 hidden h-full w-full scale-125 object-cover opacity-60 sm:block"
+
+          allow="autoplay; encrypted-media; picture-in-picture"
+
+        />
+
+        <div className="absolute inset-0 bg-[#1d1d1b]/50 sm:bg-[#1d1d1b]/35" />
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1d1d1b]/45 via-[#1d1d1b]/20 to-[#1d1d1b]" />
+
+        <div className="relative z-10 mx-auto flex min-h-[82vh] max-w-7xl items-center px-4 py-14 sm:min-h-[90vh] sm:px-6 sm:py-20 lg:px-10">
+
+          <div className="max-w-3xl text-white">
+
+            <div className="mb-5 inline-flex border border-white/40 bg-black/30 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] backdrop-blur sm:mb-6 sm:px-5 sm:text-xs">
+
+              Wholesale marketplace
+
+            </div>
+
+            <h1 className="text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-6xl md:text-7xl lg:text-8xl">
+
+              Premium Food-Service Distribution.
+
+            </h1>
+
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/80 sm:mt-6 sm:text-lg sm:leading-8">
+
+              Local Connect provides your restaurant with affordable staples and top-quality local food through one reliable wholesale system.
+
+            </p>
+
+            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap">
+
+              <Link
+
+                href="/signup"
+
+                className="border border-white bg-white px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white sm:px-7"
+
+              >
+
+                Request access
+
+              </Link>
+
+              <Link
+
+                href="/products"
+
+                className="border border-white/60 bg-black/20 px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white backdrop-blur transition hover:bg-white hover:text-[#1d1d1b] sm:px-7"
+
+              >
+
+                Browse marketplace
+
+              </Link>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
 
       {/* STORY / TRUST */}
       <section className="border-b border-[#1d1d1b]/25">

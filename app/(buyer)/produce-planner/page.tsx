@@ -335,24 +335,24 @@ export default function ProduceProfilePage() {
       return
     }
 
-    const { data: customer, error: customerError } = await supabase
-      .from('customers')
-      .select('id')
-      .eq('user_id', user.id)
-      .single()
+    const { data: membership, error: membershipError } = await supabase
+  .from('customer_members')
+  .select('customer_id, role')
+  .eq('user_id', user.id)
+  .single()
 
-    if (customerError || !customer?.id) {
-      setMessage('No customer profile found for this user.')
-      setLoading(false)
-      return
-    }
+if (membershipError || !membership?.customer_id) {
+  setMessage('No customer profile found for this user.')
+  setLoading(false)
+  return
+}
 
-    setCustomerId(customer.id)
+setCustomerId(membership.customer_id)
 
     const { data: existing, error: profileError } = await supabase
       .from('customer_produce_profiles')
       .select('id, status, notes, last_reviewed_at')
-      .eq('customer_id', customer.id)
+      .eq('customer_id', membership.customer_id)
       .maybeSingle<ExistingProfile>()
 
     if (profileError) {

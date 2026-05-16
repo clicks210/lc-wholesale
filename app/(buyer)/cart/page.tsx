@@ -13,6 +13,7 @@ import Link from 'next/link'
 export default function CartPage() {
   const [items, setItems] = useState<any[]>([])
   const [customer, setCustomer] = useState<any>(null)
+  const [customerId, setCustomerId] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
   const [guideName, setGuideName] = useState('')
   const [savingGuide, setSavingGuide] = useState(false)
@@ -49,13 +50,33 @@ export default function CartPage() {
 
       if (!user) return
 
-      const { data } = await supabase
-        .from('customers')
-        .select('*')
+      const { data: membership, error: membershipError } = await supabase
+        .from('customer_members')
+        .select('customer_id, role')
         .eq('user_id', user.id)
         .single()
 
-      setCustomer(data)
+      if (membershipError || !membership) {
+        console.error('Membership fetch error:', membershipError)
+        setMessage('Could not find your customer account.')
+        return
+      }
+
+      setCustomerId(membership.customer_id)
+
+      const { data: customerData, error: customerError } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', membership.customer_id)
+        .single()
+
+      if (customerError || !customerData) {
+        console.error('Customer fetch error:', customerError)
+        setMessage('Could not load your customer account.')
+        return
+      }
+
+      setCustomer(customerData)
     }
 
     loadCart()
@@ -91,14 +112,9 @@ export default function CartPage() {
       return
     }
 
-    const { data: customer, error: customerError } = await supabase
-      .from('customers')
-      .select('id')
-      .eq('user_id', user.id)
-      .single()
+    const activeCustomerId = customerId
 
-    if (customerError || !customer) {
-      console.error('Customer fetch error:', customerError)
+    if (!activeCustomerId) {
       setMessage('Could not find your customer account.')
       setSavingGuide(false)
       return
@@ -120,7 +136,7 @@ export default function CartPage() {
       .from('customer_order_guides')
       .insert({
         user_id: user.id,
-        customer_id: customer.id,
+        customer_id: activeCustomerId,
         name: guideName.trim(),
         description: notes || null,
       })

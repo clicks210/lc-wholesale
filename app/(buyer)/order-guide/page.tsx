@@ -35,13 +35,13 @@ export default function OrderGuidesPage() {
       return
     }
 
-    const { data: customer, error: customerError } = await supabase
-      .from('customers')
-      .select('id')
+    const { data: membership, error: membershipError } = await supabase
+      .from('customer_members')
+      .select('customer_id, role')
       .eq('user_id', user.id)
       .single()
 
-    if (customerError || !customer) {
+    if (membershipError || !membership) {
       setMessage('Could not find your customer account.')
       setLoading(false)
       return
@@ -50,7 +50,7 @@ export default function OrderGuidesPage() {
     const { data, error } = await supabase
       .from('customer_order_guides')
       .select('id, user_id, customer_id, name, description, created_at')
-      .eq('customer_id', customer.id)
+      .eq('customer_id', membership.customer_id)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -122,7 +122,7 @@ export default function OrderGuidesPage() {
               href="mailto:liam@localconnectfood.ca"
               className="font-black underline underline-offset-4 hover:text-[#244f3d]"
             >
-              liam@localconnectfood.ca
+              lmilovick@gmail.com
             </a>
           </p>
         </div>

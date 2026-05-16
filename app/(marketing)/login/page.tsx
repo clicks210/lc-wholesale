@@ -26,88 +26,78 @@ export default function LoginPage() {
       return
     }
 
+    const userId = data.user.id
+
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
-      .eq('id', data.user.id)
+      .eq('id', userId)
       .single()
 
-    if (profileError) {
+    if (profileError || !profile) {
       await supabase.auth.signOut()
       setLoading(false)
       setMessage('Login worked, but role lookup failed.')
       return
     }
 
-    if (profile?.role === 'admin') {
+    if (profile.role === 'admin') {
       setLoading(false)
       window.location.assign('/admin/dashboard')
       return
     }
 
-    const ensureRes = await fetch('/api/account/ensure-customer', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: data.user.id }),
-    })
+    const { data: memberships, error: membershipError } = await supabase
+      .from('customer_members')
+      .select('customer_id, role')
+      .eq('user_id', userId)
 
-    const ensureResult = await ensureRes.json()
-
-    if (!ensureRes.ok) {
-      await supabase.auth.signOut()
-      setLoading(false)
-      setMessage(
-        ensureResult.error || 'Login worked, but buyer account setup failed.'
-      )
-      return
-    }
-
-    const { data: customer, error: customerError } = await supabase
-      .from('customers')
-      .select('approved')
-      .eq('user_id', data.user.id)
-      .single()
-
-    if (customerError || !customer) {
+    if (membershipError || !memberships || memberships.length === 0) {
       await supabase.auth.signOut()
       setLoading(false)
       setMessage('Buyer account could not be found.')
       return
     }
 
-    if (!customer.approved) {
+    const customerIds = memberships.map(
+      (membership) => membership.customer_id
+    )
+
+    const { data: customers, error: customerError } = await supabase
+      .from('customers')
+      .select('id, approved')
+      .in('id', customerIds)
+
+    if (customerError || !customers || customers.length === 0) {
       await supabase.auth.signOut()
       setLoading(false)
+      setMessage('Buyer account could not be found.')
+      return
+    }
+
+    const approvedCustomer = customers.find(
+      (customer) => customer.approved
+    )
+
+    if (!approvedCustomer) {
+      await supabase.auth.signOut()
+      setLoading(false)
+
       setMessage(
         'Your buyer account is pending approval. We’ll notify you once your account has been approved.'
       )
+
       return
     }
 
     setLoading(false)
+
     window.location.assign('/products')
   }
 
   return (
     <main className="min-h-screen bg-[#f4f1ea] text-[#1e1e1e]">
-      <header className="border-b border-[#d6cec0] bg-white">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="text-xl font-bold text-[#244f3d]">
-            Local Connect
-          </Link>
-
-          <Link
-            href="/"
-            className="text-sm font-semibold text-[#6f675c] hover:text-[#244f3d]"
-          >
-            Back Home
-          </Link>
-        </div>
-      </header>
-
-      <section className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl grid-cols-1 px-6 py-12 lg:grid-cols-[1.05fr_0.95fr]">
+      <section className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 px-6 py-12 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex items-center bg-[#244f3d] px-8 py-14 text-white md:px-12">
           <div className="max-w-xl">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-white/70">
@@ -119,8 +109,8 @@ export default function LoginPage() {
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-7 text-white/80">
-              Place orders, view previous deliveries, create new guides, improve
-              your menu.
+              Place orders, view previous deliveries, create new guides,
+              improve your menu.
             </p>
           </div>
         </div>
@@ -170,6 +160,13 @@ export default function LoginPage() {
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
+
+            <Link
+              href="/reset-password-request"
+              className="mt-4 block text-center text-sm font-bold text-[#244f3d] hover:underline"
+            >
+              Forgot password?
+            </Link>
 
             <Link
               href="/signup"
