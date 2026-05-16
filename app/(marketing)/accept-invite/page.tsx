@@ -1,3 +1,5 @@
+// app/(marketing)/accept-invite/AcceptInviteClient.tsx
+
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -12,7 +14,7 @@ type Invite = {
   businessName: string
 }
 
-export default function AcceptInvitePage() {
+export default function AcceptInviteClient() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
@@ -37,7 +39,10 @@ export default function AcceptInvitePage() {
       const data = await response.json()
 
       if (!response.ok) {
-        setErrorMessage(data.error || 'This invite is invalid, expired, or has already been accepted.')
+        setErrorMessage(
+          data.error ||
+            'This invite is invalid, expired, or has already been accepted.'
+        )
         setLoading(false)
         return
       }
@@ -71,25 +76,30 @@ export default function AcceptInvitePage() {
 
     setSubmitting(true)
 
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: invite.email,
-      password,
-      options: {
-        data: {
-          full_name: fullName.trim(),
+    const { data: signUpData, error: signUpError } =
+      await supabase.auth.signUp({
+        email: invite.email,
+        password,
+        options: {
+          data: {
+            full_name: fullName.trim(),
+          },
         },
-      },
-    })
+      })
 
     if (signUpError || !signUpData.user) {
       setSubmitting(false)
-      setErrorMessage(signUpError?.message || 'Could not create account.')
+      setErrorMessage(
+        signUpError?.message || 'Could not create account.'
+      )
       return
     }
 
     const response = await fetch('/api/team/accept-invite', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         token,
         userId: signUpData.user.id,
@@ -101,7 +111,9 @@ export default function AcceptInvitePage() {
 
     if (!response.ok) {
       setSubmitting(false)
-      setErrorMessage(result.error || 'Could not accept invite.')
+      setErrorMessage(
+        result.error || 'Could not accept invite.'
+      )
       return
     }
 
@@ -112,7 +124,9 @@ export default function AcceptInvitePage() {
     return (
       <main className="min-h-screen bg-[#f8f3ea] px-4 py-16">
         <div className="mx-auto max-w-xl border border-[#d6cec0] bg-white p-8">
-          <p className="text-sm font-black text-[#244f3d]">Loading invite...</p>
+          <p className="text-sm font-black text-[#244f3d]">
+            Loading invite...
+          </p>
         </div>
       </main>
     )
@@ -122,8 +136,13 @@ export default function AcceptInvitePage() {
     return (
       <main className="min-h-screen bg-[#f8f3ea] px-4 py-16">
         <div className="mx-auto max-w-xl border border-red-300 bg-white p-8">
-          <h1 className="text-2xl font-black text-[#244f3d]">Invite unavailable</h1>
-          <p className="mt-4 text-sm font-bold text-red-700">{errorMessage}</p>
+          <h1 className="text-2xl font-black text-[#244f3d]">
+            Invite unavailable
+          </h1>
+
+          <p className="mt-4 text-sm font-bold text-red-700">
+            {errorMessage}
+          </p>
         </div>
       </main>
     )
@@ -141,14 +160,15 @@ export default function AcceptInvitePage() {
         </h1>
 
         <p className="mt-3 text-sm font-medium leading-6 text-[#6f675c]">
-          You’ve been invited to join an existing business account. Create your
-          password below and you’ll be added to the team.
+          You’ve been invited to join an existing business account.
+          Create your password below and you’ll be added to the team.
         </p>
 
         <div className="mt-6 border border-[#d6cec0] bg-[#f4f1ea] p-4">
           <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
             Invited Email
           </p>
+
           <p className="mt-1 text-sm font-black text-[#1f1a14]">
             {invite?.email}
           </p>
@@ -189,7 +209,9 @@ export default function AcceptInvitePage() {
             disabled={submitting}
             className="bg-[#244f3d] px-4 py-3 text-sm font-black text-white disabled:opacity-60"
           >
-            {submitting ? 'Creating Account...' : 'Accept Invite'}
+            {submitting
+              ? 'Creating Account...'
+              : 'Accept Invite'}
           </button>
         </div>
       </div>

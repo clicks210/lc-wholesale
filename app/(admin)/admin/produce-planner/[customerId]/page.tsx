@@ -132,19 +132,19 @@ export default function AdminCustomerProducePlannerPage() {
     setLoading(true)
     setError(null)
 
-    const { data: customerData, error: customerError } = await supabase
-      .from('customers')
-      .select('*')
-      .eq('id', customerId)
-      .single()
+  const { data: customerData, error: customerError } = await supabase
+  .from('customers')
+  .select('*')
+  .eq('id', customerId)
+  .single()
 
-    if (customerError) {
-      setError('Could not load customer.')
-      setLoading(false)
-      return
-    }
+if (customerError || !customerData) {
+  setError('Could not load customer.')
+  setLoading(false)
+  return
+}
 
-    setCustomer(customerData as Customer)
+setCustomer(customerData as Customer)
 
     const { data: profileData, error: profileError } = await supabase
       .from('customer_produce_profiles')
