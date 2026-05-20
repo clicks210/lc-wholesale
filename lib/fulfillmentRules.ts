@@ -30,25 +30,15 @@ export const CATEGORY_RULES = {
 
 export function getFulfillmentRule(product: any) {
   const categoryRule =
-    CATEGORY_RULES[
-      product.category as keyof typeof CATEGORY_RULES
-    ]
+    CATEGORY_RULES[product.category as keyof typeof CATEGORY_RULES]
 
   const inStock = Boolean(product.in_stock)
 
   return {
     ...categoryRule,
-
     inStock,
-
-    type: inStock
-      ? 'stocked'
-      : 'special_order',
-
-    label: inStock
-      ? 'In Stock'
-      : 'Special Order',
-
+    type: inStock ? 'stocked' : 'special_order',
+    label: inStock ? 'In Stock' : 'Special Order',
     message: inStock
       ? 'Available for standard Tuesday / Friday delivery.'
       : categoryRule?.minimum > 0
@@ -62,16 +52,15 @@ export function evaluateCartFulfillment(cartItems: any[]) {
 
   for (const item of cartItems) {
     const product = item.product || item
-
     const rule = getFulfillmentRule(product)
 
-    const lineTotal =
-      Number(product.price || 0) *
-      Number(item.quantity || 1)
+    const category = product.category || 'Uncategorized'
+    const lineTotal = Number(product.price || 0) * Number(item.quantity || 1)
+    const inStock = Boolean(product.in_stock)
 
-    if (!categoryGroups[product.category]) {
-      categoryGroups[product.category] = {
-        category: product.category,
+    if (!categoryGroups[category]) {
+      categoryGroups[category] = {
+        category,
         subtotal: 0,
         minimum: rule.minimum || 0,
         leadTimeDays: rule.leadTimeDays || 0,
@@ -79,31 +68,33 @@ export function evaluateCartFulfillment(cartItems: any[]) {
         stockedSubtotal: 0,
         specialOrderSubtotal: 0,
 
+        hasSpecialOrderItems: false,
+
         items: [],
       }
     }
 
-    categoryGroups[product.category].subtotal += lineTotal
+    categoryGroups[category].subtotal += lineTotal
 
-    if (product.in_stock) {
-      categoryGroups[product.category].stockedSubtotal +=
-        lineTotal
+    if (inStock) {
+      categoryGroups[category].stockedSubtotal += lineTotal
     } else {
-      categoryGroups[
-        product.category
-      ].specialOrderSubtotal += lineTotal
+      categoryGroups[category].specialOrderSubtotal += lineTotal
+      categoryGroups[category].hasSpecialOrderItems = true
     }
 
-    categoryGroups[product.category].items.push(item)
+    categoryGroups[category].items.push(item)
   }
 
   const groups = Object.values(categoryGroups)
 
-  const failures = groups.filter(
-    (group: any) =>
+  const failures = groups.filter((group: any) => {
+    return (
+      group.hasSpecialOrderItems &&
       group.minimum > 0 &&
       group.subtotal < group.minimum
-  )
+    )
+  })
 
   return {
     valid: failures.length === 0,
