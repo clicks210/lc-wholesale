@@ -5,6 +5,10 @@ export async function GET() {
   try {
     const accessToken = await getZohoAccessToken()
 
+    if (!accessToken) {
+      throw new Error('Zoho access token was not returned')
+    }
+
     return NextResponse.json({
       success: true,
       tokenPreview: `${accessToken.slice(0, 12)}...`,
@@ -13,7 +17,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: error.message,
+        error: error?.message || 'Zoho test failed',
       },
       { status: 500 }
     )
