@@ -7,6 +7,10 @@ import {
   updateCartItem,
   removeFromCart,
 } from '@/lib/cart'
+import {
+  evaluateCartFulfillment,
+  getFulfillmentRule,
+} from '@/lib/fulfillmentRules'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
@@ -98,6 +102,9 @@ export default function CartPage() {
 
   const estimatedTotal = subtotal + freightApplied
 
+  const fulfillment = evaluateCartFulfillment(items)
+  const canCheckout = fulfillment.valid
+
   async function createOrderGuide() {
     setSavingGuide(true)
     setMessage('')
@@ -170,6 +177,27 @@ export default function CartPage() {
     setGuideName('')
     setMessage('Order guide created successfully.')
     setSavingGuide(false)
+  }
+
+  function FulfillmentBadge({ product }: { product: any }) {
+    const rule = getFulfillmentRule(product)
+    const inStock = Boolean(product.in_stock)
+
+    return (
+      <p
+        className={`mt-2 inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide ${
+          inStock
+            ? 'bg-green-100 text-green-800'
+            : 'bg-orange-100 text-orange-800'
+        }`}
+      >
+        {inStock
+          ? 'In Stock · Tues/Fri'
+          : rule.minimum > 0
+            ? `Special Order · $${rule.minimum} ${product.category} min`
+            : 'Special Order'}
+      </p>
+    )
   }
 
   return (
@@ -245,6 +273,7 @@ export default function CartPage() {
                           <p className="mt-1 break-all font-mono text-xs text-[#6f675c]">
                             {item.product.sku}
                           </p>
+                          <FulfillmentBadge product={item.product} />
                         </div>
                       </div>
 
@@ -338,6 +367,7 @@ export default function CartPage() {
                               <p className="mt-1 break-all font-mono text-[11px] font-medium text-[#6f675c]">
                                 {item.product.sku}
                               </p>
+                              <FulfillmentBadge product={item.product} />
                             </div>
 
                             <button
@@ -436,7 +466,7 @@ export default function CartPage() {
 
                 <div className="flex justify-between">
                   <span className="font-medium text-[#6f675c]">
-                    Order Minimum
+                    Account Minimum
                   </span>
                   <span className="font-bold">{formatMoney(orderMinimum)}</span>
                 </div>
@@ -469,6 +499,27 @@ export default function CartPage() {
                 )}
               </div>
 
+              {fulfillment.failures.length > 0 && (
+                <div className="mt-5 space-y-3">
+                  {fulfillment.failures.map((group: any) => (
+                    <div
+                      key={group.category}
+                      className="border border-orange-200 bg-orange-50 p-3 text-sm text-orange-900"
+                    >
+                      <p className="font-black">
+                        {group.category} minimum not met
+                      </p>
+
+                      <p className="mt-1 text-xs font-medium leading-5">
+                        Add {formatMoney(group.minimum - group.subtotal)} more
+                        from {group.category} to unlock these special-order
+                        items.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="mt-5 flex justify-between text-lg font-black">
                 <span>Estimated Total</span>
                 <span className="text-[#244f3d]">
@@ -490,12 +541,22 @@ export default function CartPage() {
                 />
               </div>
 
-              <Link
-                href="/checkout"
-                className="mt-6 block w-full bg-[#244f3d] px-5 py-3 text-center text-sm font-black text-white hover:bg-[#2f5d46]"
-              >
-                Continue to Checkout
-              </Link>
+              {canCheckout ? (
+                <Link
+                  href="/checkout"
+                  className="mt-6 block w-full bg-[#244f3d] px-5 py-3 text-center text-sm font-black text-white hover:bg-[#2f5d46]"
+                >
+                  Continue to Checkout
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="mt-6 block w-full cursor-not-allowed bg-[#9b9488] px-5 py-3 text-center text-sm font-black text-white opacity-70"
+                >
+                  Minimums Required
+                </button>
+              )}
 
               <div className="mt-3 border border-[#d6cec0] bg-[#f4f1ea] p-3">
                 <label className="mb-2 block text-xs font-black uppercase tracking-wide text-[#6f675c]">

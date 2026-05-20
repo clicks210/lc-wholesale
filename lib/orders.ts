@@ -3,10 +3,16 @@ import { supabase } from './supabase'
 export async function submitOrder({
   items,
   deliveryDate,
+  deliveryLabel,
+  deliverySummary,
+  fulfillmentSummary,
   notes,
 }: {
   items: any[]
   deliveryDate: string
+  deliveryLabel?: string
+  deliverySummary?: string
+  fulfillmentSummary?: string
   notes: string
 }) {
   const {
@@ -54,6 +60,9 @@ export async function submitOrder({
       user_id: user.id,
       subtotal,
       delivery_date: deliveryDate || null,
+      delivery_label: deliveryLabel || null,
+      delivery_summary: deliverySummary || null,
+      fulfillment_summary: fulfillmentSummary || null,
       notes,
       status: 'submitted',
       invoice_status: 'pending',

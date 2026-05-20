@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import ProductCard from '@/components/buyer/ProductCard'
 import type { Product } from '@/types/product'
-import { addToCart } from '@/lib/cart'
 
 const categories = ['All', 'Produce', 'Bread', 'Poultry', 'Paper']
 
@@ -14,22 +14,16 @@ export default function ProductsClient({
   products: Product[]
   initialCategory: string
 }) {
+  const searchParams = useSearchParams()
+  const autoOpenProductId = searchParams.get('product')
+
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState(initialCategory || 'All')
   const [sort, setSort] = useState('name')
-  const [addedId, setAddedId] = useState<string | null>(null)
 
   useEffect(() => {
     setCategory(initialCategory || 'All')
   }, [initialCategory])
-
-  function quickAddToCart(product: Product) {
-    addToCart({ product, quantity: 1 })
-    setAddedId(product.id)
-    window.dispatchEvent(new Event('cartUpdated'))
-    window.dispatchEvent(new Event('cart-updated'))
-    setTimeout(() => setAddedId(null), 900)
-  }
 
   const filteredProducts = useMemo(() => {
     let result = [...products]
@@ -42,6 +36,7 @@ export default function ProductsClient({
 
     if (search.trim()) {
       const query = search.toLowerCase()
+
       result = result.filter((product) => {
         return (
           product.name?.toLowerCase().includes(query) ||
@@ -131,17 +126,18 @@ export default function ProductsClient({
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-  {filteredProducts.map((product) => (
-    <div
-      key={product.id}
-      className="group relative overflow-hidden border border-[#1d1d1b]/15 bg-white transition hover:border-[#244f3d] hover:shadow-[7px_7px_0_#244f3d]/20"
-    >
-      <ProductCard product={product} />
-
-      
-    </div>
-  ))}
-</div>
+            {filteredProducts.map((product) => (
+              <div
+                key={product.id}
+                className="group relative overflow-hidden border border-[#1d1d1b]/15 bg-white transition hover:border-[#244f3d] hover:shadow-[7px_7px_0_#244f3d]/20"
+              >
+                <ProductCard
+                  product={product}
+                  autoOpen={product.id === autoOpenProductId}
+                />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

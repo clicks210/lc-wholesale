@@ -1,3 +1,6 @@
+let cachedZohoAccessToken: string | null = null
+let cachedZohoAccessTokenExpiresAt = 0
+
 function requireEnv(keys: string[]) {
   for (const key of keys) {
     if (!process.env[key]) {
@@ -33,8 +36,11 @@ export async function getZohoAccessToken() {
     'ZOHO_CLIENT_SECRET',
   ])
 
-  console.log('APP Zoho accounts URL:', process.env.ZOHO_ACCOUNTS_URL)
-  console.log('APP refresh token preview:', process.env.ZOHO_REFRESH_TOKEN?.slice(0, 30))
+  const now = Date.now()
+
+  if (cachedZohoAccessToken && now < cachedZohoAccessTokenExpiresAt) {
+    return cachedZohoAccessToken
+  }
 
   const res = await fetch(`${process.env.ZOHO_ACCOUNTS_URL}/oauth/v2/token`, {
     method: 'POST',
@@ -53,10 +59,23 @@ export async function getZohoAccessToken() {
 
   if (!res.ok || !data.access_token) {
     console.error('Zoho token error:', JSON.stringify(data, null, 2))
-    throw new Error(data.error || data.message || 'Failed to refresh Zoho access token')
+
+    throw new Error(
+      data.error_description ||
+        data.error ||
+        data.message ||
+        'Failed to refresh Zoho access token'
+    )
   }
 
-  return data.access_token as string
+  cachedZohoAccessToken = data.access_token
+
+  const expiresInSeconds = Number(data.expires_in || 3600)
+
+  cachedZohoAccessTokenExpiresAt =
+    now + Math.max(expiresInSeconds - 300, 60) * 1000
+
+  return cachedZohoAccessToken
 }
 
 export async function createZohoCustomer(customer: any) {
@@ -65,9 +84,7 @@ export async function createZohoCustomer(customer: any) {
   const accessToken = await getZohoAccessToken()
 
   const contactName = cleanString(
-    customer.contact_name ||
-      customer.business_name ||
-      customer.email,
+    customer.contact_name || customer.business_name || customer.email,
     'Local Connect Customer'
   )
 
@@ -88,9 +105,10 @@ export async function createZohoCustomer(customer: any) {
     },
   }
 
-  console.log('APP Zoho org id:', process.env.ZOHO_ORGANIZATION_ID)
-  console.log('APP Zoho API URL:', process.env.ZOHO_BOOKS_API_URL)
-  console.log('Creating Zoho customer payload:', JSON.stringify(payload, null, 2))
+  console.log('Creating Zoho customer:', {
+    contact_name: payload.contact_name,
+    company_name: payload.company_name,
+  })
 
   const res = await fetch(
     `${process.env.ZOHO_BOOKS_API_URL}/contacts?organization_id=${process.env.ZOHO_ORGANIZATION_ID}`,
@@ -108,8 +126,10 @@ export async function createZohoCustomer(customer: any) {
 
   if (!res.ok || !data.contact?.contact_id) {
     console.error('Zoho customer error:', JSON.stringify(data, null, 2))
+
     throw new Error(
       data.message ||
+        data.error_description ||
         data.error ||
         String(data.code) ||
         'Failed to create Zoho customer'
@@ -127,9 +147,7 @@ export async function createZohoInvoice(order: any, zohoCustomerId: string) {
   const lineItems = (order.items || [])
     .map((item: any) => {
       const name = cleanString(
-        item.product?.name ||
-          item.product_name ||
-          item.description,
+        item.product?.name || item.product_name || item.description,
         'Wholesale item'
       )
 
@@ -149,13 +167,8 @@ export async function createZohoInvoice(order: any, zohoCustomerId: string) {
     throw new Error('Cannot create Zoho invoice without valid line items')
   }
 
-  // 🔥 NEW: Generate invoice number
-  const shortOrderId = String(order.id).slice(0, 8).toUpperCase()
-  const invoiceNumber = `LC-${shortOrderId}`
-
   const payload = {
     customer_id: zohoCustomerId,
-    invoice_number: invoiceNumber, // 🔥 THIS FIXES YOUR ERROR
     reference_number: order.id,
     date: new Date().toISOString().split('T')[0],
     payment_terms: 14,
@@ -163,9 +176,11 @@ export async function createZohoInvoice(order: any, zohoCustomerId: string) {
     notes: 'Thank you for supporting local foodservice.',
   }
 
-  console.log('APP Zoho org id:', process.env.ZOHO_ORGANIZATION_ID)
-  console.log('APP Zoho API URL:', process.env.ZOHO_BOOKS_API_URL)
-  console.log('Creating Zoho invoice payload:', JSON.stringify(payload, null, 2))
+  console.log('Creating Zoho invoice:', {
+    order_id: order.id,
+    zoho_customer_id: zohoCustomerId,
+    line_item_count: lineItems.length,
+  })
 
   const res = await fetch(
     `${process.env.ZOHO_BOOKS_API_URL}/invoices?organization_id=${process.env.ZOHO_ORGANIZATION_ID}`,
@@ -183,8 +198,10 @@ export async function createZohoInvoice(order: any, zohoCustomerId: string) {
 
   if (!res.ok || !data.invoice?.invoice_id) {
     console.error('Zoho invoice error:', JSON.stringify(data, null, 2))
+
     throw new Error(
       data.message ||
+        data.error_description ||
         data.error ||
         String(data.code) ||
         'Failed to create Zoho invoice'

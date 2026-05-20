@@ -1,20 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Modal from '@/components/shared/Modal'
 import { addToCart } from '@/lib/cart'
+import { getFulfillmentRule } from '@/lib/fulfillmentRules'
 import type { Product } from '@/types/product'
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({
+  product,
+  autoOpen = false,
+}: {
+  product: Product
+  autoOpen?: boolean
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
 
+  useEffect(() => {
+    if (autoOpen) setIsOpen(true)
+  }, [autoOpen])
+
   const isPriceOnRequest = Boolean(product.price_on_request)
+  const rule = getFulfillmentRule(product)
+  const inStock = Boolean((product as any).in_stock)
 
   function handleQuickAdd(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
-
     if (isPriceOnRequest) return
 
     addToCart({ product, quantity: 1 })
@@ -57,6 +69,25 @@ export default function ProductCard({ product }: { product: Product }) {
           <p className="mt-1 truncate text-xs text-[#6f675c] sm:text-sm">
             {product.category}
           </p>
+
+          <div className="mt-2">
+            {inStock ? (
+              <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-green-700">
+                In Stock · Tues/Fri
+              </span>
+            ) : (
+              <span className="inline-flex rounded-full bg-orange-100 px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-orange-700">
+                Special Order
+                {rule.leadTimeDays > 0 ? ` · ${rule.leadTimeDays} Days` : ''}
+              </span>
+            )}
+
+            {!inStock && rule.minimum > 0 && (
+              <p className="mt-1 text-[11px] text-[#6f675c]">
+                ${rule.minimum} {product.category} minimum
+              </p>
+            )}
+          </div>
 
           <div className="mt-3 sm:mt-4">
             {isPriceOnRequest ? (
@@ -113,6 +144,30 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="mt-1 text-sm text-[#6f675c]">
           {product.category} · {product.unit}
         </p>
+
+        <div
+          className={`mt-4 rounded-xl border p-4 text-sm ${
+            inStock
+              ? 'border-green-200 bg-green-50 text-green-800'
+              : 'border-orange-200 bg-orange-50 text-orange-800'
+          }`}
+        >
+          <p className="font-bold">
+            {inStock ? 'In Stock' : 'Special Order'}
+          </p>
+
+          <p className="mt-1">
+            {inStock
+              ? 'Available for standard Tuesday / Friday delivery.'
+              : rule.minimum > 0
+                ? `Requires $${rule.minimum} ${product.category} minimum. ${
+                    rule.leadTimeDays > 0
+                      ? `Estimated lead time: ${rule.leadTimeDays} days.`
+                      : ''
+                  }`
+                : 'Available for standard Tuesday / Friday delivery.'}
+          </p>
+        </div>
 
         {product.description && (
           <p className="mt-5 border-t border-[#d6cec0] pt-5 text-sm leading-6 text-[#4d4d4d]">

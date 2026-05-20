@@ -10,9 +10,12 @@ const navItems = [
   { label: 'Dashboard', href: '/admin/dashboard' },
   { label: 'Orders', href: '/admin/orders' },
   { label: 'Products', href: '/admin/products' },
+  { label: 'Categories', href: '/admin/categories' },
+  { label: 'Financials', href: '/admin/financials' },
   { label: 'Customers', href: '/admin/customers' },
   { label: 'Produce Planner', href: '/admin/produce-planner' },
   { label: 'Order Guides', href: '/admin/order-guides' },
+  { label: 'Email Specials', href: '/admin/email-campaigns/new' },
 ]
 
 export default function AdminLayout({

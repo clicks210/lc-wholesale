@@ -20,15 +20,46 @@ type Customer = {
 
 type Order = {
   id: string
+
   status: string | null
+
   subtotal: number | null
+
   delivery_date: string | null
+
+  delivery_label?: string | null
+
+  delivery_summary?: string | null
+
+  fulfillment_summary?: string | null
+
   notes: string | null
+
   created_at: string
+
   invoice_status?: string | null
+
   zoho_invoice_id?: string | null
+
   zoho_invoice_url?: string | null
-  order_items?: any[]
+
+  order_items?: {
+    id?: string
+
+    product_id?: string
+
+    product_name?: string
+
+    sku?: string | null
+
+    unit?: string | null
+
+    quantity?: number
+
+    unit_price?: number
+
+    line_total?: number
+  }[]
 }
 
 type ZohoInvoice = {
@@ -422,117 +453,209 @@ function Finance({
 }
 
 function Orders({ orders }: { orders: Order[] }) {
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
   return (
+
     <div className="space-y-5">
+
       <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
+
         <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
+
           <h2 className="text-lg font-black text-white">Order History</h2>
+
           <p className="mt-1 text-sm font-medium text-white/75">
+
             View submitted wholesale orders and item details.
+
           </p>
+
         </div>
+
       </div>
 
       <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
+
         {orders.length === 0 ? (
+
           <div className="px-5 py-8 text-sm font-medium text-[#6f675c]">
+
             No orders submitted yet.
+
           </div>
+
         ) : (
+
           <>
+
             <div className="hidden md:block">
+
               <div className="grid grid-cols-[1fr_1fr_1fr_1fr_0.7fr] bg-[#f4f1ea] px-5 py-3 text-xs font-black uppercase tracking-wide text-[#6f675c]">
+
                 <div>Order</div>
-                <div>Date</div>
+
+                <div>Submitted</div>
+
                 <div>Status</div>
+
                 <div>Total</div>
+
                 <div></div>
+
               </div>
 
               {orders.map((order) => (
+
                 <div
+
                   key={order.id}
+
                   className="grid grid-cols-[1fr_1fr_1fr_1fr_0.7fr] items-center border-t border-[#eee7da] px-5 py-4 text-sm"
+
                 >
+
                   <div className="font-mono text-xs font-bold">
+
                     {order.id.slice(0, 8).toUpperCase()}
+
                   </div>
 
                   <div className="text-[#6f675c]">
+
                     {new Date(order.created_at).toLocaleDateString()}
+
                   </div>
 
                   <div>
+
                     <span className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-bold uppercase text-[#6f675c]">
+
                       {order.status || 'submitted'}
+
                     </span>
+
                   </div>
 
-                  <div className="font-semibold">{formatMoney(order.subtotal)}</div>
+                  <div className="font-semibold">
+
+                    {formatMoney(order.subtotal)}
+
+                  </div>
 
                   <button
+
                     onClick={() => setSelectedOrder(order)}
+
                     className="border border-[#d6cec0] px-3 py-2 text-xs font-bold uppercase text-[#6f675c] hover:border-[#244f3d] hover:text-[#244f3d]"
+
                   >
+
                     View
+
                   </button>
+
                 </div>
+
               ))}
+
             </div>
 
             <div className="space-y-3 p-4 md:hidden">
+
               {orders.map((order) => (
+
                 <div
+
                   key={order.id}
+
                   className="border border-[#d6cec0] bg-white p-4 shadow-sm"
+
                 >
+
                   <div className="flex items-start justify-between gap-3">
+
                     <div>
+
                       <p className="font-mono text-xs font-black">
+
                         #{order.id.slice(0, 8).toUpperCase()}
+
                       </p>
+
                       <p className="mt-1 text-xs font-medium text-[#6f675c]">
-                        {new Date(order.created_at).toLocaleDateString()}
+
+                        Submitted {new Date(order.created_at).toLocaleDateString()}
+
                       </p>
+
                     </div>
 
                     <span className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-black uppercase text-[#6f675c]">
+
                       {order.status || 'submitted'}
+
                     </span>
+
                   </div>
 
                   <div className="mt-4 flex items-center justify-between border border-[#eee7da] bg-[#f4f1ea] p-3">
+
                     <span className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+
                       Total
+
                     </span>
+
                     <span className="font-black text-[#244f3d]">
+
                       {formatMoney(order.subtotal)}
+
                     </span>
+
                   </div>
 
                   <button
+
                     onClick={() => setSelectedOrder(order)}
+
                     className="mt-3 w-full border border-[#244f3d] px-4 py-3 text-xs font-black uppercase tracking-wide text-[#244f3d]"
+
                   >
+
                     View Order
+
                   </button>
+
                 </div>
+
               ))}
+
             </div>
+
           </>
+
         )}
+
       </div>
 
       {selectedOrder && (
+
         <OrderDetailsModal
+
           order={selectedOrder}
+
           onClose={() => setSelectedOrder(null)}
+
         />
+
       )}
+
     </div>
+
   )
+
 }
 
 function AccountInfo({
@@ -1090,144 +1213,315 @@ function LockedSection({
 
 
 function OrderDetailsModal({
+
   order,
+
   onClose,
+
 }: {
+
   order: Order
+
   onClose: () => void
+
 }) {
+
   const items = order.order_items || []
 
   return (
+
     <div
+
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+
       onClick={onClose}
+
     >
+
       <div
+
         className="max-h-[90vh] w-full max-w-3xl overflow-y-auto border border-[#d6cec0] bg-white shadow-xl"
+
         onClick={(e) => e.stopPropagation()}
+
       >
+
         <div className="flex items-start justify-between gap-4 border-b border-[#d6cec0] bg-[#244f3d] p-5 sm:p-6">
+
           <div className="min-w-0">
+
             <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+
               Order Details
+
             </p>
+
             <h2 className="mt-2 break-words text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">
+
               Order #{order.id.slice(0, 8).toUpperCase()}
+
             </h2>
+
             <p className="mt-2 text-sm font-medium text-white/75">
+
               Submitted {new Date(order.created_at).toLocaleString()}
+
             </p>
+
           </div>
 
           <button
+
             onClick={onClose}
+
             className="shrink-0 border border-white/40 bg-white px-3 py-2 text-sm font-black text-[#244f3d]"
+
           >
+
             ✕
+
           </button>
+
         </div>
 
         <div className="space-y-5 p-4 sm:p-6">
+
           <Section title="Order Summary">
+
             <InfoGrid
+
               items={[
+
                 ['Status', order.status || 'submitted'],
+
                 ['Invoice Status', order.invoice_status || 'pending'],
+
                 ['Total', formatMoney(order.subtotal)],
+
                 [
-                  'Requested Delivery',
-                  order.delivery_date
-                    ? new Date(order.delivery_date).toLocaleDateString()
-                    : 'Auto-scheduled by category',
+
+                  'Submitted',
+
+                  order.created_at
+
+                    ? new Date(order.created_at).toLocaleDateString()
+
+                    : '—',
+
                 ],
+
               ]}
+
             />
 
             {order.zoho_invoice_url && (
+
               <a
+
                 href={`/api/orders/${order.id}/invoice`}
+
                 target="_blank"
+
                 rel="noreferrer"
+
                 className="mt-5 inline-block w-full bg-[#244f3d] px-4 py-3 text-center text-sm font-black text-white sm:w-auto"
+
               >
+
                 View Invoice
+
               </a>
+
             )}
+
+          </Section>
+
+          <Section title="Delivery Schedule">
+
+            {order.delivery_summary ? (
+
+              <pre className="whitespace-pre-wrap break-words border border-[#eee7da] bg-[#f4f1ea] p-4 text-sm font-medium leading-6 text-[#6f675c]">
+
+                {order.delivery_summary}
+
+              </pre>
+
+            ) : (
+
+              <div className="border border-[#eee7da] bg-[#f4f1ea] p-4 text-sm font-medium text-[#6f675c]">
+
+                Delivery schedule will be confirmed by Local Connect.
+
+              </div>
+
+            )}
+
+            {order.fulfillment_summary && (
+
+              <div className="mt-4 border border-[#eee7da] bg-white p-4">
+
+                <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+
+                  Fulfillment Summary
+
+                </p>
+
+                <pre className="mt-2 whitespace-pre-wrap break-words text-sm font-medium leading-6 text-[#6f675c]">
+
+                  {order.fulfillment_summary}
+
+                </pre>
+
+              </div>
+
+            )}
+
           </Section>
 
           <Section title="Items">
+
             {items.length === 0 ? (
+
               <p className="text-sm font-medium text-[#6f675c]">
+
                 No items found for this order.
+
               </p>
+
             ) : (
+
               <div>
+
                 <div className="hidden border border-[#d6cec0] md:block">
+
                   <div className="grid grid-cols-[1.5fr_0.6fr_0.7fr_0.7fr] bg-[#f4f1ea] px-4 py-3 text-xs font-black uppercase tracking-wide text-[#6f675c]">
+
                     <div>Product</div>
+
                     <div>Qty</div>
+
                     <div>Price</div>
+
                     <div>Total</div>
+
                   </div>
 
                   {items.map((item: any) => (
+
                     <div
+
                       key={item.id}
+
                       className="grid grid-cols-[1.5fr_0.6fr_0.7fr_0.7fr] border-t border-[#eee7da] px-4 py-4 text-sm"
+
                     >
+
                       <div>
+
                         <p className="font-semibold">{item.product_name}</p>
+
                         <p className="mt-1 font-mono text-xs text-[#6f675c]">
+
                           {item.sku || '—'} · {item.unit || '—'}
+
                         </p>
+
                       </div>
 
                       <div>{item.quantity}</div>
+
                       <div>{formatMoney(item.unit_price)}</div>
+
                       <div className="font-bold">
+
                         {formatMoney(item.line_total)}
+
                       </div>
+
                     </div>
+
                   ))}
+
                 </div>
 
                 <div className="space-y-3 md:hidden">
+
                   {items.map((item: any) => (
+
                     <div
+
                       key={item.id}
+
                       className="border border-[#d6cec0] bg-white p-4 shadow-sm"
+
                     >
-                      <p className="font-black leading-snug">{item.product_name}</p>
+
+                      <p className="font-black leading-snug">
+
+                        {item.product_name}
+
+                      </p>
+
                       <p className="mt-1 break-all font-mono text-[11px] font-medium text-[#6f675c]">
+
                         {item.sku || '—'} · {item.unit || '—'}
+
                       </p>
 
                       <div className="mt-3 grid grid-cols-3 gap-2">
+
                         <MiniStat label="Qty" value={String(item.quantity)} />
-                        <MiniStat label="Price" value={formatMoney(item.unit_price)} />
+
                         <MiniStat
-                          label="Total"
-                          value={formatMoney(item.line_total)}
-                          success
+
+                          label="Price"
+
+                          value={formatMoney(item.unit_price)}
+
                         />
+
+                        <MiniStat
+
+                          label="Total"
+
+                          value={formatMoney(item.line_total)}
+
+                          success
+
+                        />
+
                       </div>
+
                     </div>
+
                   ))}
+
                 </div>
+
               </div>
+
             )}
+
           </Section>
 
           <Section title="Order Notes">
+
             <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-[#6f675c]">
+
               {order.notes || 'No notes added.'}
+
             </pre>
+
           </Section>
+
         </div>
+
       </div>
+
     </div>
+
   )
+
 }
 
 function Section({

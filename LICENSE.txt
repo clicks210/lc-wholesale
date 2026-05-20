@@ -1,0 +1,4 @@
+Copyright (c) 2026 Liam Mathew Milovick. All rights reserved.
+
+The underlying source code, architecture, and logic of this software 
+are the sole proprietary property of Liam Mathew Milovick.

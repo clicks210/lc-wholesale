@@ -6,6 +6,10 @@ import { getCart, clearCart } from '@/lib/cart'
 import { submitOrder } from '@/lib/orders'
 import { supabase } from '@/lib/supabase'
 import { getDeliveryGroups } from '@/lib/delivery'
+import {
+  evaluateCartFulfillment,
+  getFulfillmentRule,
+} from '@/lib/fulfillmentRules'
 
 export default function CheckoutPage() {
   const [items, setItems] = useState<any[]>([])
@@ -83,6 +87,9 @@ export default function CheckoutPage() {
 
   const total = subtotal + freightApplied
 
+  const fulfillment = evaluateCartFulfillment(items)
+  const canSubmitOrder = fulfillment.valid && items.length > 0 && !submitting
+
   const categoryDeliveryGroups = getDeliveryGroups(items)
 
   const deliveryGroups = categoryDeliveryGroups.reduce(
@@ -96,6 +103,7 @@ export default function CheckoutPage() {
       } else {
         groups.push({
           deliveryLabel,
+          deliveryDate: normalizeDeliveryDate(group.delivery?.date),
           categories: [group.category],
           items: [...group.items],
         })
@@ -107,6 +115,13 @@ export default function CheckoutPage() {
   )
 
   async function handleSubmitOrder() {
+    if (!fulfillment.valid) {
+      setMessage(
+        'Some category minimums are not met. Please return to cart and adjust your order.'
+      )
+      return
+    }
+
     setSubmitting(true)
     setMessage('')
 
@@ -116,39 +131,35 @@ export default function CheckoutPage() {
           .map((item: any) => `- ${item.product.name} x ${item.quantity}`)
           .join('\n')
 
-        return `${group.deliveryLabel}\n${[
-          ...new Set(group.categories),
-        ].join(' / ')}\n${itemSummary}`
+        return `${group.deliveryLabel}\n${[...new Set(group.categories)].join(
+          ' / '
+        )}\n${itemSummary}`
       })
       .join('\n\n')
 
-    const freightSummary =
-      freightApplied > 0
-        ? `Freight Applied: ${formatMoney(freightApplied)} because subtotal ${formatMoney(
-            subtotal
-          )} is below order minimum ${formatMoney(orderMinimum)}.`
-        : `Freight: Free. Subtotal ${formatMoney(
-            subtotal
-          )} meets order minimum ${formatMoney(orderMinimum)}.`
+    const fulfillmentSummary =
+      fulfillment.groups.length > 0
+        ? fulfillment.groups
+            .map(
+              (group: any) =>
+                `${group.category}: ${formatMoney(group.subtotal)} / ${formatMoney(
+                  group.minimum
+                )} minimum`
+            )
+            .join('\n')
+        : 'All items follow standard in-stock delivery.'
 
     try {
+      const primaryDeliveryGroup = categoryDeliveryGroups[0]
+
       await submitOrder({
         items,
-        deliveryDate: '',
-        notes: `${notes}
-
-Delivery Schedule:
-${deliverySummary}
-
-Delivery Terms:
-Order Minimum: ${formatMoney(orderMinimum)}
-Freight Rate: ${formatMoney(deliveryCost)}
-${freightSummary}
-
-Order Totals:
-Subtotal: ${formatMoney(subtotal)}
-Freight: ${formatMoney(freightApplied)}
-Total: ${formatMoney(total)}`.trim(),
+        deliveryDate: normalizeDeliveryDate(primaryDeliveryGroup?.delivery?.date),
+        deliveryLabel:
+          primaryDeliveryGroup?.delivery?.label || 'To be confirmed',
+        deliverySummary,
+        fulfillmentSummary,
+        notes: notes.trim(),
       })
 
       clearCart()
@@ -220,6 +231,34 @@ Total: ${formatMoney(total)}`.trim(),
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
           <section className="min-w-0 space-y-5">
+            {fulfillment.failures.length > 0 && (
+              <div className="border border-orange-300 bg-orange-50 p-4 text-orange-900 shadow-sm">
+                <h2 className="text-base font-black">
+                  Category minimums required
+                </h2>
+
+                <div className="mt-3 space-y-2">
+                  {fulfillment.failures.map((group: any) => (
+                    <div key={group.category} className="text-sm">
+                      <p className="font-black">{group.category}</p>
+                      <p className="text-xs font-medium leading-5">
+                        Add {formatMoney(group.minimum - group.subtotal)} more
+                        from {group.category} to unlock these special-order
+                        items.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  href="/cart"
+                  className="mt-4 inline-block bg-orange-700 px-4 py-2 text-xs font-black uppercase tracking-wide text-white"
+                >
+                  Fix Cart
+                </Link>
+              </div>
+            )}
+
             <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
               <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
                 <h2 className="text-base font-black text-white sm:text-lg">
@@ -255,7 +294,8 @@ Total: ${formatMoney(total)}`.trim(),
                   </p>
 
                   <p className="mt-2 font-black leading-snug">
-                    {customer?.delivery_address || 'No delivery address on file'}
+                    {customer?.delivery_address ||
+                      'No delivery address on file'}
                   </p>
 
                   <p className="mt-1 font-medium text-[#6f675c]">
@@ -332,6 +372,8 @@ Total: ${formatMoney(total)}`.trim(),
                                 <p className="line-clamp-2 text-sm font-black leading-snug sm:text-base">
                                   {item.product.name}
                                 </p>
+
+                                <FulfillmentBadge product={item.product} />
 
                                 <p className="mt-1 text-[11px] font-medium leading-4 text-[#6f675c] sm:text-xs">
                                   {item.quantity} ×{' '}
@@ -441,6 +483,24 @@ Total: ${formatMoney(total)}`.trim(),
                   </p>
                 </div>
               )}
+
+              {fulfillment.failures.length > 0 && (
+                <div className="border border-orange-300 bg-orange-50 p-3 text-orange-900">
+                  <p className="font-black">Special-order minimums</p>
+
+                  <div className="mt-2 space-y-2">
+                    {fulfillment.failures.map((group: any) => (
+                      <p
+                        key={group.category}
+                        className="text-xs font-medium leading-5"
+                      >
+                        {group.category}: add{' '}
+                        {formatMoney(group.minimum - group.subtotal)} more.
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mt-5 flex justify-between gap-4 text-base font-black sm:text-lg">
@@ -450,16 +510,18 @@ Total: ${formatMoney(total)}`.trim(),
 
             <button
               onClick={handleSubmitOrder}
-              disabled={submitting || items.length === 0}
-              className="mt-6 w-full bg-[#244f3d] px-5 py-3 text-sm font-black text-white transition hover:bg-[#2f5d46] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={!canSubmitOrder}
+              className="mt-6 w-full bg-[#244f3d] px-5 py-3 text-sm font-black text-white transition hover:bg-[#2f5d46] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#9b9488] disabled:opacity-60"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   Placing Order...
                 </span>
-              ) : (
+              ) : fulfillment.valid ? (
                 'Place Order'
+              ) : (
+                'Minimums Required'
               )}
             </button>
 
@@ -486,13 +548,28 @@ Total: ${formatMoney(total)}`.trim(),
   )
 }
 
-function Info({
-  label,
-  value,
-}: {
-  label: string
-  value?: string | null
-}) {
+function FulfillmentBadge({ product }: { product: any }) {
+  const rule = getFulfillmentRule(product)
+  const inStock = Boolean(product.in_stock)
+
+  return (
+    <p
+      className={`mt-2 inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide ${
+        inStock
+          ? 'bg-green-100 text-green-800'
+          : 'bg-orange-100 text-orange-800'
+      }`}
+    >
+      {inStock
+        ? 'In Stock · Tues/Fri'
+        : rule.minimum > 0
+          ? `Special Order · $${rule.minimum} ${product.category} min`
+          : 'Special Order'}
+    </p>
+  )
+}
+
+function Info({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
       <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
@@ -516,6 +593,16 @@ function MiniStat({ label, value }: { label: string; value: string }) {
       </p>
     </div>
   )
+}
+
+function normalizeDeliveryDate(value: string | Date | null | undefined) {
+  if (!value) return ''
+
+  if (value instanceof Date) {
+    return value.toISOString().split('T')[0]
+  }
+
+  return value
 }
 
 function formatMoney(value: any) {
