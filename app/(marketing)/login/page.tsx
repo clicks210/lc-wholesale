@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
+type ProfileRole = 'admin' | 'buyer' | 'producer'
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -16,7 +18,7 @@ export default function LoginPage() {
     setMessage('')
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim().toLowerCase(),
       password,
     })
 
@@ -41,7 +43,9 @@ export default function LoginPage() {
       return
     }
 
-    if (profile.role === 'admin') {
+    const role = profile.role as ProfileRole
+
+    if (role === 'admin') {
       setLoading(false)
       window.location.assign('/admin/dashboard')
       return
@@ -55,7 +59,11 @@ export default function LoginPage() {
     if (membershipError || !memberships || memberships.length === 0) {
       await supabase.auth.signOut()
       setLoading(false)
-      setMessage('Buyer account could not be found.')
+      setMessage(
+        role === 'producer'
+          ? 'Producer account could not be found.'
+          : 'Buyer account could not be found.'
+      )
       return
     }
 
@@ -71,7 +79,11 @@ export default function LoginPage() {
     if (customerError || !customers || customers.length === 0) {
       await supabase.auth.signOut()
       setLoading(false)
-      setMessage('Buyer account could not be found.')
+      setMessage(
+        role === 'producer'
+          ? 'Producer account could not be found.'
+          : 'Buyer account could not be found.'
+      )
       return
     }
 
@@ -84,13 +96,20 @@ export default function LoginPage() {
       setLoading(false)
 
       setMessage(
-        'Your buyer account is pending approval. We’ll notify you once your account has been approved.'
+        role === 'producer'
+          ? 'Your producer account is pending approval. We’ll notify you once your account has been approved.'
+          : 'Your buyer account is pending approval. We’ll notify you once your account has been approved.'
       )
 
       return
     }
 
     setLoading(false)
+
+    if (role === 'producer') {
+      window.location.assign('/producer/products')
+      return
+    }
 
     window.location.assign('/products')
   }
@@ -109,8 +128,8 @@ export default function LoginPage() {
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-7 text-white/80">
-              Place orders, view previous deliveries, create new guides,
-              improve your menu.
+              Place orders, manage products, view previous deliveries, and keep
+              your account moving.
             </p>
           </div>
         </div>
@@ -172,7 +191,7 @@ export default function LoginPage() {
               href="/signup"
               className="mt-4 block w-full border border-[#244f3d] px-5 py-3 text-center text-sm font-bold text-[#244f3d] transition hover:bg-[#f4f1ea]"
             >
-              Create Buyer Account
+              Create Account
             </Link>
 
             <p className="mt-5 text-center text-xs leading-6 text-[#6f675c]">

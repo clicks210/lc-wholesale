@@ -4,12 +4,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-const APP_VERSION = 'v0.9.5'
+const APP_VERSION = 'v1.9.5'
 
 const navItems = [
   { label: 'Dashboard', href: '/admin/dashboard' },
   { label: 'Orders', href: '/admin/orders' },
   { label: 'Products', href: '/admin/products' },
+  { label: '3rd Party Products', href: '/admin/producer-products' },
   { label: 'Categories', href: '/admin/categories' },
   { label: 'Financials', href: '/admin/financials' },
   { label: 'Customers', href: '/admin/customers' },

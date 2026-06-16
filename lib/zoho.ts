@@ -79,8 +79,7 @@ export async function getZohoAccessToken() {
 }
 
 export async function createZohoCustomer(customer: any) {
-  requireEnv(['ZOHO_BOOKS_API_URL', 'ZOHO_ORGANIZATION_ID'])
-
+requireEnv(['ZOHO_BOOKS_API_URL', 'ZOHO_ORGANIZATION_ID'])
   const accessToken = await getZohoAccessToken()
 
   const contactName = cleanString(
@@ -105,11 +104,6 @@ export async function createZohoCustomer(customer: any) {
     },
   }
 
-  console.log('Creating Zoho customer:', {
-    contact_name: payload.contact_name,
-    company_name: payload.company_name,
-  })
-
   const res = await fetch(
     `${process.env.ZOHO_BOOKS_API_URL}/contacts?organization_id=${process.env.ZOHO_ORGANIZATION_ID}`,
     {
@@ -133,6 +127,62 @@ export async function createZohoCustomer(customer: any) {
         data.error ||
         String(data.code) ||
         'Failed to create Zoho customer'
+    )
+  }
+
+  return data.contact.contact_id as string
+}
+
+export async function createZohoVendor(producer: any) {
+  requireEnv(['ZOHO_BOOKS_API_URL', 'ZOHO_ORGANIZATION_ID'])
+
+  const accessToken = await getZohoAccessToken()
+
+  const contactName = cleanString(
+    producer.contact_name || producer.business_name || producer.email,
+    'Local Connect Vendor'
+  )
+
+  const companyName = cleanString(
+    producer.business_name || producer.contact_name,
+    contactName
+  )
+
+  const payload = {
+    contact_name: contactName,
+    company_name: companyName,
+    contact_type: 'vendor',
+    billing_address: {
+      address: cleanString(producer.delivery_address),
+      city: cleanString(producer.delivery_city),
+      zip: cleanString(producer.delivery_postal_code),
+      country: 'Canada',
+    },
+  }
+
+  const res = await fetch(
+    `${process.env.ZOHO_BOOKS_API_URL}/contacts?organization_id=${process.env.ZOHO_ORGANIZATION_ID}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Zoho-oauthtoken ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    }
+  )
+
+  const data = await parseZohoResponse(res)
+
+  if (!res.ok || !data.contact?.contact_id) {
+    console.error('Zoho vendor error:', JSON.stringify(data, null, 2))
+
+    throw new Error(
+      data.message ||
+        data.error_description ||
+        data.error ||
+        String(data.code) ||
+        'Failed to create Zoho vendor'
     )
   }
 
@@ -176,12 +226,6 @@ export async function createZohoInvoice(order: any, zohoCustomerId: string) {
     notes: 'Thank you for supporting local foodservice.',
   }
 
-  console.log('Creating Zoho invoice:', {
-    order_id: order.id,
-    zoho_customer_id: zohoCustomerId,
-    line_item_count: lineItems.length,
-  })
-
   const res = await fetch(
     `${process.env.ZOHO_BOOKS_API_URL}/invoices?organization_id=${process.env.ZOHO_ORGANIZATION_ID}`,
     {
@@ -209,4 +253,91 @@ export async function createZohoInvoice(order: any, zohoCustomerId: string) {
   }
 
   return data.invoice
+}
+
+export async function createZohoPurchaseOrder({
+  vendorId,
+  order,
+  producerItems,
+}: {
+  vendorId: string
+  order: any
+  producerItems: any[]
+}) {
+  requireEnv([
+  'ZOHO_BOOKS_API_URL',
+  'ZOHO_ORGANIZATION_ID',
+  'ZOHO_GENERIC_PURCHASE_ITEM_ID',
+])
+
+  const accessToken = await getZohoAccessToken()
+
+  const lineItems = producerItems
+    .map((item: any, index: number) => {
+      const description = cleanString(item.product_name, 'Producer item')
+      const quantity = Number(item.quantity || 0)
+
+      const rate = Number(
+        item.cost_price ??
+          item.unit_cost ??
+          item.producer_price ??
+          item.unit_price ??
+          0
+      )
+
+      return {
+  item_id: process.env.ZOHO_GENERIC_PURCHASE_ITEM_ID!,
+  item_order: index + 1,
+  description,
+  quantity,
+  rate,
+}
+
+    })
+    .filter((item: any) => item.quantity > 0)
+
+  if (!lineItems.length) {
+    throw new Error('Cannot create Zoho purchase order without valid line items')
+  }
+
+  const payload = {
+    vendor_id: vendorId,
+    reference_number: `LC-${String(order.id).slice(0, 8).toUpperCase()}`,
+    date: new Date().toISOString().split('T')[0],
+    delivery_date: order.delivery_date || undefined,
+    line_items: lineItems,
+    notes: `Local Connect producer purchase order for customer order #${String(
+      order.id
+    )
+      .slice(0, 8)
+      .toUpperCase()}`,
+  }
+
+  const res = await fetch(
+    `${process.env.ZOHO_BOOKS_API_URL}/purchaseorders?organization_id=${process.env.ZOHO_ORGANIZATION_ID}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Zoho-oauthtoken ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    }
+  )
+
+  const data = await parseZohoResponse(res)
+
+  if (!res.ok || !data.purchaseorder?.purchaseorder_id) {
+    console.error('Zoho purchase order error:', JSON.stringify(data, null, 2))
+
+    throw new Error(
+      data.message ||
+        data.error_description ||
+        data.error ||
+        String(data.code) ||
+        'Failed to create Zoho purchase order'
+    )
+  }
+
+  return data.purchaseorder
 }

@@ -87,37 +87,16 @@ export default function CheckoutPage() {
 
   const total = subtotal + freightApplied
 
-  const fulfillment = evaluateCartFulfillment(items)
+  const lcItems = items.filter((item) => !item.product.producer_customer_id)
+  const fulfillment = evaluateCartFulfillment(lcItems)
   const canSubmitOrder = fulfillment.valid && items.length > 0 && !submitting
 
-  const categoryDeliveryGroups = getDeliveryGroups(items)
-
-  const deliveryGroups = categoryDeliveryGroups.reduce(
-    (groups: any[], group: any) => {
-      const deliveryLabel = group.delivery?.label || 'To be confirmed'
-      const existing = groups.find((g) => g.deliveryLabel === deliveryLabel)
-
-      if (existing) {
-        existing.items.push(...group.items)
-        existing.categories.push(group.category)
-      } else {
-        groups.push({
-          deliveryLabel,
-          deliveryDate: normalizeDeliveryDate(group.delivery?.date),
-          categories: [group.category],
-          items: [...group.items],
-        })
-      }
-
-      return groups
-    },
-    []
-  )
+  const deliveryGroups = getDeliveryGroups(items)
 
   async function handleSubmitOrder() {
     if (!fulfillment.valid) {
       setMessage(
-        'Some category minimums are not met. Please return to cart and adjust your order.'
+        'Some Local Connect category minimums are not met. Please return to cart and adjust your order.'
       )
       return
     }
@@ -131,9 +110,9 @@ export default function CheckoutPage() {
           .map((item: any) => `- ${item.product.name} x ${item.quantity}`)
           .join('\n')
 
-        return `${group.deliveryLabel}\n${[...new Set(group.categories)].join(
-          ' / '
-        )}\n${itemSummary}`
+        return `${group.delivery?.label || 'To be confirmed'}\n${
+          group.category || 'Products'
+        }\n${itemSummary}`
       })
       .join('\n\n')
 
@@ -147,10 +126,10 @@ export default function CheckoutPage() {
                 )} minimum`
             )
             .join('\n')
-        : 'All items follow standard in-stock delivery.'
+        : 'All Local Connect items follow standard in-stock delivery. Producer items follow producer-specific delivery terms.'
 
     try {
-      const primaryDeliveryGroup = categoryDeliveryGroups[0]
+      const primaryDeliveryGroup = deliveryGroups[0]
 
       await submitOrder({
         items,
@@ -325,15 +304,18 @@ export default function CheckoutPage() {
               </div>
 
               <div className="divide-y divide-[#eee7da]">
-                {deliveryGroups.map((group: any) => (
-                  <div key={group.deliveryLabel} className="p-3 sm:p-4">
+                {deliveryGroups.map((group: any, groupIndex: number) => (
+                  <div
+                    key={`${group.delivery?.label || 'delivery'}-${groupIndex}`}
+                    className="p-3 sm:p-4"
+                  >
                     <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="font-black text-[#244f3d]">
-                          {group.deliveryLabel}
+                          {group.delivery?.label || 'To be confirmed'}
                         </p>
                         <p className="text-[10px] font-bold uppercase tracking-wide text-[#6f675c] sm:text-xs">
-                          {[...new Set(group.categories)].join(' / ')}
+                          {group.category || 'Products'}
                         </p>
                       </div>
 
@@ -437,27 +419,16 @@ export default function CheckoutPage() {
             </h2>
 
             <div className="mt-5 space-y-3 border-b border-[#d6cec0] pb-5 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="font-medium text-[#6f675c]">Items</span>
-                <span className="font-bold">{itemCount}</span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="font-medium text-[#6f675c]">Subtotal</span>
-                <span className="font-bold">{formatMoney(subtotal)}</span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="font-medium text-[#6f675c]">Deliveries</span>
-                <span className="font-bold">{deliveryGroups.length}</span>
-              </div>
-
-              <div className="flex justify-between gap-4">
-                <span className="font-medium text-[#6f675c]">
-                  Order Minimum
-                </span>
-                <span className="font-bold">{formatMoney(orderMinimum)}</span>
-              </div>
+              <SummaryRow label="Items" value={String(itemCount)} />
+              <SummaryRow label="Subtotal" value={formatMoney(subtotal)} />
+              <SummaryRow
+                label="Deliveries"
+                value={String(deliveryGroups.length)}
+              />
+              <SummaryRow
+                label="Order Minimum"
+                value={formatMoney(orderMinimum)}
+              />
 
               {freightApplied > 0 ? (
                 <div className="border border-orange-200 bg-orange-50 p-3">
@@ -549,23 +520,63 @@ export default function CheckoutPage() {
 }
 
 function FulfillmentBadge({ product }: { product: any }) {
+  const isProducerProduct = Boolean(product.producer_customer_id)
+
+  const isLcFulfilled =
+    product.fulfillment_type === 'lc_stocked' ||
+    product.producer_delivery_fulfillment_type === 'local_connect' ||
+    product.producer_fulfillment_type === 'local_connect'
+
+  if (isProducerProduct && !isLcFulfilled) {
+    const schedule = getSchedule(
+      product.producer_delivery_schedule || product.delivery_schedule
+    )
+
+    return (
+      <div className="mt-2">
+        <p className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-blue-800">
+          Producer Delivered
+        </p>
+
+        {schedule.length > 0 ? (
+          <p className="mt-1 text-[11px] leading-4 text-[#6f675c]">
+            {formatSchedule(schedule)}
+          </p>
+        ) : (
+          <p className="mt-1 text-[11px] leading-4 text-[#6f675c]">
+            Producer delivery terms not set.
+          </p>
+        )}
+      </div>
+    )
+  }
+
   const rule = getFulfillmentRule(product)
   const inStock = Boolean(product.in_stock)
 
   return (
     <p
       className={`mt-2 inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide ${
-        inStock
+        inStock || isLcFulfilled
           ? 'bg-green-100 text-green-800'
           : 'bg-orange-100 text-orange-800'
       }`}
     >
-      {inStock
+      {inStock || isLcFulfilled
         ? 'In Stock · Tues/Fri'
         : rule.minimum > 0
           ? `Special Order · $${rule.minimum} ${product.category} min`
           : 'Special Order'}
     </p>
+  )
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="font-medium text-[#6f675c]">{label}</span>
+      <span className="font-bold">{value}</span>
+    </div>
   )
 }
 
@@ -595,6 +606,66 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   )
 }
 
+function getNextProducerDeliveryDate(schedule: any[]) {
+  if (!Array.isArray(schedule) || schedule.length === 0) {
+    return 'Delivery to be confirmed'
+  }
+
+  const now = new Date()
+
+  const dayMap: Record<string, number> = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6,
+  }
+
+  const upcomingDates = schedule
+    .filter((item) => dayMap[item.delivery_day] !== undefined)
+    .map((item) => {
+      const targetDay = dayMap[item.delivery_day]
+      const nextDate = new Date(now)
+      const diff = (targetDay - now.getDay() + 7) % 7
+
+      nextDate.setDate(now.getDate() + diff)
+
+      return {
+        ...item,
+        nextDate,
+      }
+    })
+
+  if (upcomingDates.length === 0) {
+    return 'Delivery to be confirmed'
+  }
+
+  upcomingDates.sort(
+    (a, b) => a.nextDate.getTime() - b.nextDate.getTime()
+  )
+
+  const next = upcomingDates[0]
+
+  return next.nextDate.toLocaleDateString('en-CA', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+function formatTime(time: string) {
+  if (!time) return 'cutoff not set'
+
+  const [hourString, minute] = time.split(':')
+  const hour = Number(hourString)
+  const suffix = hour >= 12 ? 'PM' : 'AM'
+  const displayHour = hour % 12 || 12
+
+  return `${displayHour}:${minute} ${suffix}`
+}
+
 function normalizeDeliveryDate(value: string | Date | null | undefined) {
   if (!value) return ''
 
@@ -612,4 +683,34 @@ function formatMoney(value: any) {
     style: 'currency',
     currency: 'CAD',
   }).format(number)
+}
+
+function getSchedule(value: any) {
+  if (Array.isArray(value)) return value
+
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+
+  return []
+}
+
+function formatSchedule(schedule: any[]) {
+  if (!Array.isArray(schedule) || schedule.length === 0) {
+    return 'Delivery schedule not set.'
+  }
+
+  return schedule
+    .map(
+      (item) =>
+        `${item.delivery_day} delivery, order by ${item.cutoff_day} at ${formatTime(
+          item.cutoff_time
+        )}`
+    )
+    .join(' · ')
 }

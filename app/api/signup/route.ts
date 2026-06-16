@@ -26,6 +26,11 @@ export async function POST(req: Request) {
       contactName,
       phone,
       accessCode,
+      role,
+      deliveryAddress,
+      deliveryCity,
+      deliveryPostalCode,
+      deliveryNotes,
     } = await req.json()
 
     if (!email || !password || !businessName) {
@@ -35,17 +40,30 @@ export async function POST(req: Request) {
       )
     }
 
+    const normalizedRole = role === 'producer' ? 'producer' : 'buyer'
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
     const normalizedEmail = String(email).trim().toLowerCase()
     const cleanBusinessName = String(businessName).trim()
     const cleanContactName = contactName ? String(contactName).trim() : null
     const cleanPhone = phone ? String(phone).trim() : null
+    const cleanDeliveryAddress = deliveryAddress
+      ? String(deliveryAddress).trim()
+      : null
+    const cleanDeliveryCity = deliveryCity ? String(deliveryCity).trim() : null
+    const cleanDeliveryPostalCode = deliveryPostalCode
+      ? String(deliveryPostalCode).trim().toUpperCase()
+      : null
+    const cleanDeliveryNotes = deliveryNotes
+      ? String(deliveryNotes).trim()
+      : null
 
     const accessApproved =
       Boolean(accessCode) &&
       Boolean(process.env.BUYER_ACCESS_CODE) &&
       String(accessCode).trim() === process.env.BUYER_ACCESS_CODE
+
+    const approved = accessApproved
 
     const { data: signUpData, error: signUpError } =
       await supabaseAnon.auth.signUp({
@@ -54,6 +72,7 @@ export async function POST(req: Request) {
         options: {
           emailRedirectTo: `${siteUrl}/login`,
           data: {
+            role: normalizedRole,
             businessName: cleanBusinessName,
             contactName: cleanContactName,
             phone: cleanPhone,
@@ -76,7 +95,7 @@ export async function POST(req: Request) {
       .from('profiles')
       .upsert({
         id: user.id,
-        role: 'buyer',
+        role: normalizedRole,
       })
 
     if (profileError) {
@@ -91,7 +110,11 @@ export async function POST(req: Request) {
         contact_name: cleanContactName,
         phone: cleanPhone,
         email: normalizedEmail,
-        approved: accessApproved,
+        approved,
+        delivery_address: cleanDeliveryAddress,
+        delivery_city: cleanDeliveryCity,
+        delivery_postal_code: cleanDeliveryPostalCode,
+        delivery_notes: cleanDeliveryNotes,
       })
       .select('*')
       .single()
@@ -119,12 +142,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: accessApproved
-        ? 'Check your email to confirm your account. After verification your buyer account will be automatically approved.'
-        : 'Check your email to confirm your account. After verification your buyer account will be reviewed.',
+      message: approved
+        ? `Check your email to confirm your account. After verification your ${normalizedRole} account will be automatically approved.`
+        : `Check your email to confirm your account. After verification your ${normalizedRole} account will be reviewed.`,
       userId: user.id,
       customerId: customer.id,
-      accessApproved,
+      role: normalizedRole,
+      approved,
     })
   } catch (error: any) {
     return NextResponse.json(

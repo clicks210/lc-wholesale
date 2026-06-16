@@ -257,7 +257,224 @@ export default function WholesaleLandingPage() {
         </div>
       </section>
 
-      {/* PRODUCT LINES */}
+ {/* PRODUCER MARKETPLACE */}
+<section className="relative overflow-hidden border-b border-[#1d1d1b]/25 text-white">
+  {/* Background Image */}
+  <img
+    src="/images/producer-marketplace.png"
+    alt="Local producers and foodservice distribution"
+    className="absolute inset-0 h-full w-full object-cover"
+  />
+
+  {/* Overlays */}
+  <div className="absolute inset-0 bg-[#244f3d]/75" />
+  <div className="absolute inset-0 bg-gradient-to-r from-[#244f3d]/95 via-[#244f3d]/85 to-[#244f3d]/70" />
+
+  <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-10">
+    <div className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-center">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-white/70">
+          For Producers & Suppliers
+        </p>
+
+        <h2 className="mt-3 max-w-4xl text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-5xl md:text-6xl">
+          Grow your wholesale sales through Local Connect.
+        </h2>
+
+        <p className="mt-6 max-w-3xl text-lg leading-8 text-white/80">
+          Sell directly into Local Connect's growing wholesale network of
+          restaurants, cafes, caterers, retailers, and institutional
+          foodservice operators. We help suppliers reach new customers,
+          streamline ordering, and grow wholesale sales without building
+          their own sales or technology infrastructure.
+        </p>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="border border-white/20 bg-black/20 p-5 backdrop-blur">
+            <h3 className="text-lg font-black">
+              Access Existing Buyers
+            </h3>
+
+            <p className="mt-3 text-sm leading-6 text-white/75">
+              Put your products in front of restaurants and food businesses
+              already purchasing through Local Connect.
+            </p>
+          </div>
+
+          <div className="border border-white/20 bg-black/20 p-5 backdrop-blur">
+            <h3 className="text-lg font-black">
+              B2B Online Ordering
+            </h3>
+
+            <p className="mt-3 text-sm leading-6 text-white/75">
+              Enable wholesale customers to browse products, place orders,
+              and view delivery schedules through a professional ordering
+              platform.
+            </p>
+          </div>
+
+          <div className="border border-white/20 bg-black/20 p-5 backdrop-blur">
+            <h3 className="text-lg font-black">
+              Flexible Fulfillment
+            </h3>
+
+            <p className="mt-3 text-sm leading-6 text-white/75">
+              Deliver products yourself or leverage Local Connect logistics
+              and distribution to reach more customers.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/signup"
+            className="border border-white bg-white px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#244f3d] transition hover:bg-transparent hover:text-white"
+          >
+            Become a Supplier
+          </Link>
+
+         
+        </div>
+      </div>
+
+      <div className="border border-white/20 bg-black/20 p-8 backdrop-blur-xl">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-white/60">
+          Marketplace Snapshot
+        </p>
+
+        <div className="mt-8 space-y-5">
+          <div className="border-b border-white/15 pb-5">
+            <p className="text-4xl font-black">$6M+</p>
+            <p className="mt-1 text-sm text-white/70">
+              Annual buying power targeted through Local Connect's network
+            </p>
+          </div>
+
+          <div className="border-b border-white/15 pb-5">
+            <p className="text-4xl font-black">1 Platform</p>
+            <p className="mt-1 text-sm text-white/70">
+              Products, ordering, delivery schedules, and customer management
+            </p>
+          </div>
+
+          <div>
+            <p className="text-4xl font-black">2 Options</p>
+            <p className="mt-1 text-sm text-white/70">
+              Fulfill yourself or leverage Local Connect logistics
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 border border-white/15 bg-white/5 p-5">
+          <p className="text-lg font-black">
+            Sell more. Admin less.
+          </p>
+
+          <p className="mt-2 text-sm leading-6 text-white/70">
+            Local Connect helps suppliers spend less time managing orders
+            and more time producing great products.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* LOCAL CONNECT PARTNERS */}
+<section className="border-b border-[#1d1d1b]/25 bg-white">
+  <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
+    <div className="text-center">
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
+        Existing Wholesale Network
+      </p>
+
+      <h2 className="mt-3 text-4xl font-black tracking-[-0.045em] sm:text-5xl">
+        Local Connect is a partner in these businesses.
+      </h2>
+
+      <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-[#5f5f57]">
+        Local Connect works alongside restaurants, breweries, retailers,
+        caterers, and institutional foodservice operators throughout British
+        Columbia.
+      </p>
+    </div>
+
+    <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {[
+        {
+          name: 'Noble Pig',
+          logo: '/images/partners/noble-pig.png',
+          website: 'https://www.noblepig.ca',
+        },
+        {
+          name: 'Swelaps Market',
+          logo: '/images/partners/swelaps.png',
+          website: 'https://swelapsmarket.ca',
+        },
+        {
+          name: 'Bright Eye Brewing',
+          logo: '/images/partners/bright-eye.png',
+          website: 'https://www.brighteyebrewing.com',
+        },
+        {
+          name: 'Valhalla Smokehouse',
+          logo: '/images/partners/valhalla.png',
+          website: 'https://valhallasmokehouse.com',
+        },
+        {
+          name: 'Table 125',
+          logo: '/images/partners/table-125.png',
+          website: 'https://table125.ca',
+        },
+        {
+          name: 'TRU / Aramark',
+          logo: '/images/partners/aramark.png',
+          website: 'https://www.aramark.ca',
+        },
+      ].map((partner) => (
+        <a
+          key={partner.name}
+          href={partner.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex h-36 items-center justify-center border border-[#d6cec0] bg-[#f9f7f1] p-6 transition duration-200 hover:border-[#244f3d] hover:shadow-lg"
+        >
+          <img
+            src={partner.logo}
+            alt={partner.name}
+            className="max-h-20 w-auto object-contain transition duration-200 group-hover:scale-105"
+          />
+        </a>
+      ))}
+    </div>
+
+    <div className="mt-10 border border-[#d6cec0] bg-[#f4f1ea] p-6 text-center">
+      <p className="text-lg font-black text-[#244f3d]">
+        These partners — and many more — are actively purchasing through Local
+        Connect.
+      </p>
+
+      <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-[#5f5f57]">
+        Join the marketplace to put your products in front of an existing
+        wholesale customer network already purchasing produce, protein,
+        bakery, paper products, and foodservice essentials every week.
+      </p>
+
+      <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+        <Link
+          href="/signup"
+          className="border border-[#244f3d] bg-[#244f3d] px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#1d1d1b]"
+        >
+          Become a Supplier
+        </Link>
+
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+      
       <section className="bg-white text-[#1d1d1b]">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
           <div className="max-w-3xl">
@@ -387,45 +604,7 @@ export default function WholesaleLandingPage() {
   </div>
 </section>   
 
-   {/* LOCAL CONNECT 911 */}
-<section className="border-b border-[#1d1d1b]/25 bg-[#244f3d] px-4 py-14 text-center text-white sm:px-6 sm:py-20 lg:px-10">
-  <div className="mx-auto max-w-4xl">
-    <p className="inline-flex border border-white/30 bg-white/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-white/75">
-      Emergency delivery
-    </p>
 
-    <h2 className="mt-5 text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-5xl md:text-7xl">
-      Local Connect 911
-    </h2>
-
-    <p className="mx-auto mt-5 max-w-2xl text-xl font-black leading-tight tracking-[-0.03em] sm:text-2xl">
-      Ran out mid-service? Call us.
-    </p>
-
-    <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
-      Emergency support for missed orders, slammed weekends, and essential products that didn’t show up.
-    </p>
-
-
-   <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-     <a
-  href="#"
-  data-open-clickbooks
-  data-service="911-order"
-  className="border border-[#b4472c] bg-[#b4472c] px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-transparent hover:text-[#b4472c]"
->
-  Call LC 911
-</a>
-
-      <Link
-        href="/products"
-        className="border border-white/40 bg-transparent px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-white hover:text-[#244f3d]"
-      >
-        Browse essentials
-      </Link>
-    </div>
-  </div>
-</section>
 
       {/* HOW IT WORKS */}
 <section className="border-b border-[#1d1d1b]/25 bg-white px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
@@ -497,7 +676,7 @@ export default function WholesaleLandingPage() {
             </h3>
             <p className="text-sm text-[#5f5f57]">Local Connect Wholesale</p>
             <p className="mt-2 text-sm text-[#5f5f57]">Kamloops, BC</p>
-            <p className="mt-2 text-sm text-[#5f5f57]">liam@localconnect.ca</p>
+            <p className="mt-2 text-sm text-[#5f5f57]">lmilovick@gmail.com</p>
           </div>
 
           <div>

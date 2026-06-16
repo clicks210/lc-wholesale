@@ -3,16 +3,43 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
+type AccountType = 'restaurant' | 'producer'
+
 export default function SignupPage() {
+  const [accountType, setAccountType] = useState<AccountType>('restaurant')
+
   const [businessName, setBusinessName] = useState('')
   const [contactName, setContactName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [accessCode, setAccessCode] = useState('')
+
+  const [deliveryAddress, setDeliveryAddress] = useState('')
+  const [deliveryCity, setDeliveryCity] = useState('')
+  const [deliveryPostalCode, setDeliveryPostalCode] = useState('')
+  const [deliveryNotes, setDeliveryNotes] = useState('')
+
   const [message, setMessage] = useState('')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const role = accountType === 'producer' ? 'producer' : 'buyer'
+
+  const businessLabel =
+    accountType === 'producer' ? 'Producer / Farm Name' : 'Restaurant / Business Name'
+
+  const addressLabel =
+    accountType === 'producer' ? 'Pickup Address' : 'Delivery Address'
+
+  const cityLabel =
+    accountType === 'producer' ? 'Pickup City' : 'Delivery City'
+
+  const postalCodeLabel =
+    accountType === 'producer' ? 'Pickup Postal Code' : 'Delivery Postal Code'
+
+  const notesLabel =
+    accountType === 'producer' ? 'Pickup Notes' : 'Delivery Notes'
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -23,18 +50,19 @@ export default function SignupPage() {
     try {
       const res = await fetch('/api/signup', {
         method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json',
-        },
-
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          role,
           businessName,
           contactName,
           email,
           phone,
           password,
           accessCode,
+          deliveryAddress,
+          deliveryCity,
+          deliveryPostalCode,
+          deliveryNotes,
         }),
       })
 
@@ -46,7 +74,6 @@ export default function SignupPage() {
       }
 
       setSuccess(true)
-
       setMessage(
         'Account created. Please check your email to verify your account before signing in.'
       )
@@ -57,7 +84,11 @@ export default function SignupPage() {
       setPhone('')
       setPassword('')
       setAccessCode('')
-    } catch (error) {
+      setDeliveryAddress('')
+      setDeliveryCity('')
+      setDeliveryPostalCode('')
+      setDeliveryNotes('')
+    } catch {
       setMessage('Signup failed. Please try again.')
     } finally {
       setLoading(false)
@@ -70,33 +101,75 @@ export default function SignupPage() {
         <div className="flex items-center bg-[#244f3d] px-8 py-14 text-white md:px-12">
           <div className="max-w-xl">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-white/70">
-              Buyer Registration
+              {accountType === 'producer'
+                ? 'Producer Registration'
+                : 'Buyer Registration'}
             </p>
 
             <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
-              Open a purchasing account with Local Connect.
+              {accountType === 'producer'
+                ? 'Sell your products through Local Connect.'
+                : 'Open a purchasing account with Local Connect.'}
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-7 text-white/80">
-              Create a buyer account for your restaurant, cafe, grocer, or food
-              service business.
+              {accountType === 'producer'
+                ? 'Create a producer account to manage your products, availability, and incoming restaurant orders.'
+                : 'Create a buyer account for your restaurant, cafe, grocer, or food service business.'}
             </p>
           </div>
         </div>
 
         <div className="flex items-center justify-center border border-[#d6cec0] bg-white px-6 py-14 md:px-12">
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-xl">
+            <div className="mb-8 grid grid-cols-2 border border-[#d6cec0] bg-[#f4f1ea] p-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountType('restaurant')
+                  setSuccess(false)
+                  setMessage('')
+                }}
+                className={
+                  accountType === 'restaurant'
+                    ? 'bg-[#244f3d] px-5 py-3 text-sm font-bold text-white shadow-sm'
+                    : 'bg-white px-5 py-3 text-sm font-bold text-[#244f3d] hover:bg-[#f7f5ef]'
+                }
+              >
+                Restaurant
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountType('producer')
+                  setSuccess(false)
+                  setMessage('')
+                }}
+                className={
+                  accountType === 'producer'
+                    ? 'bg-[#244f3d] px-5 py-3 text-sm font-bold text-white shadow-sm'
+                    : 'bg-white px-5 py-3 text-sm font-bold text-[#244f3d] hover:bg-[#f7f5ef]'
+                }
+              >
+                Producer
+              </button>
+            </div>
+
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#244f3d]">
               Create Account
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold tracking-tight">
-              Buyer signup
+              {accountType === 'producer'
+                ? 'Producer signup'
+                : 'Restaurant signup'}
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-[#6f675c]">
-              Fill out your business details to create a wholesale buyer
-              account.
+              {accountType === 'producer'
+                ? 'Fill out your producer details to request access to the Local Connect supplier portal.'
+                : 'Fill out your business details to create a wholesale buyer account.'}
             </p>
 
             <form onSubmit={handleSignup} className="mt-8 space-y-5">
@@ -106,7 +179,7 @@ export default function SignupPage() {
               >
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-                    Business Name
+                    {businessLabel}
                   </label>
 
                   <input
@@ -160,6 +233,65 @@ export default function SignupPage() {
 
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    {addressLabel}
+                  </label>
+
+                  <input
+                    required
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+                </div>
+
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                      {cityLabel}
+                    </label>
+
+                    <input
+                      required
+                      value={deliveryCity}
+                      onChange={(e) => setDeliveryCity(e.target.value)}
+                      className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                      {postalCodeLabel}
+                    </label>
+
+                    <input
+                      required
+                      value={deliveryPostalCode}
+                      onChange={(e) => setDeliveryPostalCode(e.target.value)}
+                      className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm uppercase outline-none focus:border-[#244f3d]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    {notesLabel}
+                  </label>
+
+                  <textarea
+                    rows={3}
+                    value={deliveryNotes}
+                    onChange={(e) => setDeliveryNotes(e.target.value)}
+                    placeholder={
+                      accountType === 'producer'
+                        ? 'Example: pickup door, cooler location, farm gate notes...'
+                        : 'Example: delivery entrance, hours, buzzer, drop-off notes...'
+                    }
+                    className="w-full resize-none border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                     Access Code
                   </label>
 
@@ -172,7 +304,7 @@ export default function SignupPage() {
 
                   <p className="mt-2 text-xs leading-5 text-[#6f675c]">
                     Have a Local Connect access code? Enter it to auto-approve
-                    your buyer account after email verification.
+                    your account after email verification.
                   </p>
                 </div>
 
@@ -198,7 +330,9 @@ export default function SignupPage() {
                 >
                   {loading
                     ? 'Creating account...'
-                    : 'Create Buyer Account'}
+                    : accountType === 'producer'
+                      ? 'Create Producer Account'
+                      : 'Create Restaurant Account'}
                 </button>
               </fieldset>
             </form>

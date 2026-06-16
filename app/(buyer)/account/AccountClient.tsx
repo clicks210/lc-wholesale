@@ -44,22 +44,31 @@ type Order = {
   zoho_invoice_url?: string | null
 
   order_items?: {
-    id?: string
+  id?: string
 
-    product_id?: string
+  product_id?: string
 
-    product_name?: string
+  product_name?: string
 
-    sku?: string | null
+  sku?: string | null
 
-    unit?: string | null
+  unit?: string | null
 
-    quantity?: number
+  quantity?: number
 
-    unit_price?: number
+  unit_price?: number
 
-    line_total?: number
-  }[]
+  line_total?: number
+
+  image_url?: string | null
+
+  product_image?: string | null
+
+  products?: {
+    image_url?: string | null
+    category?: string | null
+  } | null
+}[]
 }
 
 type ZohoInvoice = {
@@ -148,10 +157,19 @@ export default function AccountPage() {
       setCustomer(customerData)
 
       const { data: orderData, error: orderError } = await supabase
-        .from('orders')
-        .select('*, order_items(*)')
-        .eq('customer_id', membership.customer_id)
-        .order('created_at', { ascending: false })
+  .from('orders')
+  .select(`
+    *,
+    order_items(
+      *,
+      products(
+        image_url,
+        category
+      )
+    )
+  `)
+  .eq('customer_id', membership.customer_id)
+  .order('created_at', { ascending: false })
 
       if (orderError) {
         console.error('Orders lookup failed:', orderError)
@@ -1336,173 +1354,46 @@ function OrderDetailsModal({
 
           </Section>
 
-          <Section title="Delivery Schedule">
+          <Section title="Delivery & Items">
 
-            {order.delivery_summary ? (
+  {order.delivery_summary ? (
 
-              <pre className="whitespace-pre-wrap break-words border border-[#eee7da] bg-[#f4f1ea] p-4 text-sm font-medium leading-6 text-[#6f675c]">
+    <DeliverySummaryCards
+  summary={order.delivery_summary}
+  orderItems={order.order_items || []}
+/>
 
-                {order.delivery_summary}
+  ) : (
 
-              </pre>
+    <div className="border border-[#eee7da] bg-[#f4f1ea] p-4 text-sm font-medium text-[#6f675c]">
 
-            ) : (
+      Delivery schedule will be confirmed by Local Connect.
 
-              <div className="border border-[#eee7da] bg-[#f4f1ea] p-4 text-sm font-medium text-[#6f675c]">
+    </div>
 
-                Delivery schedule will be confirmed by Local Connect.
+  )}
 
-              </div>
+  {order.fulfillment_summary && (
 
-            )}
+    <div className="mt-4 border border-[#eee7da] bg-white p-4">
 
-            {order.fulfillment_summary && (
+      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
 
-              <div className="mt-4 border border-[#eee7da] bg-white p-4">
+        Fulfillment Summary
 
-                <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+      </p>
 
-                  Fulfillment Summary
+      <pre className="mt-2 whitespace-pre-wrap break-words text-sm font-medium leading-6 text-[#6f675c]">
 
-                </p>
+        {order.fulfillment_summary}
 
-                <pre className="mt-2 whitespace-pre-wrap break-words text-sm font-medium leading-6 text-[#6f675c]">
+      </pre>
 
-                  {order.fulfillment_summary}
+    </div>
 
-                </pre>
+  )}
 
-              </div>
-
-            )}
-
-          </Section>
-
-          <Section title="Items">
-
-            {items.length === 0 ? (
-
-              <p className="text-sm font-medium text-[#6f675c]">
-
-                No items found for this order.
-
-              </p>
-
-            ) : (
-
-              <div>
-
-                <div className="hidden border border-[#d6cec0] md:block">
-
-                  <div className="grid grid-cols-[1.5fr_0.6fr_0.7fr_0.7fr] bg-[#f4f1ea] px-4 py-3 text-xs font-black uppercase tracking-wide text-[#6f675c]">
-
-                    <div>Product</div>
-
-                    <div>Qty</div>
-
-                    <div>Price</div>
-
-                    <div>Total</div>
-
-                  </div>
-
-                  {items.map((item: any) => (
-
-                    <div
-
-                      key={item.id}
-
-                      className="grid grid-cols-[1.5fr_0.6fr_0.7fr_0.7fr] border-t border-[#eee7da] px-4 py-4 text-sm"
-
-                    >
-
-                      <div>
-
-                        <p className="font-semibold">{item.product_name}</p>
-
-                        <p className="mt-1 font-mono text-xs text-[#6f675c]">
-
-                          {item.sku || '—'} · {item.unit || '—'}
-
-                        </p>
-
-                      </div>
-
-                      <div>{item.quantity}</div>
-
-                      <div>{formatMoney(item.unit_price)}</div>
-
-                      <div className="font-bold">
-
-                        {formatMoney(item.line_total)}
-
-                      </div>
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-                <div className="space-y-3 md:hidden">
-
-                  {items.map((item: any) => (
-
-                    <div
-
-                      key={item.id}
-
-                      className="border border-[#d6cec0] bg-white p-4 shadow-sm"
-
-                    >
-
-                      <p className="font-black leading-snug">
-
-                        {item.product_name}
-
-                      </p>
-
-                      <p className="mt-1 break-all font-mono text-[11px] font-medium text-[#6f675c]">
-
-                        {item.sku || '—'} · {item.unit || '—'}
-
-                      </p>
-
-                      <div className="mt-3 grid grid-cols-3 gap-2">
-
-                        <MiniStat label="Qty" value={String(item.quantity)} />
-
-                        <MiniStat
-
-                          label="Price"
-
-                          value={formatMoney(item.unit_price)}
-
-                        />
-
-                        <MiniStat
-
-                          label="Total"
-
-                          value={formatMoney(item.line_total)}
-
-                          success
-
-                        />
-
-                      </div>
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-              </div>
-
-            )}
-
-          </Section>
+</Section>
 
           <Section title="Order Notes">
 
@@ -1539,6 +1430,143 @@ function Section({
       <div className="p-4 sm:p-6">{children}</div>
     </div>
   )
+}
+
+function DeliverySummaryCards({
+  summary,
+  orderItems = [],
+}: {
+  summary: string
+  orderItems?: any[]
+}) {
+  const groups = parseDeliverySummary(summary)
+
+  function findOrderItem(line: string) {
+  const cleaned = line.replace(/\s+x\s+\d+$/i, '').trim()
+
+  return orderItems.find((item) => {
+    const name = item.product_name?.trim()
+
+    return (
+      name === cleaned ||
+      cleaned.includes(name) ||
+      name?.includes(cleaned)
+    )
+  })
+}
+
+  return (
+    <div className="space-y-4">
+      {groups.map((group, index) => (
+        <div
+          key={`${group.title}-${index}`}
+          className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm"
+        >
+          <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
+            <p className="text-[10px] font-black uppercase tracking-wide text-white/70">
+              {group.category || 'Delivery Group'}
+            </p>
+
+            <h3 className="mt-1 text-base font-black text-white sm:text-lg">
+              {group.title}
+            </h3>
+          </div>
+
+          <div className="divide-y divide-[#eee7da]">
+            {group.items.map((line, itemIndex) => {
+              const item = findOrderItem(line)
+
+const imageUrl =
+  item?.products?.image_url ||
+  item?.product?.image_url ||
+  item?.image_url ||
+  item?.product_image ||
+  null
+
+const quantity =
+  Number(item?.quantity || extractQuantity(line) || 1)
+
+const unitPrice =
+  Number(item?.unit_price || 0)
+
+const lineTotal =
+  Number(
+    item?.line_total ||
+    unitPrice * quantity ||
+    0
+  )
+
+              return (
+                <div
+                  key={`${line}-${itemIndex}`}
+                  className="flex gap-3 bg-[#f9f7f1] p-3 text-sm sm:items-center sm:justify-between"
+                >
+                  <div className="flex min-w-0 flex-1 gap-3">
+                    <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea] sm:h-20 sm:w-20">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={item?.product_name || 'Product image'}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center px-1 text-center text-[9px] font-black uppercase tracking-wide text-[#8a8173] sm:text-[10px]">
+                          No Image
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 text-sm font-black leading-snug sm:text-base">
+                        {item?.product_name || line}
+                      </p>
+
+                      <p className="mt-1 text-[11px] font-medium leading-4 text-[#6f675c] sm:text-xs">
+                        {item?.quantity || '—'} × {formatMoney(item?.unit_price)}
+                        {item?.products?.category
+                          ? ` · ${item.products.category}`
+                          : ''}
+                      </p>
+
+                      <p className="mt-1 truncate font-mono text-[10px] text-[#8a8173] sm:text-[11px]">
+                        {item?.sku || '—'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 text-right">
+                    <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:hidden">
+                      Total
+                    </p>
+                    <p className="text-sm font-black text-[#244f3d] sm:text-base">
+                      {formatMoney(lineTotal)}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function parseDeliverySummary(summary: string) {
+  if (!summary) return []
+
+  return summary.split('\n\n').map((block) => {
+    const lines = block
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+
+    return {
+      title: lines[0] || 'Delivery',
+      category: lines[1] || '',
+      items: lines.slice(2).map((line) => line.replace(/^- /, '')),
+    }
+  })
 }
 
 function InfoGrid({ items }: { items: string[][] }) {
@@ -1667,4 +1695,10 @@ function formatMoney(value: any) {
     style: 'currency',
     currency: 'CAD',
   }).format(Number(value || 0))
+}
+
+function extractQuantity(line: string) {
+  const match = line.match(/\s+x\s+(\d+)$/i)
+
+  return match ? Number(match[1]) : 1
 }

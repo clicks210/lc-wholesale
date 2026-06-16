@@ -6,32 +6,88 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getCart } from '@/lib/cart'
 
-const categories = [
-  { label: 'All Products', href: '/products', value: null },
-  { label: 'Produce', href: '/products?category=Produce', value: 'Produce' },
-  { label: 'Bread', href: '/products?category=Bread', value: 'Bread' },
-  { label: 'Poultry', href: '/products?category=Poultry', value: 'Poultry' },
-  { label: 'Paper', href: '/products?category=Paper', value: 'Paper' },
-]
+type CategoryLink = {
+  label: string
+  href: string
+  value: string | null
+}
 
 function BuyerLayoutContent({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null)
+  const [userRole, setUserRole] = useState<string | null>(null)
   const [cartCount, setCartCount] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [categories, setCategories] = useState<CategoryLink[]>([
+    { label: 'All Products', href: '/products', value: null },
+  ])
 
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const activeCategory = searchParams.get('category')
+  const isProductsPage = pathname.startsWith('/products')
+
+  const orderGuideActive = pathname.startsWith('/order-guide')
+  const accountActive = pathname.startsWith('/account')
+  const cartActive = pathname.startsWith('/cart')
+
+  const dashboardHref =
+    userRole === 'admin'
+      ? '/admin'
+      : userRole === 'producer'
+        ? '/producer/products'
+        : null
+
+  const dashboardLabel =
+    userRole === 'admin'
+      ? 'Admin Dashboard'
+      : userRole === 'producer'
+        ? 'Producer Dashboard'
+        : 'Dashboard'
 
   function loadCartCount() {
     const cart = getCart()
-
-    const count = cart.reduce((sum: number, item: any) => {
-      return sum + Number(item.quantity || 0)
-    }, 0)
-
-    setCartCount(count)
+    setCartCount(
+      cart.reduce(
+        (sum: number, item: any) => sum + Number(item.quantity || 0),
+        0
+      )
+    )
   }
+
+  async function loadCategories() {
+    const { data, error } = await supabase
+      .from('product_categories')
+      .select('name')
+      .order('name', { ascending: true })
+
+    if (error) {
+      console.error('Error loading categories:', error)
+      return
+    }
+
+    setCategories([
+      { label: 'All Products', href: '/products', value: null },
+      ...(data || []).map((category) => ({
+        label: category.name,
+        href: `/products?category=${encodeURIComponent(category.name)}`,
+        value: category.name,
+      })),
+    ])
+  }
+
+  async function loadUserRole(userId: string) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single()
+
+    setUserRole(profile?.role ?? null)
+  }
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
 
   useEffect(() => {
     loadCartCount()
@@ -48,13 +104,29 @@ function BuyerLayoutContent({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    async function loadAuth() {
+      const { data } = await supabase.auth.getUser()
+
       setUser(data.user)
-    })
+
+      if (data.user) {
+        await loadUserRole(data.user.id)
+      } else {
+        setUserRole(null)
+      }
+    }
+
+    loadAuth()
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
         setUser(session?.user ?? null)
+
+        if (session?.user) {
+          await loadUserRole(session.user.id)
+        } else {
+          setUserRole(null)
+        }
       }
     )
 
@@ -73,113 +145,44 @@ function BuyerLayoutContent({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false)
   }
 
-  const orderGuideActive = pathname.startsWith('/order-guide')
-  const accountActive = pathname.startsWith('/account')
-  const cartActive = pathname.startsWith('/cart')
+  function categoryIsActive(item: CategoryLink) {
+    return (
+      pathname === '/products' &&
+      (item.value ? activeCategory === item.value : !activeCategory)
+    )
+  }
 
   return (
     <main className="min-h-dvh bg-[#f4f1ea] text-[#1e1e1e]">
-      <header className="sticky top-0 z-40 border-b border-[#d6cec0] bg-white">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-[#d6cec0] bg-white/90 backdrop-blur-xl lg:hidden">
+        <div className="flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center" onClick={closeMenu}>
             <img
               src="/images/logo.png"
               alt="Local Connect"
-              className="h-11 w-auto object-contain sm:h-12"
+              className="h-11 w-auto object-contain"
             />
           </Link>
 
-          <nav className="hidden items-center gap-2 md:flex">
-            {categories.map((item) => {
-              const active =
-                pathname === '/products' &&
-                (item.value ? activeCategory === item.value : !activeCategory)
-
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`px-3 py-2 text-sm font-semibold transition ${
-                    active
-                      ? 'bg-[#244f3d] text-white'
-                      : 'text-[#6f675c] hover:bg-[#f4f1ea] hover:text-[#244f3d]'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              )
-            })}
-          </nav>
-
-          <div className="hidden items-center gap-2 text-sm font-semibold md:flex">
-            <Link
-              href="/account"
-              className={`px-3 py-2 transition ${
-                accountActive
-                  ? 'bg-[#244f3d] text-white'
-                  : 'text-[#6f675c] hover:bg-[#f4f1ea] hover:text-[#244f3d]'
-              }`}
-            >
-              Account
-            </Link>
-
-            <Link
-              href="/order-guide"
-              className={`border px-3 py-2 transition ${
-                orderGuideActive
-                  ? 'border-[#244f3d] bg-[#244f3d] text-white'
-                  : 'border-[#244f3d] text-[#244f3d] hover:bg-[#f4f1ea]'
-              }`}
-            >
-              Guides
-            </Link>
-
-            <Link
-              href="/cart"
-              className={`relative px-4 py-2 transition ${
-                cartActive
-                  ? 'bg-[#1b3d2f] text-white'
-                  : 'bg-[#244f3d] text-white hover:bg-[#2f5d46]'
-              }`}
-            >
-              Cart
-
-              {cartCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-bold leading-none text-white">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-
-            {user ? (
-              <button
-                onClick={handleSignOut}
-                className="border border-[#d6cec0] px-4 py-2 text-[#6f675c] hover:border-[#244f3d] hover:text-[#244f3d]"
-              >
-                Sign Out
-              </button>
-            ) : (
+          <div className="flex items-center gap-2">
+            {dashboardHref && (
               <Link
-                href="/login"
-                className="border border-[#244f3d] px-4 py-2 text-[#244f3d] hover:bg-[#f4f1ea]"
+                href={dashboardHref}
+                onClick={closeMenu}
+                className="bg-[#244f3d] px-3 py-2 text-sm font-bold text-white"
               >
-                Sign In
+                Dashboard
               </Link>
             )}
-          </div>
 
-          <div className="flex items-center gap-2 md:hidden">
             <Link
               href="/cart"
               onClick={closeMenu}
-              className={`relative px-3 py-2 text-sm font-bold transition ${
-                cartActive
-                  ? 'bg-[#1b3d2f] text-white'
-                  : 'bg-[#244f3d] text-white'
+              className={`relative px-3 py-2 text-sm font-bold ${
+                cartActive ? 'bg-[#1b3d2f] text-white' : 'bg-[#244f3d] text-white'
               }`}
             >
               Cart
-
               {cartCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-bold leading-none text-white">
                   {cartCount}
@@ -197,31 +200,27 @@ function BuyerLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <nav className="flex gap-2 overflow-x-auto border-t border-[#eee7da] bg-white px-4 py-3 md:hidden">
-          {categories.map((item) => {
-            const active =
-              pathname === '/products' &&
-              (item.value ? activeCategory === item.value : !activeCategory)
-
-            return (
+        {isProductsPage && (
+          <nav className="flex gap-2 overflow-x-auto border-t border-[#eee7da] bg-white px-4 py-3">
+            {categories.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 className={`shrink-0 border px-3 py-2 text-xs font-bold uppercase tracking-[0.06em] ${
-                  active
+                  categoryIsActive(item)
                     ? 'border-[#244f3d] bg-[#244f3d] text-white'
                     : 'border-[#d6cec0] bg-[#f4f1ea] text-[#6f675c]'
                 }`}
               >
                 {item.label}
               </Link>
-            )
-          })}
-        </nav>
+            ))}
+          </nav>
+        )}
       </header>
 
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 md:hidden">
+        <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
           <button
             type="button"
             aria-label="Close menu"
@@ -250,10 +249,19 @@ function BuyerLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="space-y-3 p-5">
+              {dashboardHref && (
+                <MobileMenuLink
+                  href={dashboardHref}
+                  label={dashboardLabel}
+                  active={pathname.startsWith(dashboardHref)}
+                  onClick={closeMenu}
+                />
+              )}
+
               <MobileMenuLink
                 href="/products"
                 label="Browse Products"
-                active={pathname.startsWith('/products')}
+                active={isProductsPage}
                 onClick={closeMenu}
               />
               <MobileMenuLink
@@ -295,21 +303,137 @@ function BuyerLayoutContent({ children }: { children: React.ReactNode }) {
                 )}
               </div>
             </div>
-
-            <div className="absolute bottom-0 left-0 right-0 border-t border-[#d6cec0] bg-[#f4f1ea] p-5">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#244f3d]">
-                Need help?
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[#6f675c]">
-                Contact your Local Connect representative for ordering support.
-              </p>
-            </div>
           </aside>
         </div>
       )}
 
-      {children}
+      <aside className="fixed left-5 top-5 z-40 hidden h-[calc(100dvh-2.5rem)] w-72 flex-col overflow-hidden rounded-[2rem] border border-white/60 bg-white/45 shadow-2xl backdrop-blur-2xl lg:flex">
+        <div className="border-b border-white/60 bg-white/40 p-6">
+          <Link href="/" className="inline-flex">
+            <img
+              src="/images/logo.png"
+              alt="Local Connect"
+              className="h-14 w-auto object-contain"
+            />
+          </Link>
+
+          <p className="mt-5 text-xs font-black uppercase tracking-[0.22em] text-[#244f3d]">
+            Wholesale Portal
+          </p>
+          <p className="mt-2 text-sm leading-6 text-[#6f675c]">
+            Browse, build orders, and manage your Local Connect account.
+          </p>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-5">
+          <div className="space-y-2">
+            {dashboardHref && (
+              <SidebarLink
+                href={dashboardHref}
+                label={dashboardLabel}
+                active={pathname.startsWith(dashboardHref)}
+              />
+            )}
+
+            <SidebarLink
+              href="/products"
+              label="Products"
+              active={isProductsPage}
+            />
+
+            <SidebarLink
+              href="/account"
+              label="Account"
+              active={accountActive}
+            />
+
+            <SidebarLink
+              href="/order-guide"
+              label="Guides"
+              active={orderGuideActive}
+            />
+
+            <SidebarLink
+              href="/cart"
+              label={`Cart${cartCount > 0 ? ` (${cartCount})` : ''}`}
+              active={cartActive}
+            />
+          </div>
+
+          {isProductsPage && (
+            <div className="mt-7 border-t border-white/60 pt-6">
+              <p className="mb-4 text-xs font-black uppercase tracking-[0.2em] text-[#244f3d]">
+                Categories
+              </p>
+
+              <div className="space-y-2">
+                {categories.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className={`block rounded-2xl px-4 py-3 text-sm font-bold transition ${
+                      categoryIsActive(item)
+                        ? 'bg-[#244f3d] text-white shadow-lg'
+                        : 'text-[#6f675c] hover:bg-white/70 hover:text-[#244f3d]'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="border-t border-white/60 bg-white/35 p-5">
+          {user ? (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="w-full rounded-2xl border border-[#d6cec0] bg-white/60 px-4 py-3 text-left text-sm font-bold text-[#6f675c] transition hover:border-[#244f3d] hover:text-[#244f3d]"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="block w-full rounded-2xl border border-[#244f3d] bg-white/60 px-4 py-3 text-sm font-bold text-[#244f3d] transition hover:bg-white"
+            >
+              Sign In
+            </Link>
+          )}
+
+          <p className="mt-4 text-xs leading-5 text-[#6f675c]">
+            Need something not listed? Contact your Local Connect rep.
+          </p>
+        </div>
+      </aside>
+
+      <section className="min-w-0 lg:pl-[19rem]">{children}</section>
     </main>
+  )
+}
+
+function SidebarLink({
+  href,
+  label,
+  active,
+}: {
+  href: string
+  label: string
+  active: boolean
+}) {
+  return (
+    <Link
+      href={href}
+      className={`block rounded-2xl px-4 py-3 text-sm font-black transition ${
+        active
+          ? 'bg-[#244f3d] text-white shadow-lg'
+          : 'text-[#6f675c] hover:bg-white/70 hover:text-[#244f3d]'
+      }`}
+    >
+      {label}
+    </Link>
   )
 }
 

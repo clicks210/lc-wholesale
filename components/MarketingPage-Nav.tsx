@@ -73,7 +73,7 @@ export default function MarketingPageNav() {
             ? 'Loading...'
             : loggedIn
               ? 'Back to Marketplace'
-              : 'Buyer Access'}
+              : 'Account Access'}
         </Link>
 
       </div>

@@ -1,15 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { createProduct } from '@/lib/products'
 
-const categories = ['Produce', 'Bread', 'Poultry', 'Paper']
-
 export default function NewProductPage() {
   const router = useRouter()
+
+  const [categories, setCategories] = useState<string[]>([])
+  const [newCategory, setNewCategory] = useState('')
+  const [addingCategory, setAddingCategory] = useState(false)
 
   const [sku, setSku] = useState('')
   const [name, setName] = useState('')
@@ -29,6 +31,58 @@ export default function NewProductPage() {
   const margin = priceOnRequest ? 0 : Number(price || 0) - Number(costPrice || 0)
   const marginPercent =
     !priceOnRequest && Number(price) > 0 ? (margin / Number(price)) * 100 : 0
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
+  async function loadCategories() {
+    const { data, error } = await supabase
+      .from('product_categories')
+      .select('name')
+      .order('name', { ascending: true })
+
+    if (error) {
+      setMessage(error.message)
+      return
+    }
+
+    setCategories(data?.map((item) => item.name) || [])
+  }
+
+  async function addCategory() {
+    const cleaned = newCategory.trim()
+
+    if (!cleaned) return
+
+    const existingCategory = categories.find(
+      (item) => item.toLowerCase() === cleaned.toLowerCase()
+    )
+
+    if (existingCategory) {
+      setCategory(existingCategory)
+      setNewCategory('')
+      return
+    }
+
+    setAddingCategory(true)
+    setMessage('')
+
+    const { error } = await supabase
+      .from('product_categories')
+      .insert({ name: cleaned })
+
+    if (error) {
+      setMessage(error.message)
+      setAddingCategory(false)
+      return
+    }
+
+    setCategories((current) => [...current, cleaned].sort())
+    setCategory(cleaned)
+    setNewCategory('')
+    setAddingCategory(false)
+  }
 
   async function uploadImage() {
     if (!imageFile) return ''
@@ -128,6 +182,7 @@ export default function NewProductPage() {
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6f675c]">
                   Category
                 </label>
+
                 <select
                   required
                   value={category}
@@ -141,6 +196,24 @@ export default function NewProductPage() {
                     </option>
                   ))}
                 </select>
+
+                <div className="mt-3 flex gap-2">
+                  <input
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    placeholder="Add new category..."
+                    className="flex-1 border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={addCategory}
+                    disabled={addingCategory}
+                    className="border border-[#244f3d] px-4 py-3 text-sm font-bold text-[#244f3d] hover:bg-[#244f3d] hover:text-white disabled:opacity-50"
+                  >
+                    {addingCategory ? 'Adding...' : 'Add'}
+                  </button>
+                </div>
               </div>
 
               <div className="md:col-span-2">
