@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { getZohoAccessToken } from '@/lib/zoho'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const cookieStore = await cookies()
 
@@ -27,20 +27,73 @@ export async function GET() {
 
     const {
       data: { user },
+      error: userError,
     } = await supabase.auth.getUser()
 
-    if (!user) {
-      return NextResponse.json({ error: 'Not logged in' }, { status: 401 })
+    if (userError || !user) {
+      return NextResponse.json(
+        { error: 'Not logged in' },
+        { status: 401 }
+      )
+    }
+
+    const { searchParams } = new URL(request.url)
+    const requestedCustomerId = searchParams.get('customerId')
+
+    let customerId: string
+
+    /*
+      Admins can request another customer's invoices by passing:
+      ?customerId=...
+    */
+    if (requestedCustomerId) {
+      const { data: profile, error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError || profile?.role !== 'admin') {
+        return NextResponse.json(
+          { error: 'Not authorized to view this customer' },
+          { status: 403 }
+        )
+      }
+
+      customerId = requestedCustomerId
+    } else {
+      /*
+        Normal customer request: determine their customer account through
+        customer_members.
+      */
+      const { data: membership, error: membershipError } =
+        await supabaseAdmin
+          .from('customer_members')
+          .select('customer_id')
+          .eq('user_id', user.id)
+          .single()
+
+      if (membershipError || !membership) {
+        return NextResponse.json(
+          { error: 'Customer membership not found' },
+          { status: 404 }
+        )
+      }
+
+      customerId = membership.customer_id
     }
 
     const { data: customer, error: customerError } = await supabaseAdmin
       .from('customers')
       .select('id, zoho_customer_id')
-      .eq('user_id', user.id)
+      .eq('id', customerId)
       .single()
 
     if (customerError || !customer) {
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      )
     }
 
     if (!customer.zoho_customer_id) {
@@ -72,11 +125,16 @@ export async function GET() {
       cache: 'no-store',
     })
 
-    const zohoData = await zohoRes.json()
+    const zohoData = await zohoRes.json().catch(() => null)
 
-    if (!zohoRes.ok) {
+    if (!zohoRes.ok || zohoData?.code !== 0) {
+      console.error('Zoho invoice fetch failed:', zohoData)
+
       return NextResponse.json(
-        { error: 'Zoho fetch failed', details: zohoData },
+        {
+          error: zohoData?.message || 'Zoho fetch failed',
+          details: zohoData,
+        },
         { status: 500 }
       )
     }
@@ -88,7 +146,9 @@ export async function GET() {
     console.error('Account invoices route error:', err)
 
     return NextResponse.json(
-      { error: err.message || 'Server error' },
+      {
+        error: err.message || 'Server error',
+      },
       { status: 500 }
     )
   }

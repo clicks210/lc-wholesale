@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { getCart, clearCart } from '@/lib/cart'
 import { submitOrder } from '@/lib/orders'
@@ -17,6 +18,7 @@ export default function CheckoutPage() {
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
+  const router = useRouter()
 
   function getProductImage(product: any) {
     return (
@@ -93,65 +95,66 @@ export default function CheckoutPage() {
 
   const deliveryGroups = getDeliveryGroups(items)
 
+
   async function handleSubmitOrder() {
-    if (!fulfillment.valid) {
-      setMessage(
-        'Some Local Connect category minimums are not met. Please return to cart and adjust your order.'
-      )
-      return
-    }
+  if (!fulfillment.valid) {
+    setMessage(
+      'Some Local Connect category minimums are not met. Please return to cart and adjust your order.'
+    )
+    return
+  }
 
-    setSubmitting(true)
-    setMessage('')
+  setSubmitting(true)
+  setMessage('')
 
-    const deliverySummary = deliveryGroups
-      .map((group: any) => {
-        const itemSummary = group.items
-          .map((item: any) => `- ${item.product.name} x ${item.quantity}`)
+  const deliverySummary = deliveryGroups
+    .map((group: any) => {
+      const itemSummary = group.items
+        .map((item: any) => `- ${item.product.name} x ${item.quantity}`)
+        .join('\n')
+
+      return `${group.delivery?.label || 'To be confirmed'}\n${
+        group.category || 'Products'
+      }\n${itemSummary}`
+    })
+    .join('\n\n')
+
+  const fulfillmentSummary =
+    fulfillment.groups.length > 0
+      ? fulfillment.groups
+          .map(
+            (group: any) =>
+              `${group.category}: ${formatMoney(group.subtotal)} / ${formatMoney(
+                group.minimum
+              )} minimum`
+          )
           .join('\n')
+      : 'All Local Connect items follow standard in-stock delivery. Producer items follow producer-specific delivery terms.'
 
-        return `${group.delivery?.label || 'To be confirmed'}\n${
-          group.category || 'Products'
-        }\n${itemSummary}`
-      })
-      .join('\n\n')
+  try {
+    const primaryDeliveryGroup = deliveryGroups[0]
 
-    const fulfillmentSummary =
-      fulfillment.groups.length > 0
-        ? fulfillment.groups
-            .map(
-              (group: any) =>
-                `${group.category}: ${formatMoney(group.subtotal)} / ${formatMoney(
-                  group.minimum
-                )} minimum`
-            )
-            .join('\n')
-        : 'All Local Connect items follow standard in-stock delivery. Producer items follow producer-specific delivery terms.'
+    const order = await submitOrder({
+      items,
+      deliveryDate: normalizeDeliveryDate(primaryDeliveryGroup?.delivery?.date),
+      deliveryLabel:
+        primaryDeliveryGroup?.delivery?.label || 'To be confirmed',
+      deliverySummary,
+      fulfillmentSummary,
+      notes: notes.trim(),
+    })
 
-    try {
-      const primaryDeliveryGroup = deliveryGroups[0]
+    clearCart()
+    window.dispatchEvent(new Event('cartUpdated'))
+    window.dispatchEvent(new Event('cart-updated'))
 
-      await submitOrder({
-        items,
-        deliveryDate: normalizeDeliveryDate(primaryDeliveryGroup?.delivery?.date),
-        deliveryLabel:
-          primaryDeliveryGroup?.delivery?.label || 'To be confirmed',
-        deliverySummary,
-        fulfillmentSummary,
-        notes: notes.trim(),
-      })
-
-      clearCart()
-      window.dispatchEvent(new Event('cartUpdated'))
-      window.dispatchEvent(new Event('cart-updated'))
-      setItems([])
-      setMessage('Order submitted successfully.')
-    } catch (error: any) {
-      setMessage(error.message || 'Order submission failed.')
-    }
-
+    router.push(`/orders/${order.id}/success`)
+    return
+  } catch (error: any) {
+    setMessage(error.message || 'Order submission failed.')
     setSubmitting(false)
   }
+}
 
   if (items.length === 0 && !message) {
     return (

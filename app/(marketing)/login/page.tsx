@@ -181,11 +181,11 @@ export default function LoginPage() {
             </form>
 
             <Link
-              href="/reset-password-request"
-              className="mt-4 block text-center text-sm font-bold text-[#244f3d] hover:underline"
-            >
-              Forgot password?
-            </Link>
+            href="/forgot-password"
+            className="mt-4 block text-center text-sm font-bold text-[#244f3d] hover:underline"
+          >
+            Forgot password?
+          </Link>
 
             <Link
               href="/signup"

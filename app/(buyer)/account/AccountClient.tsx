@@ -91,6 +91,31 @@ export default function AccountPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(true)
   const [memberRole, setMemberRole] = useState('staff')
+  const [ordersLoading, setOrdersLoading] = useState(false)
+const [ordersLoaded, setOrdersLoaded] = useState(false)
+
+async function loadOrders(customerId: string) {
+  try {
+    setOrdersLoading(true)
+
+    const { data, error } = await supabase
+      .from('orders')
+      .select('id,status,subtotal,delivery_date,created_at,invoice_status,notes')
+      .eq('customer_id', customerId)
+      .order('created_at', { ascending: false })
+      .limit(20)
+
+    if (error) {
+      console.error('Orders lookup failed:', error)
+      return
+    }
+
+    setOrders(data || [])
+    setOrdersLoaded(true)
+  } finally {
+    setOrdersLoading(false)
+  }
+}
 
   async function loadInvoices() {
     try {
@@ -156,36 +181,35 @@ export default function AccountPage() {
 
       setCustomer(customerData)
 
-      const { data: orderData, error: orderError } = await supabase
-  .from('orders')
-  .select(`
-    *,
-    order_items(
-      *,
-      products(
-        image_url,
-        category
-      )
-    )
-  `)
-  .eq('customer_id', membership.customer_id)
-  .order('created_at', { ascending: false })
-
-      if (orderError) {
-        console.error('Orders lookup failed:', orderError)
-      }
-
-      setOrders(orderData || [])
-
-      if (membership.role === 'owner') {
-        await loadInvoices()
-      }
-
+  
       setLoading(false)
     }
 
     loadAccount()
   }, [])
+
+  useEffect(() => {
+  if (tab === 'orders' && customer && !ordersLoaded) {
+    loadOrders(customer.id)
+  }
+
+  if (
+    tab === 'finance' &&
+    customer &&
+    invoices.length === 0 &&
+    !invoiceLoading &&
+    (memberRole === 'owner' || memberRole === 'accounting')
+  ) {
+    loadInvoices()
+  }
+}, [
+  tab,
+  customer,
+  ordersLoaded,
+  invoices.length,
+  invoiceLoading,
+  memberRole,
+])
 
   if (loading) {
     return (
@@ -271,7 +295,7 @@ export default function AccountPage() {
   )}
 
   {tab === 'orders' && (
-    <Orders orders={orders} />
+    <Orders orders={orders} loading={ordersLoading} />
   )}
 </div>
         </div>
@@ -319,15 +343,24 @@ function Finance({
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-3 md:grid-cols-3">
-        <FinanceCard title="Total Billed" value={formatMoney(totalBilled)} />
-        <FinanceCard
-          title="Outstanding in Zoho"
-          value={formatMoney(outstanding)}
-          danger={outstanding > 0}
-        />
-        <FinanceCard title="Paid This Month" value={formatMoney(paidThisMonth)} success />
-      </div>
+    <div className="grid gap-3 md:grid-cols-3">
+  <FinanceCard
+    title="Total Billed"
+    value={formatMoney(totalBilled)}
+  />
+
+  <FinanceCard
+    title="Outstanding"
+    value={formatMoney(outstanding)}
+    danger={outstanding > 0}
+  />
+
+  <FinanceCard
+    title="Paid This Month"
+    value={formatMoney(paidThisMonth)}
+    success
+  />
+</div>
 
       <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
         <div className="flex flex-col gap-4 border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -470,7 +503,13 @@ function Finance({
   )
 }
 
-function Orders({ orders }: { orders: Order[] }) {
+function Orders({
+  orders,
+  loading,
+}: {
+  orders: Order[]
+  loading: boolean
+}) {
 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
@@ -496,7 +535,11 @@ function Orders({ orders }: { orders: Order[] }) {
 
       <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
 
-        {orders.length === 0 ? (
+        {loading ? (
+  <div className="px-5 py-8 text-sm font-medium text-[#6f675c]">
+    Loading orders...
+  </div>
+) : orders.length === 0 ? (
 
           <div className="px-5 py-8 text-sm font-medium text-[#6f675c]">
 

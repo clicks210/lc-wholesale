@@ -21,6 +21,31 @@ type ZohoInvoice = {
   invoice_url?: string
 }
 
+type CustomerContact = {
+  id: string
+  customer_id: string
+  name: string | null
+  email: string
+  phone: string | null
+  receives_order_confirmations: boolean
+  created_at: string
+  updated_at: string
+}
+
+async function readJsonResponse(res: Response) {
+  const contentType = res.headers.get('content-type') || ''
+
+  if (!contentType.includes('application/json')) {
+    const text = await res.text()
+
+    throw new Error(
+      `Server returned ${res.status} instead of JSON. Check that the API route exists at the exact path being fetched. ${text.slice(0, 80)}`
+    )
+  }
+
+  return res.json()
+}
+
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<any[]>([])
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null)
@@ -182,6 +207,19 @@ function CustomerModal({
   const [savingTerms, setSavingTerms] = useState(false)
   const [termsMessage, setTermsMessage] = useState('')
 
+  const [contacts, setContacts] = useState<CustomerContact[]>([])
+  const [contactsLoading, setContactsLoading] = useState(true)
+  const [contactsError, setContactsError] = useState('')
+  const [contactMessage, setContactMessage] = useState('')
+  const [savingContact, setSavingContact] = useState(false)
+
+  const [newContact, setNewContact] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    receives_order_confirmations: true,
+  })
+
   useEffect(() => {
     setOrderMinimum(String(customer.order_minimum ?? 0))
     setDeliveryCost(String(customer.delivery_cost ?? 0))
@@ -189,33 +227,67 @@ function CustomerModal({
   }, [customer.id, customer.order_minimum, customer.delivery_cost])
 
   useEffect(() => {
-    async function loadInvoices() {
+    async function loadContacts() {
       try {
-        setInvoiceLoading(true)
-        setInvoiceError('')
+        setContactsLoading(true)
+        setContactsError('')
+        setContactMessage('')
 
-        const res = await fetch(`/api/admin/customers/${customer.id}/invoices`, {
-          cache: 'no-store',
-        })
+        const res = await fetch(
+          `/api/admin/customers/${customer.id}/contacts`,
+          { cache: 'no-store' }
+        )
 
-        const data = await res.json()
+        const data = await readJsonResponse(res)
 
         if (!res.ok) {
-          throw new Error(data.error || 'Failed to load invoices')
+          throw new Error(data.error || 'Failed to load contacts')
         }
 
-        setInvoices(data.invoices || [])
+        setContacts(data.contacts || [])
       } catch (error: any) {
-        setInvoiceError(error.message || 'Failed to load invoices')
+        setContactsError(error.message || 'Failed to load contacts')
       } finally {
-        setInvoiceLoading(false)
+        setContactsLoading(false)
       }
     }
 
     if (customer?.id) {
-      loadInvoices()
+      loadContacts()
     }
   }, [customer?.id])
+
+ useEffect(() => {
+  async function loadInvoices() {
+    try {
+      setInvoiceLoading(true)
+      setInvoiceError('')
+
+      const res = await fetch(
+  `/api/account/invoices?customerId=${encodeURIComponent(customer.id)}`,
+  {
+    cache: 'no-store',
+  }
+)
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to load invoices')
+      }
+
+      setInvoices(data.invoices || [])
+    } catch (error: any) {
+      setInvoiceError(error.message || 'Failed to load invoices')
+    } finally {
+      setInvoiceLoading(false)
+    }
+  }
+
+  if (customer?.id) {
+    loadInvoices()
+  }
+}, [customer?.id])
 
   async function handleSaveDeliveryTerms() {
     try {
@@ -242,6 +314,127 @@ function CustomerModal({
       setTermsMessage(error.message || 'Failed to save delivery terms.')
     } finally {
       setSavingTerms(false)
+    }
+  }
+
+  async function handleAddContact() {
+    try {
+      setSavingContact(true)
+      setContactsError('')
+      setContactMessage('')
+
+      const email = newContact.email.trim().toLowerCase()
+
+      if (!email) {
+        throw new Error('Email is required.')
+      }
+
+      const res = await fetch(
+        `/api/admin/customers/${customer.id}/contacts`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...newContact,
+            name: newContact.name.trim() || null,
+            email,
+            phone: newContact.phone.trim() || null,
+          }),
+        }
+      )
+
+      const data = await readJsonResponse(res)
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to add contact')
+      }
+
+      setContacts((prev) => [...prev, data.contact])
+      setNewContact({
+        name: '',
+        email: '',
+        phone: '',
+        receives_order_confirmations: true,
+      })
+      setContactMessage('Contact added.')
+    } catch (error: any) {
+      setContactsError(error.message || 'Failed to add contact')
+    } finally {
+      setSavingContact(false)
+    }
+  }
+
+  async function handleUpdateContact(
+    contactId: string,
+    updates: Partial<CustomerContact>
+  ) {
+    const previousContacts = contacts
+
+    setContacts((prev) =>
+      prev.map((contact) =>
+        contact.id === contactId ? { ...contact, ...updates } : contact
+      )
+    )
+
+    try {
+      setContactsError('')
+      setContactMessage('')
+
+      const res = await fetch(
+        `/api/admin/customers/${customer.id}/contacts/${contactId}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updates),
+        }
+      )
+
+      const data = await readJsonResponse(res)
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update contact')
+      }
+
+      setContacts((prev) =>
+        prev.map((contact) =>
+          contact.id === contactId ? data.contact : contact
+        )
+      )
+      setContactMessage('Contact updated.')
+    } catch (error: any) {
+      setContacts(previousContacts)
+      setContactsError(error.message || 'Failed to update contact')
+    }
+  }
+
+  async function handleDeleteContact(contactId: string) {
+    try {
+      setContactsError('')
+      setContactMessage('')
+
+      const res = await fetch(
+        `/api/admin/customers/${customer.id}/contacts/${contactId}`,
+        {
+          method: 'DELETE',
+        }
+      )
+
+      const data = await readJsonResponse(res)
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to remove contact')
+      }
+
+      setContacts((prev) =>
+        prev.filter((contact) => contact.id !== contactId)
+      )
+      setContactMessage('Contact removed.')
+    } catch (error: any) {
+      setContactsError(error.message || 'Failed to remove contact')
     }
   }
 
@@ -403,6 +596,164 @@ function CustomerModal({
             </div>
           </Section>
 
+          <Section title="Account Email Contacts">
+            <p className="text-sm leading-6 text-[#6f675c]">
+              Add additional email addresses that should receive order
+              confirmations for this business. These contacts do not need login
+              accounts.
+            </p>
+
+            <div className="mt-5 border border-[#d6cec0] bg-[#f4f1ea] p-4">
+              <div className="grid gap-4 md:grid-cols-3">
+                <label>
+                  <span className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    Name
+                  </span>
+                  <input
+                    value={newContact.name}
+                    onChange={(e) =>
+                      setNewContact((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="Owner, chef, accounting..."
+                    className="mt-2 w-full border border-[#d6cec0] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+                </label>
+
+                <label>
+                  <span className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    Email
+                  </span>
+                  <input
+                    type="email"
+                    value={newContact.email}
+                    onChange={(e) =>
+                      setNewContact((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                    placeholder="orders@business.ca"
+                    className="mt-2 w-full border border-[#d6cec0] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+                </label>
+
+                <label>
+                  <span className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                    Phone
+                  </span>
+                  <input
+                    value={newContact.phone}
+                    onChange={(e) =>
+                      setNewContact((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
+                    placeholder="Optional"
+                    className="mt-2 w-full border border-[#d6cec0] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-4">
+                <ContactToggle
+                  label="Receive order confirmations"
+                  checked={newContact.receives_order_confirmations}
+                  onChange={(checked) =>
+                    setNewContact((prev) => ({
+                      ...prev,
+                      receives_order_confirmations: checked,
+                    }))
+                  }
+                />
+              </div>
+
+              <button
+                onClick={handleAddContact}
+                disabled={savingContact || !newContact.email.trim()}
+                className="mt-4 bg-[#244f3d] px-5 py-3 text-xs font-bold uppercase tracking-wide text-white disabled:opacity-50"
+              >
+                {savingContact ? 'Adding...' : 'Add Contact'}
+              </button>
+            </div>
+
+            {contactsError && (
+              <div className="mt-4 border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                {contactsError}
+              </div>
+            )}
+
+            {contactMessage && (
+              <p className="mt-4 text-sm font-semibold text-[#244f3d]">
+                {contactMessage}
+              </p>
+            )}
+
+            <div className="mt-5">
+              {contactsLoading ? (
+                <p className="text-sm text-[#6f675c]">Loading contacts...</p>
+              ) : contacts.length === 0 ? (
+                <div className="border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm text-[#6f675c]">
+                  No additional account contacts have been added.
+                </div>
+              ) : (
+                <div className="overflow-x-auto border border-[#d6cec0]">
+                  <div className="min-w-[700px]">
+                    <div className="grid grid-cols-[1fr_1.5fr_0.9fr_0.8fr_0.5fr] bg-[#f4f1ea] px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+                      <div>Name</div>
+                      <div>Email</div>
+                      <div>Phone</div>
+                      <div className="text-center">Confirmations</div>
+                      <div />
+                    </div>
+
+                    {contacts.map((contact) => (
+                      <div
+                        key={contact.id}
+                        className="grid grid-cols-[1fr_1.5fr_0.9fr_0.8fr_0.5fr] items-center border-t border-[#eee7da] px-4 py-4 text-sm"
+                      >
+                        <div className="font-semibold">
+                          {contact.name || '—'}
+                        </div>
+                        <div className="break-all text-[#6f675c]">
+                          {contact.email}
+                        </div>
+                        <div className="text-[#6f675c]">
+                          {contact.phone || '—'}
+                        </div>
+
+                        <div className="flex justify-center">
+                          <input
+                            type="checkbox"
+                            checked={contact.receives_order_confirmations}
+                            onChange={(e) =>
+                              handleUpdateContact(contact.id, {
+                                receives_order_confirmations: e.target.checked,
+                              })
+                            }
+                            className="h-4 w-4 accent-[#244f3d]"
+                          />
+                        </div>
+
+                        <div className="text-right">
+                          <button
+                            onClick={() => handleDeleteContact(contact.id)}
+                            className="text-xs font-bold uppercase tracking-wide text-red-700"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </Section>
+
           <Section title="Zoho Invoices">
             {invoiceLoading ? (
               <p className="text-sm text-[#6f675c]">Loading invoices...</p>
@@ -457,13 +808,13 @@ function CustomerModal({
 
                         {invoice.invoice_id && (
                           <a
-                            href={`/api/admin/invoices/${invoice.invoice_id}/pdf`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="mt-1 inline-block text-xs font-bold uppercase tracking-wide text-[#244f3d] underline"
-                          >
-                            View PDF
-                          </a>
+                          href={`/api/admin/customers/${customer.id}/invoices/${invoice.invoice_id}/pdf`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-block text-xs font-bold uppercase tracking-wide text-[#244f3d] underline"
+                        >
+                          View PDF
+                        </a>
                         )}
                       </div>
 
@@ -529,6 +880,28 @@ function InfoGrid({ items }: { items: [string, any][] }) {
         </div>
       ))}
     </div>
+  )
+}
+
+function ContactToggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
+  return (
+    <label className="flex items-center gap-3 border border-[#d6cec0] bg-white p-3 text-sm font-semibold">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="h-4 w-4 accent-[#244f3d]"
+      />
+      <span>{label}</span>
+    </label>
   )
 }
 
