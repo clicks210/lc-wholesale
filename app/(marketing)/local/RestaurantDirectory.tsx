@@ -59,7 +59,7 @@ export default function RestaurantDirectory({
         <header className="relative z-20 mx-auto w-full max-w-4xl text-center">
           <div className="relative mx-auto h-[305px] w-full overflow-hidden sm:h-[365px] md:h-[420px] lg:h-[465px]">
             <img
-              src="/images/Tree-Vector.png"
+              src="/images/tree-vector.png"
               alt="Local Connect"
               className="absolute left-1/2 top-0 w-[620px] max-w-none -translate-x-1/2 sm:w-[760px] md:w-[860px] lg:w-[980px]"
             />
