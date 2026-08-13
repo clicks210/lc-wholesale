@@ -1,0 +1,587 @@
+/* app/local/page.module.css */
+
+.page {
+  --forest: #244f3d;
+  --forest-dark: #17372b;
+  --mint: #6fc7b3;
+  --teal: #2aa591;
+  --leaf: #6e9f54;
+  --cream: #fff9dc;
+  --paper: #fffdf1;
+  --pink: #e892c0;
+  --lavender: #b497d6;
+  --tomato: #d9543f;
+  --gold: #d3b65b;
+  --ink: #1c2924;
+
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 26%, rgba(111, 199, 179, 0.14) 0 90px, transparent 92px),
+    radial-gradient(circle at 91% 44%, rgba(180, 151, 214, 0.12) 0 120px, transparent 122px),
+    var(--paper);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 720px;
+  padding: 24px clamp(22px, 5vw, 76px) 90px;
+  background:
+    linear-gradient(rgba(255, 249, 220, 0.86), rgba(255, 249, 220, 0.94)),
+    url("/local-connect-sticker-art.png") center 16% / 1300px auto no-repeat;
+  border-bottom: 1px solid rgba(36, 79, 61, 0.15);
+}
+
+.hero::before,
+.hero::after {
+  position: absolute;
+  content: "";
+  border: 2px solid rgba(42, 165, 145, 0.18);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.hero::before {
+  width: 360px;
+  height: 360px;
+  left: -180px;
+  top: 230px;
+}
+
+.hero::after {
+  width: 500px;
+  height: 500px;
+  right: -240px;
+  top: 120px;
+  border-color: rgba(180, 151, 214, 0.18);
+}
+
+.vineTop {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 18px;
+  background:
+    linear-gradient(90deg, var(--forest), var(--teal), var(--leaf), var(--forest));
+  opacity: 0.92;
+}
+
+.nav,
+.heroGrid,
+.directory,
+.storyStrip,
+.footer {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+}
+
+.nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 18px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--forest-dark);
+  text-decoration: none;
+}
+
+.brandMark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: white;
+  background: var(--forest);
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 6px 20px rgba(23, 55, 43, 0.2);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+}
+
+.brand strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.brand small {
+  margin-top: 3px;
+  color: rgba(23, 55, 43, 0.72);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.accountLink {
+  padding: 11px 17px;
+  color: var(--forest);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(36, 79, 61, 0.22);
+  border-radius: 999px;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+.accountLink:hover {
+  transform: translateY(-2px);
+  background: white;
+}
+
+.heroGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.8fr);
+  align-items: center;
+  gap: clamp(48px, 8vw, 110px);
+  padding-top: 94px;
+}
+
+.heroCopy {
+  max-width: 680px;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.hero h1,
+.directory h2,
+.storyStrip h2 {
+  margin: 0;
+  color: var(--forest-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.hero h1 {
+  max-width: 760px;
+  font-size: clamp(48px, 7vw, 82px);
+  line-height: 0.96;
+}
+
+.intro {
+  max-width: 650px;
+  margin: 28px 0 32px;
+  color: rgba(28, 41, 36, 0.78);
+  font-size: clamp(18px, 2.1vw, 22px);
+  line-height: 1.58;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 620px;
+  padding: 8px 10px 8px 18px;
+  background: white;
+  border: 1px solid rgba(36, 79, 61, 0.15);
+  border-radius: 18px;
+  box-shadow: 0 18px 55px rgba(23, 55, 43, 0.12);
+}
+
+.searchIcon {
+  color: var(--forest);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.search input {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 6px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 16px;
+}
+
+.search input::placeholder {
+  color: rgba(28, 41, 36, 0.5);
+}
+
+.helperText {
+  margin: 14px 0 0;
+  color: rgba(28, 41, 36, 0.62);
+  font-size: 14px;
+}
+
+.artFrame {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--cream);
+  border: 10px solid rgba(255, 255, 255, 0.8);
+  border-radius: 46% 54% 48% 52% / 55% 45% 55% 45%;
+  box-shadow:
+    0 30px 70px rgba(23, 55, 43, 0.18),
+    0 0 0 2px rgba(36, 79, 61, 0.12);
+  transform: rotate(1.5deg);
+}
+
+.artwork {
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.15);
+}
+
+.directory {
+  padding: 92px clamp(22px, 4vw, 44px) 104px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+.sectionHeading h2,
+.storyStrip h2 {
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.05;
+}
+
+.sectionHeading > p {
+  margin: 0 0 7px;
+  color: rgba(28, 41, 36, 0.62);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  min-height: 330px;
+  flex-direction: column;
+  padding: 26px;
+  overflow: hidden;
+  color: inherit;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(232, 146, 192, 0.18), transparent 35%),
+    white;
+  border: 1px solid rgba(36, 79, 61, 0.13);
+  border-radius: 26px;
+  box-shadow: 0 12px 35px rgba(23, 55, 43, 0.07);
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.card:nth-child(2n) {
+  background:
+    radial-gradient(circle at 90% 10%, rgba(111, 199, 179, 0.19), transparent 35%),
+    white;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(36, 79, 61, 0.28);
+  box-shadow: 0 22px 50px rgba(23, 55, 43, 0.13);
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.restaurantMark {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  color: white;
+  background: var(--forest);
+  border-radius: 22px 10px 22px 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 800;
+  transform: rotate(-2deg);
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: var(--forest);
+  background: var(--cream);
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+.cardBody {
+  margin-top: 32px;
+}
+
+.location {
+  margin: 0 0 8px !important;
+  color: var(--teal) !important;
+  font-size: 12px !important;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.card h3 {
+  margin: 0;
+  color: var(--forest-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 31px;
+  line-height: 1.1;
+}
+
+.cardBody > p:last-child {
+  max-width: 550px;
+  margin: 13px 0 0;
+  color: rgba(28, 41, 36, 0.68);
+  line-height: 1.55;
+}
+
+.cardStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 28px;
+}
+
+.cardStats span {
+  padding: 8px 11px;
+  color: rgba(28, 41, 36, 0.72);
+  background: rgba(255, 249, 220, 0.72);
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.cardStats strong {
+  color: var(--forest);
+}
+
+.emptyState {
+  padding: 70px 24px;
+  text-align: center;
+  background: white;
+  border: 1px dashed rgba(36, 79, 61, 0.28);
+  border-radius: 26px;
+}
+
+.emptyState span {
+  font-size: 40px;
+}
+
+.emptyState h3 {
+  margin: 18px 0 8px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+}
+
+.emptyState p {
+  margin: 0;
+  color: rgba(28, 41, 36, 0.66);
+}
+
+.emptyState button {
+  margin-top: 20px;
+  padding: 11px 17px;
+  color: white;
+  background: var(--forest);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.storyStrip {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+  align-items: end;
+  gap: 70px;
+  margin-bottom: 80px;
+  padding: 54px clamp(28px, 5vw, 64px);
+  color: white;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(111, 199, 179, 0.28), transparent 28%),
+    var(--forest);
+  border-radius: 34px;
+  box-shadow: 0 28px 65px rgba(23, 55, 43, 0.2);
+}
+
+.storyStrip .eyebrow {
+  color: #a9e4d5;
+}
+
+.storyStrip h2 {
+  color: white;
+}
+
+.storyStrip > p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 34px;
+  padding: 0 clamp(22px, 4vw, 44px) 50px;
+  color: rgba(28, 41, 36, 0.68);
+  font-size: 14px;
+}
+
+.footer strong {
+  color: var(--forest);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+}
+
+.footer p {
+  margin: 7px 0 0;
+}
+
+.credit {
+  max-width: 430px;
+  text-align: right;
+}
+
+.credit a {
+  color: var(--forest);
+  font-weight: 700;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+    padding-bottom: 65px;
+  }
+
+  .heroGrid {
+    grid-template-columns: 1fr;
+    padding-top: 66px;
+  }
+
+  .heroCopy {
+    max-width: none;
+  }
+
+  .artFrame {
+    width: min(520px, 92vw);
+    margin-inline: auto;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .storyStrip {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    margin-inline: 18px;
+  }
+}
+
+@media (max-width: 620px) {
+  .nav {
+    align-items: flex-start;
+  }
+
+  .accountLink {
+    display: none;
+  }
+
+  .hero {
+    padding-inline: 18px;
+  }
+
+  .hero h1 {
+    font-size: clamp(44px, 14vw, 62px);
+  }
+
+  .intro {
+    margin-top: 22px;
+  }
+
+  .sectionHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 24px;
+  }
+
+  .directory {
+    padding: 68px 18px 78px;
+  }
+
+  .card {
+    min-height: 350px;
+    padding: 22px;
+  }
+
+  .cardStats {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .storyStrip {
+    margin-bottom: 58px;
+    padding: 38px 25px;
+    border-radius: 25px;
+  }
+
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-inline: 20px;
+  }
+
+  .credit {
+    text-align: left;
+  }
+}

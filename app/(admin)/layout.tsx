@@ -13,6 +13,7 @@ const navItems = [
   { label: '3rd Party Products', href: '/admin/producer-products' },
   { label: 'Categories', href: '/admin/categories' },
   { label: 'Financials', href: '/admin/financials' },
+  { label: 'Traceability Settings', href: '/admin/traceability-settings' },
   { label: 'Customers', href: '/admin/customers' },
   { label: 'Produce Planner', href: '/admin/produce-planner' },
   { label: 'Order Guides', href: '/admin/order-guides' },
