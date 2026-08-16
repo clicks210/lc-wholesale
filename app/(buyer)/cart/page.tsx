@@ -171,24 +171,24 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
+    <div className="min-h-screen bg-[#f4f5f2] px-5 py-7 text-[#181c19] sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="mb-6 border-b border-[#d9ddd8] bg-transparent pb-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
             Local Connect Wholesale
           </p>
 
           <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-black tracking-[-0.04em]">Cart</h1>
-              <p className="mt-1 text-sm font-medium text-[#6f675c]">
+              <h1 className="text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">Cart</h1>
+              <p className="mt-2 text-sm text-[#69716b]">
                 {itemCount} items in your wholesale order
               </p>
             </div>
 
             <Link
               href="/products"
-              className="mt-3 inline-flex w-fit border border-[#244f3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-[#244f3d] hover:bg-[#244f3d] hover:text-white sm:mt-0"
+              className="mt-3 inline-flex min-h-11 w-fit items-center border border-[#1f5a43] px-4 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f5a43] transition-colors hover:bg-[#1f5a43] hover:text-white sm:mt-0"
             >
               Keep Shopping
             </Link>
@@ -196,14 +196,14 @@ export default function CartPage() {
         </div>
 
         {items.length === 0 ? (
-          <div className="border border-[#d6cec0] bg-white p-8 text-sm text-[#6f675c]">
+          <div className="border-y border-[#d9ddd8] bg-white py-20 text-center text-sm text-[#69716b]">
             {message || 'No items in cart.'}
           </div>
         ) : (
           <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
             <div>
-              <div className="hidden overflow-hidden border border-[#d6cec0] bg-white shadow-sm md:block">
-                <div className="grid grid-cols-[2fr_0.55fr_0.6fr_0.7fr_0.75fr] border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 text-xs font-black uppercase tracking-wide text-white">
+              <div className="hidden overflow-hidden border border-[#d9ddd8] bg-white md:block">
+                <div className="grid grid-cols-[2fr_0.55fr_0.6fr_0.7fr_0.75fr] border-b border-[#d9ddd8] bg-[#f8f9f7] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.14em] text-[#7b837d]">
                   <div>Product</div>
                   <div>Unit</div>
                   <div>Price</div>
@@ -233,12 +233,12 @@ export default function CartPage() {
               </div>
             </div>
 
-            <aside className="border border-[#d6cec0] bg-white p-5 shadow-sm lg:sticky lg:top-5 lg:self-start">
-              <h2 className="text-xl font-black tracking-[-0.03em]">
+            <aside className="border border-[#d9ddd8] bg-white p-5 lg:sticky lg:top-5 lg:self-start sm:p-6">
+              <h2 className="text-2xl font-semibold tracking-[-0.03em]">
                 Order Summary
               </h2>
 
-              <div className="mt-5 space-y-3 border-b border-[#d6cec0] pb-5 text-sm">
+              <div className="mt-6 space-y-3 border-b border-[#d9ddd8] pb-6 text-sm">
                 <SummaryRow label="Items" value={String(itemCount)} />
                 <SummaryRow label="Subtotal" value={formatMoney(subtotal)} />
                 <SummaryRow
@@ -247,10 +247,10 @@ export default function CartPage() {
                 />
 
                 {freightApplied > 0 ? (
-                  <div className="border border-orange-200 bg-orange-50 p-3">
+                  <div className="border-l-2 border-orange-300 bg-orange-50/70 px-4 py-3">
                     <div className="flex justify-between text-orange-800">
-                      <span className="font-black">Freight</span>
-                      <span className="font-black">
+                      <span className="font-semibold">Freight</span>
+                      <span className="font-semibold">
                         {formatMoney(freightApplied)}
                       </span>
                     </div>
@@ -261,10 +261,10 @@ export default function CartPage() {
                     </p>
                   </div>
                 ) : (
-                  <div className="border border-green-200 bg-green-50 p-3">
+                  <div className="border-l-2 border-green-300 bg-green-50/70 px-4 py-3">
                     <div className="flex justify-between text-green-800">
-                      <span className="font-black">Freight</span>
-                      <span className="font-black">Free</span>
+                      <span className="font-semibold">Freight</span>
+                      <span className="font-semibold">Free</span>
                     </div>
 
                     <p className="mt-2 text-xs font-medium leading-5 text-green-800">
@@ -279,9 +279,9 @@ export default function CartPage() {
                   {fulfillment.failures.map((group: any) => (
                     <div
                       key={group.category}
-                      className="border border-orange-200 bg-orange-50 p-3 text-sm text-orange-900"
+                      className="border-l-2 border-orange-300 bg-orange-50/70 px-4 py-3 text-sm text-orange-900"
                     >
-                      <p className="font-black">
+                      <p className="font-semibold">
                         {group.category} minimum not met
                       </p>
 
@@ -295,15 +295,15 @@ export default function CartPage() {
                 </div>
               )}
 
-              <div className="mt-5 flex justify-between text-lg font-black">
-                <span>Estimated Total</span>
-                <span className="text-[#244f3d]">
+              <div className="mt-6 flex items-end justify-between border-t border-[#d9ddd8] pt-5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7f867f]">Estimated Total</span>
+                <span className="text-2xl font-semibold tracking-[-0.03em] text-[#1f5a43]">
                   {formatMoney(estimatedTotal)}
                 </span>
               </div>
 
               <div className="mt-5">
-                <label className="mb-2 block text-xs font-black uppercase tracking-wide text-[#6f675c]">
+                <label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-[#818882]">
                   Order Notes
                 </label>
 
@@ -312,14 +312,14 @@ export default function CartPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Delivery notes, substitutions, timing, etc."
-                  className="w-full border border-[#d6cec0] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none transition-colors placeholder:text-[#969d97] focus:border-[#1f5a43]"
                 />
               </div>
 
               {canCheckout ? (
                 <Link
                   href="/checkout"
-                  className="mt-6 block w-full bg-[#244f3d] px-5 py-3 text-center text-sm font-black text-white hover:bg-[#2f5d46]"
+                  className="mt-6 flex min-h-12 w-full items-center justify-center bg-[#1f5a43] px-5 text-[11px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#174735]"
                 >
                   Continue to Checkout
                 </Link>
@@ -327,14 +327,14 @@ export default function CartPage() {
                 <button
                   type="button"
                   disabled
-                  className="mt-6 block w-full cursor-not-allowed bg-[#9b9488] px-5 py-3 text-center text-sm font-black text-white opacity-70"
+                  className="mt-6 flex min-h-12 w-full cursor-not-allowed items-center justify-center bg-[#a6ada7] px-5 text-[11px] font-bold uppercase tracking-[0.1em] text-white opacity-70"
                 >
                   Minimums Required
                 </button>
               )}
 
-              <div className="mt-3 border border-[#d6cec0] bg-[#f4f1ea] p-3">
-                <label className="mb-2 block text-xs font-black uppercase tracking-wide text-[#6f675c]">
+              <div className="mt-4 border-t border-[#d9ddd8] bg-[#f8f9f7] p-4">
+                <label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-[#818882]">
                   Save Cart as Order Guide
                 </label>
 
@@ -342,14 +342,14 @@ export default function CartPage() {
                   value={guideName}
                   onChange={(e) => setGuideName(e.target.value)}
                   placeholder="e.g. Weekly Kitchen Order"
-                  className="w-full border border-[#d6cec0] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none transition-colors placeholder:text-[#969d97] focus:border-[#1f5a43]"
                 />
 
                 <button
                   type="button"
                   onClick={createOrderGuide}
                   disabled={savingGuide}
-                  className="mt-3 w-full border border-[#244f3d] bg-white px-5 py-3 text-sm font-black text-[#244f3d] hover:bg-white/70 disabled:opacity-60"
+                  className="mt-3 flex min-h-11 w-full items-center justify-center border border-[#1f5a43] bg-white px-5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f5a43] transition-colors hover:bg-[#f1f5f2] disabled:opacity-60"
                 >
                   {savingGuide
                     ? 'Creating Order Guide...'
@@ -363,18 +363,18 @@ export default function CartPage() {
                   clearCart()
                   refreshCart()
                 }}
-                className="mt-3 w-full border border-[#d6cec0] px-5 py-3 text-sm font-black text-[#6f675c] hover:border-[#244f3d] hover:text-[#244f3d]"
+                className="mt-3 flex min-h-11 w-full items-center justify-center border border-[#d9ddd8] px-5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#69716b] transition-colors hover:border-[#1f5a43] hover:text-[#1f5a43]"
               >
                 Clear Cart
               </button>
 
               {message && (
-                <p className="mt-4 border border-[#d6cec0] bg-[#f4f1ea] p-3 text-sm font-medium text-[#6f675c]">
+                <p className="mt-4 border-l-2 border-[#1f5a43] bg-[#f8f9f7] px-4 py-3 text-sm text-[#69716b]">
                   {message}
                 </p>
               )}
 
-              <p className="mt-5 text-xs leading-5 text-[#6f675c]">
+              <p className="mt-5 text-xs leading-5 text-[#69716b]">
                 Orders are reviewed by Local Connect before fulfillment.
               </p>
             </aside>
@@ -439,19 +439,19 @@ function CartRow({ item, imageUrl, refreshCart }: any) {
   const lineTotal = Number(item.product.price ?? 0) * item.quantity
 
   return (
-    <div className="grid grid-cols-[2fr_0.55fr_0.6fr_0.7fr_0.75fr] items-center border-b border-[#eee7da] px-4 py-4 text-sm last:border-b-0">
+    <div className="grid grid-cols-[2fr_0.55fr_0.6fr_0.7fr_0.75fr] items-center border-b border-[#e1e4df] px-4 py-4 text-sm transition-colors hover:bg-[#fafbf9] last:border-b-0">
       <ProductCell item={item} imageUrl={imageUrl} />
 
-      <div className="font-medium text-[#6f675c]">
+      <div className="text-[#69716b]">
         {item.product.unit || '—'}
       </div>
 
-      <div className="font-bold">{formatMoney(item.product.price)}</div>
+      <div className="font-semibold">{formatMoney(item.product.price)}</div>
 
       <QuantityControls item={item} refreshCart={refreshCart} />
 
       <div className="text-right">
-        <p className="font-black">{formatMoney(lineTotal)}</p>
+        <p className="font-semibold">{formatMoney(lineTotal)}</p>
 
         <button
           type="button"
@@ -472,8 +472,8 @@ function MobileCartRow({ item, imageUrl, refreshCart }: any) {
   const lineTotal = Number(item.product.price ?? 0) * item.quantity
 
   return (
-    <div className="border border-[#d6cec0] bg-white p-4 shadow-sm">
-      <div className="flex items-start gap-3 border-b border-[#eee7da] pb-3">
+    <div className="border border-[#d9ddd8] bg-white p-4">
+      <div className="flex items-start gap-3 border-b border-[#e1e4df] pb-3">
         <ProductCell item={item} imageUrl={imageUrl} mobile />
 
         <button
@@ -482,7 +482,7 @@ function MobileCartRow({ item, imageUrl, refreshCart }: any) {
             removeFromCart(item.product.id)
             refreshCart()
           }}
-          className="shrink-0 text-xs font-black uppercase tracking-wide text-red-700"
+          className="shrink-0 text-xs font-semibold uppercase tracking-wide text-red-700"
         >
           Remove
         </button>
@@ -497,10 +497,10 @@ function MobileCartRow({ item, imageUrl, refreshCart }: any) {
         <QuantityControls item={item} refreshCart={refreshCart} />
 
         <div className="text-right">
-          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b]">
             Line Total
           </p>
-          <p className="text-lg font-black text-[#244f3d]">
+          <p className="text-lg font-semibold text-[#244f3d]">
             {formatMoney(lineTotal)}
           </p>
         </div>
@@ -512,7 +512,7 @@ function MobileCartRow({ item, imageUrl, refreshCart }: any) {
 function ProductCell({ item, imageUrl, mobile = false }: any) {
   return (
     <div className="flex min-w-0 items-center gap-4 pr-4">
-      <div className="h-20 w-20 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea]">
+      <div className="h-20 w-20 shrink-0 overflow-hidden border border-[#d9ddd8] bg-[#f8f9f7]">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -520,7 +520,7 @@ function ProductCell({ item, imageUrl, mobile = false }: any) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center px-2 text-center text-[10px] font-black uppercase tracking-wide text-[#8a8173]">
+          <div className="flex h-full w-full items-center justify-center px-2 text-center text-[10px] font-semibold uppercase tracking-wide text-[#8b928d]">
             No Image
           </div>
         )}
@@ -529,13 +529,13 @@ function ProductCell({ item, imageUrl, mobile = false }: any) {
       <div className="min-w-0 flex-1">
         <p
           className={
-            mobile ? 'text-base font-black leading-snug' : 'font-bold leading-snug'
+            mobile ? 'text-base font-semibold leading-snug' : 'font-bold leading-snug'
           }
         >
           {item.product.name}
         </p>
 
-        <p className="mt-1 break-all font-mono text-xs text-[#6f675c]">
+        <p className="mt-1 break-all font-mono text-xs text-[#69716b]">
           {item.product.sku}
         </p>
 
@@ -554,12 +554,12 @@ function QuantityControls({ item, refreshCart }: any) {
           updateCartItem(item.product.id, item.quantity - 1)
           refreshCart()
         }}
-        className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 font-bold hover:border-[#244f3d]"
+        className="h-9 w-9 border border-[#d9ddd8] bg-[#f8f9f7] text-sm font-semibold transition-colors hover:border-[#1f5a43] hover:text-[#1f5a43]"
       >
         -
       </button>
 
-      <span className="w-11 border-y border-[#d6cec0] bg-white py-1 text-center font-bold">
+      <span className="flex h-9 w-11 items-center justify-center border-y border-[#d9ddd8] bg-white text-sm font-semibold">
         {item.quantity}
       </span>
 
@@ -569,7 +569,7 @@ function QuantityControls({ item, refreshCart }: any) {
           updateCartItem(item.product.id, item.quantity + 1)
           refreshCart()
         }}
-        className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 font-bold hover:border-[#244f3d]"
+        className="h-9 w-9 border border-[#d9ddd8] bg-[#f8f9f7] text-sm font-semibold transition-colors hover:border-[#1f5a43] hover:text-[#1f5a43]"
       >
         +
       </button>
@@ -598,7 +598,7 @@ function FulfillmentBadge({ product }: { product: any }) {
     return (
       <div className="mt-2">
         <p
-          className={`inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide ${
+          className={`inline-flex px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] ${
             isLcFulfilled
               ? 'bg-green-100 text-green-800'
               : 'bg-blue-100 text-blue-800'
@@ -608,11 +608,11 @@ function FulfillmentBadge({ product }: { product: any }) {
         </p>
 
         {schedule.length > 0 ? (
-          <p className="mt-1 text-[11px] leading-4 text-[#6f675c]">
+          <p className="mt-1 text-[11px] leading-4 text-[#69716b]">
             {formatSchedule(schedule)}
           </p>
         ) : (
-          <p className="mt-1 text-[11px] leading-4 text-[#6f675c]">
+          <p className="mt-1 text-[11px] leading-4 text-[#69716b]">
             Producer delivery terms not set.
           </p>
         )}
@@ -626,7 +626,7 @@ function FulfillmentBadge({ product }: { product: any }) {
   return (
     <div className="mt-2">
       <p
-        className={`inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide ${
+        className={`inline-flex px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] ${
           inStock
             ? 'bg-green-100 text-green-800'
             : 'bg-orange-100 text-orange-800'
@@ -640,7 +640,7 @@ function FulfillmentBadge({ product }: { product: any }) {
       </p>
 
       {!inStock && schedule.length > 0 && (
-        <p className="mt-1 text-[11px] leading-4 text-[#6f675c]">
+        <p className="mt-1 text-[11px] leading-4 text-[#69716b]">
           {formatSchedule(schedule)}
         </p>
       )}
@@ -651,16 +651,16 @@ function FulfillmentBadge({ product }: { product: any }) {
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
-      <span className="font-medium text-[#6f675c]">{label}</span>
-      <span className="font-bold">{value}</span>
+      <span className="text-[#69716b]">{label}</span>
+      <span className="font-semibold">{value}</span>
     </div>
   )
 }
 
 function InfoBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
-      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+    <div className="border border-[#e1e4df] bg-[#f8f9f7] p-3">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b]">
         {label}
       </p>
       <p className="mt-1 font-bold">{value}</p>

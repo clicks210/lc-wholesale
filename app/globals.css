@@ -1,22 +1,42 @@
 @import "tailwindcss";
 
 :root {
+  /* BRAND */
   --lc-green: #244f3d;
   --lc-green-soft: #2f5d46;
-  --lc-bg: #f4f1ea;
+
+  /* SURFACES */
+  --lc-bg: #f4f5f2;
+  --lc-surface: #ffffff;
+  --lc-surface-soft: #f8f9f7;
+
+  /* WARM ACCENT — use sparingly */
   --lc-sand: #e9e1d4;
-  --lc-border: #d6cec0;
-  --lc-ink: #1e1e1e;
-  --lc-muted: #6f675c;
+
+  /* STRUCTURE */
+  --lc-border: #d9ddd8;
+  --lc-border-strong: #c8cdc8;
+
+  /* TYPE */
+  --lc-ink: #181c19;
+  --lc-muted: #69716b;
+
   --lc-white: #ffffff;
 }
 
 @theme inline {
   --color-lc-green: var(--lc-green);
   --color-lc-green-soft: var(--lc-green-soft);
+
   --color-lc-bg: var(--lc-bg);
+  --color-lc-surface: var(--lc-surface);
+  --color-lc-surface-soft: var(--lc-surface-soft);
+
   --color-lc-sand: var(--lc-sand);
+
   --color-lc-border: var(--lc-border);
+  --color-lc-border-strong: var(--lc-border-strong);
+
   --color-lc-ink: var(--lc-ink);
   --color-lc-muted: var(--lc-muted);
 }
@@ -25,10 +45,19 @@
   box-sizing: border-box;
 }
 
+html {
+  background: var(--lc-bg);
+}
+
 body {
+  margin: 0;
   background: var(--lc-bg);
   color: var(--lc-ink);
 }
+
+/* =========================
+   NAVIGATION
+========================= */
 
 .nav-link {
   color: var(--lc-ink);
@@ -48,6 +77,10 @@ body {
   color: var(--lc-green);
 }
 
+/* =========================
+   LAYOUT
+========================= */
+
 .lc-container {
   max-width: 80rem;
   margin-inline: auto;
@@ -58,34 +91,73 @@ body {
   padding-block: 4rem;
 }
 
+/* =========================
+   SURFACES
+========================= */
+
 .lc-card {
   border: 1px solid var(--lc-border);
-  background: white;
+  background: var(--lc-surface);
 }
 
+/* =========================
+   BUTTONS
+========================= */
+
 .lc-button-primary {
+  border: 1px solid var(--lc-green);
   background: var(--lc-green);
   color: white;
   padding: 0.875rem 1.5rem;
   font-weight: 700;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.lc-button-primary:hover {
+  background: #193e2f;
+  border-color: #193e2f;
 }
 
 .lc-button-secondary {
   border: 1px solid var(--lc-green);
+  background: transparent;
   color: var(--lc-green);
   padding: 0.875rem 1.5rem;
   font-weight: 700;
-} 
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.lc-button-secondary:hover {
+  background: var(--lc-green);
+  color: white;
+}
+
+/* =========================
+   INPUTS
+========================= */
 
 .input {
   width: 100%;
-  border: 1px solid #d6cec0;
-  background: #f4f1ea;
+  border: 1px solid var(--lc-border);
+  background: var(--lc-surface);
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
+  color: var(--lc-ink);
   outline: none;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.input::placeholder {
+  color: #929994;
 }
 
 .input:focus {
-  border-color: #244f3d;
+  border-color: var(--lc-green);
+  background: white;
 }

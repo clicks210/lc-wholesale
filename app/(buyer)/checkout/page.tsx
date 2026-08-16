@@ -1,3 +1,6 @@
+
+
+
 'use client'
 
 import Link from 'next/link'
@@ -158,23 +161,23 @@ export default function CheckoutPage() {
 
   if (items.length === 0 && !message) {
     return (
-      <div className="min-h-screen bg-[#f4f1ea] px-3 py-4 text-[#1e1e1e] sm:px-6 sm:py-5 lg:px-10">
-        <div className="mx-auto max-w-4xl border border-[#d6cec0] bg-white p-5 shadow-sm sm:p-8">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#244f3d] sm:text-[11px]">
+      <div className="min-h-screen bg-[#f4f5f2] px-5 py-8 text-[#181c19] sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1100px] border-y border-[#d9ddd8] bg-white px-6 py-14 sm:px-8 sm:py-16">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
             Local Connect Wholesale
           </p>
 
-          <h1 className="mt-2 text-2xl font-black tracking-[-0.04em] sm:text-3xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
             Checkout
           </h1>
 
-          <p className="mt-3 text-sm font-medium text-[#6f675c]">
+          <p className="mt-3 text-sm text-[#69716b]">
             Your cart is empty.
           </p>
 
           <Link
             href="/products"
-            className="mt-6 inline-block bg-[#244f3d] px-5 py-3 text-sm font-black text-white hover:bg-[#2f5d46]"
+            className="mt-7 inline-flex min-h-12 items-center bg-[#1f5a43] px-6 text-[11px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#174735]"
           >
             Browse Products
           </Link>
@@ -184,27 +187,27 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-3 py-4 text-[#1e1e1e] sm:px-6 sm:py-5 lg:px-10">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-4 border border-[#d6cec0] bg-white p-4 shadow-sm sm:mb-5 sm:p-6">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#244f3d] sm:text-[11px]">
+    <div className="min-h-screen bg-[#f4f5f2] px-5 py-7 text-[#181c19] sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="mb-6 border-b border-[#d9ddd8] bg-transparent pb-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
             Local Connect Wholesale
           </p>
 
           <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-2xl font-black tracking-[-0.04em] sm:text-3xl">
+              <h1 className="text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
                 Checkout
               </h1>
 
-              <p className="mt-1 text-sm font-medium leading-5 text-[#6f675c]">
+              <p className="mt-3 text-sm leading-6 text-[#69716b]">
                 Review your account, delivery schedule, and order total.
               </p>
             </div>
 
             <Link
               href="/cart"
-              className="inline-flex w-fit border border-[#244f3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-[#244f3d] hover:bg-[#244f3d] hover:text-white"
+              className="inline-flex min-h-11 w-fit items-center border border-[#1f5a43] px-4 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f5a43] transition-colors hover:bg-[#1f5a43] hover:text-white"
             >
               Back to Cart
             </Link>
@@ -214,7 +217,7 @@ export default function CheckoutPage() {
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
           <section className="min-w-0 space-y-5">
             {fulfillment.failures.length > 0 && (
-              <div className="border border-orange-300 bg-orange-50 p-4 text-orange-900 shadow-sm">
+              <div className="border-l-2 border-orange-300 bg-orange-50/70 px-4 py-4 text-orange-900">
                 <h2 className="text-base font-black">
                   Category minimums required
                 </h2>
@@ -234,16 +237,16 @@ export default function CheckoutPage() {
 
                 <Link
                   href="/cart"
-                  className="mt-4 inline-block bg-orange-700 px-4 py-2 text-xs font-black uppercase tracking-wide text-white"
+                  className="mt-4 inline-flex min-h-10 items-center bg-orange-700 px-4 text-[10px] font-bold uppercase tracking-[0.1em] text-white"
                 >
                   Fix Cart
                 </Link>
               </div>
             )}
 
-            <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
-                <h2 className="text-base font-black text-white sm:text-lg">
+            <div className="overflow-hidden border border-[#d9ddd8] bg-white">
+              <div className="border-b border-[#d9ddd8] bg-[#f8f9f7] px-4 py-3 sm:px-5 sm:py-4">
+                <h2 className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1f5a43] sm:text-[10px]">
                   Account Information
                 </h2>
               </div>
@@ -270,43 +273,43 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <div className="mt-5 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm">
-                  <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:text-[11px]">
+                <div className="mt-5 border border-[#d9ddd8] bg-[#f8f9f7] p-4 text-sm">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#858c86]">
                     Delivery Address
                   </p>
 
-                  <p className="mt-2 font-black leading-snug">
+                  <p className="mt-2 font-semibold leading-snug">
                     {customer?.delivery_address ||
                       'No delivery address on file'}
                   </p>
 
-                  <p className="mt-1 font-medium text-[#6f675c]">
+                  <p className="mt-1 text-[#69716b]">
                     {customer?.delivery_city || '—'}, BC{' '}
                     {customer?.delivery_postal_code || ''}
                   </p>
 
-                  <p className="mt-3 leading-5 text-[#6f675c]">
+                  <p className="mt-3 leading-5 text-[#69716b]">
                     {customer?.delivery_notes || 'No delivery notes added.'}
                   </p>
                 </div>
 
                 <Link
                   href="/account"
-                  className="mt-4 inline-block text-sm font-black text-[#244f3d]"
+                  className="mt-4 inline-block text-sm font-semibold text-[#1f5a43]"
                 >
                   Edit account details →
                 </Link>
               </div>
             </div>
 
-            <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
-                <h2 className="text-base font-black text-white sm:text-lg">
+            <div className="overflow-hidden border border-[#d9ddd8] bg-white">
+              <div className="border-b border-[#d9ddd8] bg-[#f8f9f7] px-4 py-3 sm:px-5 sm:py-4">
+                <h2 className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1f5a43] sm:text-[10px]">
                   Delivery Schedule & Items
                 </h2>
               </div>
 
-              <div className="divide-y divide-[#eee7da]">
+              <div className="divide-y divide-[#e1e4df]">
                 {deliveryGroups.map((group: any, groupIndex: number) => (
                   <div
                     key={`${group.delivery?.label || 'delivery'}-${groupIndex}`}
@@ -314,15 +317,15 @@ export default function CheckoutPage() {
                   >
                     <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="font-black text-[#244f3d]">
+                        <p className="font-semibold text-[#1f5a43]">
                           {group.delivery?.label || 'To be confirmed'}
                         </p>
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#6f675c] sm:text-xs">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#858c86]">
                           {group.category || 'Products'}
                         </p>
                       </div>
 
-                      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:text-xs">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#858c86]">
                         {group.items.length} products
                       </p>
                     </div>
@@ -336,10 +339,10 @@ export default function CheckoutPage() {
                         return (
                           <div
                             key={item.product.id}
-                            className="flex gap-3 border border-[#eee7da] bg-[#f9f7f1] p-3 text-sm sm:items-center sm:justify-between"
+                            className="flex gap-3 border-t border-[#e1e4df] bg-white p-3 text-sm transition-colors hover:bg-[#fafbf9] sm:items-center sm:justify-between"
                           >
                             <div className="flex min-w-0 flex-1 gap-3">
-                              <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea] sm:h-20 sm:w-20">
+                              <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#d9ddd8] bg-[#f8f9f7] sm:h-20 sm:w-20">
                                 {imageUrl ? (
                                   <img
                                     src={imageUrl}
@@ -347,20 +350,20 @@ export default function CheckoutPage() {
                                     className="h-full w-full object-cover"
                                   />
                                 ) : (
-                                  <div className="flex h-full w-full items-center justify-center px-1 text-center text-[9px] font-black uppercase tracking-wide text-[#8a8173] sm:text-[10px]">
+                                  <div className="flex h-full w-full items-center justify-center px-1 text-center text-[9px] font-bold uppercase tracking-[0.08em] text-[#8b928d]">
                                     No Image
                                   </div>
                                 )}
                               </div>
 
                               <div className="min-w-0 flex-1">
-                                <p className="line-clamp-2 text-sm font-black leading-snug sm:text-base">
+                                <p className="line-clamp-2 text-sm font-semibold leading-snug sm:text-base">
                                   {item.product.name}
                                 </p>
 
                                 <FulfillmentBadge product={item.product} />
 
-                                <p className="mt-1 text-[11px] font-medium leading-4 text-[#6f675c] sm:text-xs">
+                                <p className="mt-1 text-[11px] leading-4 text-[#69716b] sm:text-xs">
                                   {item.quantity} ×{' '}
                                   {formatMoney(item.product.price)}
                                   {item.product.category
@@ -369,7 +372,7 @@ export default function CheckoutPage() {
                                 </p>
 
                                 {item.product.sku && (
-                                  <p className="mt-1 truncate font-mono text-[10px] text-[#8a8173] sm:text-[11px]">
+                                  <p className="mt-1 truncate font-mono text-[10px] text-[#8b928d] sm:text-[11px]">
                                     {item.product.sku}
                                   </p>
                                 )}
@@ -377,10 +380,10 @@ export default function CheckoutPage() {
                             </div>
 
                             <div className="shrink-0 text-right">
-                              <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:hidden">
+                              <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#858c86] sm:hidden">
                                 Total
                               </p>
-                              <p className="text-sm font-black text-[#244f3d] sm:text-base">
+                              <p className="text-sm font-semibold text-[#1f5a43] sm:text-base">
                                 {formatMoney(lineTotal)}
                               </p>
                             </div>
@@ -393,15 +396,15 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-              <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
-                <h2 className="text-base font-black text-white sm:text-lg">
+            <div className="overflow-hidden border border-[#d9ddd8] bg-white">
+              <div className="border-b border-[#d9ddd8] bg-[#f8f9f7] px-4 py-3 sm:px-5 sm:py-4">
+                <h2 className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1f5a43] sm:text-[10px]">
                   Order Notes
                 </h2>
               </div>
 
               <div className="p-4 sm:p-6">
-                <label className="mb-2 block text-xs font-black uppercase tracking-wide text-[#6f675c]">
+                <label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-[#858c86]">
                   Notes for Local Connect
                 </label>
 
@@ -410,18 +413,18 @@ export default function CheckoutPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Substitutions, receiving instructions, special handling..."
-                  className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                  className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none transition-colors placeholder:text-[#969d97] focus:border-[#1f5a43]"
                 />
               </div>
             </div>
           </section>
 
-          <aside className="h-fit border border-[#d6cec0] bg-white p-4 shadow-sm sm:p-5 lg:sticky lg:top-5">
-            <h2 className="text-lg font-black tracking-[-0.03em] sm:text-xl">
+          <aside className="h-fit border border-[#d9ddd8] bg-white p-5 sm:p-6 lg:sticky lg:top-5">
+            <h2 className="text-2xl font-semibold tracking-[-0.03em]">
               Order Summary
             </h2>
 
-            <div className="mt-5 space-y-3 border-b border-[#d6cec0] pb-5 text-sm">
+            <div className="mt-6 space-y-3 border-b border-[#d9ddd8] pb-6 text-sm">
               <SummaryRow label="Items" value={String(itemCount)} />
               <SummaryRow label="Subtotal" value={formatMoney(subtotal)} />
               <SummaryRow
@@ -434,7 +437,7 @@ export default function CheckoutPage() {
               />
 
               {freightApplied > 0 ? (
-                <div className="border border-orange-200 bg-orange-50 p-3">
+                <div className="border-l-2 border-orange-300 bg-orange-50/70 px-4 py-3">
                   <div className="flex justify-between gap-4 text-orange-800">
                     <span className="font-black">Freight</span>
                     <span className="font-black">
@@ -447,7 +450,7 @@ export default function CheckoutPage() {
                   </p>
                 </div>
               ) : (
-                <div className="border border-green-200 bg-green-50 p-3">
+                <div className="border-l-2 border-green-300 bg-green-50/70 px-4 py-3">
                   <div className="flex justify-between gap-4 text-green-800">
                     <span className="font-black">Freight</span>
                     <span className="font-black">Free</span>
@@ -459,7 +462,7 @@ export default function CheckoutPage() {
               )}
 
               {fulfillment.failures.length > 0 && (
-                <div className="border border-orange-300 bg-orange-50 p-3 text-orange-900">
+                <div className="border-l-2 border-orange-300 bg-orange-50/70 px-4 py-3 text-orange-900">
                   <p className="font-black">Special-order minimums</p>
 
                   <div className="mt-2 space-y-2">
@@ -477,15 +480,15 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            <div className="mt-5 flex justify-between gap-4 text-base font-black sm:text-lg">
-              <span>Total</span>
-              <span className="text-[#244f3d]">{formatMoney(total)}</span>
+            <div className="mt-6 flex items-end justify-between gap-4 border-t border-[#d9ddd8] pt-5">
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7f867f]">Total</span>
+              <span className="text-2xl font-semibold tracking-[-0.03em] text-[#1f5a43]">{formatMoney(total)}</span>
             </div>
 
             <button
               onClick={handleSubmitOrder}
               disabled={!canSubmitOrder}
-              className="mt-6 w-full bg-[#244f3d] px-5 py-3 text-sm font-black text-white transition hover:bg-[#2f5d46] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#9b9488] disabled:opacity-60"
+              className="mt-6 flex min-h-12 w-full items-center justify-center bg-[#1f5a43] px-5 text-[11px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#174735] disabled:cursor-not-allowed disabled:bg-[#a6ada7] disabled:opacity-60"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -501,18 +504,18 @@ export default function CheckoutPage() {
 
             <Link
               href="/cart"
-              className="mt-3 block w-full border border-[#d6cec0] px-5 py-3 text-center text-sm font-black text-[#6f675c] hover:border-[#244f3d] hover:text-[#244f3d]"
+              className="mt-3 flex min-h-11 w-full items-center justify-center border border-[#d9ddd8] px-5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#69716b] transition-colors hover:border-[#1f5a43] hover:text-[#1f5a43]"
             >
               Back to Cart
             </Link>
 
             {message && (
-              <p className="mt-4 border border-[#d6cec0] bg-[#f4f1ea] p-3 text-sm font-medium text-[#6f675c]">
+              <p className="mt-4 border-l-2 border-[#1f5a43] bg-[#f8f9f7] px-4 py-3 text-sm text-[#69716b]">
                 {message}
               </p>
             )}
 
-            <p className="mt-5 text-xs leading-5 text-[#6f675c]">
+            <p className="mt-5 text-xs leading-5 text-[#69716b]">
               Orders are reviewed by Local Connect before fulfillment.
             </p>
           </aside>
@@ -537,16 +540,16 @@ function FulfillmentBadge({ product }: { product: any }) {
 
     return (
       <div className="mt-2">
-        <p className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-blue-800">
+        <p className="inline-flex bg-blue-100 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] text-blue-800">
           Producer Delivered
         </p>
 
         {schedule.length > 0 ? (
-          <p className="mt-1 text-[11px] leading-4 text-[#6f675c]">
+          <p className="mt-1 text-[11px] leading-4 text-[#69716b]">
             {formatSchedule(schedule)}
           </p>
         ) : (
-          <p className="mt-1 text-[11px] leading-4 text-[#6f675c]">
+          <p className="mt-1 text-[11px] leading-4 text-[#69716b]">
             Producer delivery terms not set.
           </p>
         )}
@@ -559,7 +562,7 @@ function FulfillmentBadge({ product }: { product: any }) {
 
   return (
     <p
-      className={`mt-2 inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase tracking-wide ${
+      className={`mt-2 inline-flex px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] ${
         inStock || isLcFulfilled
           ? 'bg-green-100 text-green-800'
           : 'bg-orange-100 text-orange-800'
@@ -577,19 +580,19 @@ function FulfillmentBadge({ product }: { product: any }) {
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="font-medium text-[#6f675c]">{label}</span>
-      <span className="font-bold">{value}</span>
+      <span className="text-[#69716b]">{label}</span>
+      <span className="font-semibold">{value}</span>
     </div>
   )
 }
 
 function Info({ label, value }: { label: string; value?: string | null }) {
   return (
-    <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
-      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+    <div className="border border-[#e1e4df] bg-[#f8f9f7] p-3">
+      <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#858c86]">
         {label}
       </p>
-      <p className="mt-1 break-words text-sm font-black sm:text-base">
+      <p className="mt-1.5 break-words text-sm font-semibold text-[#252b27] sm:text-base">
         {value || '—'}
       </p>
     </div>
@@ -598,11 +601,11 @@ function Info({ label, value }: { label: string; value?: string | null }) {
 
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
-      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+    <div className="border border-[#e1e4df] bg-[#f8f9f7] p-3">
+      <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#858c86]">
         {label}
       </p>
-      <p className="mt-1 break-words text-sm font-bold sm:text-base">
+      <p className="mt-1.5 break-words text-sm font-semibold text-[#252b27] sm:text-base">
         {value}
       </p>
     </div>

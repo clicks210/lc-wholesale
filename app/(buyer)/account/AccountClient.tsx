@@ -213,7 +213,7 @@ async function loadOrders(customerId: string) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
+      <div className="min-h-screen bg-[#f4f5f2] px-5 py-7 text-[#181c19] sm:px-8 lg:px-12">
         Loading account...
       </div>
     )
@@ -224,24 +224,24 @@ async function loadOrders(customerId: string) {
   const lastName = contactParts.slice(1).join(' ') || '—'
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
+    <div className="min-h-screen bg-[#f4f5f2] px-5 py-7 text-[#181c19] sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="mb-6 border-b border-[#d9ddd8] bg-transparent pb-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
             Local Connect Wholesale
           </p>
 
-          <h1 className="mt-2 text-3xl font-black tracking-[-0.04em]">
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em] text-[#181c19] sm:text-5xl">
             Account Dashboard
           </h1>
 
-          <p className="mt-1 text-sm font-medium text-[#6f675c]">
+          <p className="mt-3 text-sm text-[#69716b]">
             Welcome back, {firstName}
           </p>
         </div>
 
-        <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-   <div className="grid grid-cols-1 border-b border-[#d6cec0] sm:grid-cols-3">
+        <div className="overflow-hidden border border-[#d9ddd8] bg-white">
+   <div className="grid grid-cols-1 border-b border-[#d9ddd8] sm:grid-cols-3">
   <TabButton
     label="$ Finance"
     active={tab === 'finance'}
@@ -362,11 +362,11 @@ function Finance({
   />
 </div>
 
-      <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="overflow-hidden border border-[#d9ddd8] bg-white">
+        <div className="flex flex-col gap-4 border-b border-[#d9ddd8] bg-[#244f3d] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-black text-white">Invoice History</h2>
-            <p className="mt-1 text-sm font-medium text-white/75">
+            <h2 className="text-lg font-semibold tracking-[-0.02em] text-[#181c19]">Invoice History</h2>
+            <p className="mt-1 text-sm text-[#69716b]">
               Live invoice status from Zoho.
             </p>
           </div>
@@ -374,7 +374,7 @@ function Finance({
           <button
             onClick={onRefresh}
             disabled={loading}
-            className="w-full border border-white/40 bg-white px-4 py-2 text-xs font-black uppercase tracking-wide text-[#244f3d] disabled:opacity-50 sm:w-auto"
+            className="w-full border border-[#1f5a43] bg-white px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f5a43] transition-colors hover:bg-[#1f5a43] hover:text-white disabled:opacity-50 sm:w-auto"
           >
             {loading ? 'Refreshing...' : 'Refresh Zoho'}
           </button>
@@ -385,21 +385,21 @@ function Finance({
             {error}
           </div>
         ) : !customer?.zoho_customer_id ? (
-          <div className="p-5 text-sm font-medium text-[#6f675c]">
+          <div className="p-5 text-sm font-medium text-[#69716b]">
             No Zoho account is connected yet.
           </div>
         ) : loading ? (
-          <div className="p-5 text-sm font-medium text-[#6f675c]">
+          <div className="p-5 text-sm font-medium text-[#69716b]">
             Loading invoices...
           </div>
         ) : invoices.length === 0 ? (
-          <div className="p-5 text-sm font-medium text-[#6f675c]">
+          <div className="p-5 text-sm font-medium text-[#69716b]">
             No invoices available yet.
           </div>
         ) : (
           <div>
             <div className="hidden md:block">
-              <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] bg-[#f4f1ea] px-5 py-3 text-xs font-black uppercase tracking-wide text-[#6f675c]">
+              <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] bg-[#f8f9f7] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#69716b]">
                 <div>Invoice</div>
                 <div>Date</div>
                 <div>Due</div>
@@ -411,14 +411,14 @@ function Finance({
               {invoices.map((invoice) => (
                 <div
                   key={invoice.invoice_id}
-                  className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] items-center border-t border-[#eee7da] px-5 py-4 text-sm"
+                  className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] items-center border-t border-[#e1e4df] px-5 py-4 text-sm"
                 >
                   <div className="break-all font-mono text-xs font-bold">
                     {invoice.invoice_number || invoice.invoice_id}
                   </div>
 
-                  <div className="text-[#6f675c]">{invoice.date || '—'}</div>
-                  <div className="text-[#6f675c]">{invoice.due_date || '—'}</div>
+                  <div className="text-[#69716b]">{invoice.date || '—'}</div>
+                  <div className="text-[#69716b]">{invoice.due_date || '—'}</div>
 
                   <div>
                     <span className={getInvoiceStatusClass(invoice.status)}>
@@ -445,7 +445,7 @@ function Finance({
                       href={`/api/account/invoices/${invoice.invoice_id}/pdf`}
                       target="_blank"
                       rel="noreferrer"
-                      className="border border-[#244f3d] px-3 py-2 text-xs font-bold uppercase text-[#244f3d] hover:bg-[#f4f1ea]"
+                      className="border border-[#244f3d] px-3 py-2 text-xs font-bold uppercase text-[#244f3d] hover:bg-[#f4f5f2]"
                     >
                       View PDF
                     </a>
@@ -458,14 +458,14 @@ function Finance({
               {invoices.map((invoice) => (
                 <div
                   key={invoice.invoice_id}
-                  className="border border-[#d6cec0] bg-white p-4 shadow-sm"
+                  className="border border-[#d9ddd8] bg-white p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="break-all font-mono text-xs font-black">
+                      <p className="break-all font-mono text-xs font-semibold">
                         {invoice.invoice_number || invoice.invoice_id}
                       </p>
-                      <p className="mt-1 text-xs font-medium text-[#6f675c]">
+                      <p className="mt-1 text-xs font-medium text-[#69716b]">
                         {invoice.date || '—'} · Due {invoice.due_date || '—'}
                       </p>
                     </div>
@@ -489,7 +489,7 @@ function Finance({
                     href={`/api/account/invoices/${invoice.invoice_id}/pdf`}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-3 block w-full border border-[#244f3d] px-4 py-3 text-center text-xs font-black uppercase tracking-wide text-[#244f3d]"
+                    className="mt-3 block w-full border border-[#244f3d] px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#244f3d]"
                   >
                     View PDF
                   </a>
@@ -517,13 +517,13 @@ function Orders({
 
     <div className="space-y-5">
 
-      <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
+      <div className="overflow-hidden border border-[#d9ddd8] bg-white">
 
-        <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
+        <div className="border-b border-[#d9ddd8] bg-white px-5 py-4">
 
-          <h2 className="text-lg font-black text-white">Order History</h2>
+          <h2 className="text-lg font-semibold tracking-[-0.02em] text-[#181c19]">Order History</h2>
 
-          <p className="mt-1 text-sm font-medium text-white/75">
+          <p className="mt-1 text-sm text-[#69716b]">
 
             View submitted wholesale orders and item details.
 
@@ -533,15 +533,15 @@ function Orders({
 
       </div>
 
-      <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
+      <div className="overflow-hidden border border-[#d9ddd8] bg-white">
 
         {loading ? (
-  <div className="px-5 py-8 text-sm font-medium text-[#6f675c]">
+  <div className="px-5 py-8 text-sm font-medium text-[#69716b]">
     Loading orders...
   </div>
 ) : orders.length === 0 ? (
 
-          <div className="px-5 py-8 text-sm font-medium text-[#6f675c]">
+          <div className="px-5 py-8 text-sm font-medium text-[#69716b]">
 
             No orders submitted yet.
 
@@ -553,7 +553,7 @@ function Orders({
 
             <div className="hidden md:block">
 
-              <div className="grid grid-cols-[1fr_1fr_1fr_1fr_0.7fr] bg-[#f4f1ea] px-5 py-3 text-xs font-black uppercase tracking-wide text-[#6f675c]">
+              <div className="grid grid-cols-[1fr_1fr_1fr_1fr_0.7fr] bg-[#f8f9f7] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#69716b]">
 
                 <div>Order</div>
 
@@ -573,7 +573,7 @@ function Orders({
 
                   key={order.id}
 
-                  className="grid grid-cols-[1fr_1fr_1fr_1fr_0.7fr] items-center border-t border-[#eee7da] px-5 py-4 text-sm"
+                  className="grid grid-cols-[1fr_1fr_1fr_1fr_0.7fr] items-center border-t border-[#e1e4df] px-5 py-4 text-sm"
 
                 >
 
@@ -583,7 +583,7 @@ function Orders({
 
                   </div>
 
-                  <div className="text-[#6f675c]">
+                  <div className="text-[#69716b]">
 
                     {new Date(order.created_at).toLocaleDateString()}
 
@@ -591,7 +591,7 @@ function Orders({
 
                   <div>
 
-                    <span className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-bold uppercase text-[#6f675c]">
+                    <span className="border border-[#d9ddd8] bg-[#f4f5f2] px-3 py-1 text-xs font-bold uppercase text-[#69716b]">
 
                       {order.status || 'submitted'}
 
@@ -609,7 +609,7 @@ function Orders({
 
                     onClick={() => setSelectedOrder(order)}
 
-                    className="border border-[#d6cec0] px-3 py-2 text-xs font-bold uppercase text-[#6f675c] hover:border-[#244f3d] hover:text-[#244f3d]"
+                    className="border border-[#d9ddd8] px-3 py-2 text-xs font-bold uppercase text-[#69716b] hover:border-[#244f3d] hover:text-[#244f3d]"
 
                   >
 
@@ -631,7 +631,7 @@ function Orders({
 
                   key={order.id}
 
-                  className="border border-[#d6cec0] bg-white p-4 shadow-sm"
+                  className="border border-[#d9ddd8] bg-white p-4 shadow-sm"
 
                 >
 
@@ -639,13 +639,13 @@ function Orders({
 
                     <div>
 
-                      <p className="font-mono text-xs font-black">
+                      <p className="font-mono text-xs font-semibold">
 
                         #{order.id.slice(0, 8).toUpperCase()}
 
                       </p>
 
-                      <p className="mt-1 text-xs font-medium text-[#6f675c]">
+                      <p className="mt-1 text-xs font-medium text-[#69716b]">
 
                         Submitted {new Date(order.created_at).toLocaleDateString()}
 
@@ -653,7 +653,7 @@ function Orders({
 
                     </div>
 
-                    <span className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-black uppercase text-[#6f675c]">
+                    <span className="border border-[#d9ddd8] bg-[#f8f9f7] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#69716b]">
 
                       {order.status || 'submitted'}
 
@@ -661,15 +661,15 @@ function Orders({
 
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between border border-[#eee7da] bg-[#f4f1ea] p-3">
+                  <div className="mt-4 flex items-center justify-between border border-[#e1e4df] bg-[#f8f9f7] p-3">
 
-                    <span className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b]">
 
                       Total
 
                     </span>
 
-                    <span className="font-black text-[#244f3d]">
+                    <span className="font-semibold text-[#244f3d]">
 
                       {formatMoney(order.subtotal)}
 
@@ -681,7 +681,7 @@ function Orders({
 
                     onClick={() => setSelectedOrder(order)}
 
-                    className="mt-3 w-full border border-[#244f3d] px-4 py-3 text-xs font-black uppercase tracking-wide text-[#244f3d]"
+                    className="mt-3 w-full border border-[#244f3d] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-[#244f3d]"
 
                   >
 
@@ -815,23 +815,23 @@ function PasswordResetSection({ email }: { email: string }) {
   return (
     <Section title="Password & Security">
       <div className="space-y-4">
-        <p className="text-sm font-medium leading-6 text-[#6f675c]">
+        <p className="text-sm font-medium leading-6 text-[#69716b]">
           Send yourself a secure password reset email. You’ll receive a link to
           create a new password.
         </p>
 
-        <div className="border border-[#eee7da] bg-[#f4f1ea] p-4">
-          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+        <div className="border border-[#e1e4df] bg-[#f8f9f7] p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b]">
             Account Email
           </p>
-          <p className="mt-1 break-words font-black">{email || '—'}</p>
+          <p className="mt-1 break-words font-semibold">{email || '—'}</p>
         </div>
 
         <button
           type="button"
           onClick={sendPasswordReset}
           disabled={sending || !email}
-          className="w-full bg-[#244f3d] px-4 py-3 text-sm font-black text-white disabled:opacity-60 sm:w-auto"
+          className="w-full bg-[#1f5a43] px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#174735] disabled:opacity-60 sm:w-auto"
         >
           {sending ? 'Sending Reset Email...' : 'Send Password Reset Email'}
         </button>
@@ -996,12 +996,12 @@ function TeamAccessSection({
   return (
     <Section title="Team Access">
       <div className="space-y-5">
-        <p className="text-sm font-medium leading-6 text-[#6f675c]">
+        <p className="text-sm font-medium leading-6 text-[#69716b]">
           Invite team members to access this business account.
         </p>
 
         {!canManageTeam ? (
-          <div className="border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm font-bold text-[#6f675c]">
+          <div className="border border-[#d9ddd8] bg-[#f8f9f7] p-4 text-sm font-bold text-[#69716b]">
             Only owners and managers can invite or remove team members.
           </div>
         ) : (
@@ -1012,13 +1012,13 @@ function TeamAccessSection({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="chef@restaurant.com"
-                className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+                className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
               />
 
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm font-bold outline-none focus:border-[#244f3d]"
+                className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm font-bold outline-none focus:border-[#244f3d]"
               >
                 <option value="purchaser">Purchaser</option>
                 <option value="accounting">Accounting</option>
@@ -1028,7 +1028,7 @@ function TeamAccessSection({
             <button
               onClick={handleInvite}
               disabled={sending || !customer}
-              className="w-full bg-[#244f3d] px-4 py-3 text-sm font-black text-white disabled:opacity-60 sm:w-auto"
+              className="w-full bg-[#1f5a43] px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#174735] disabled:opacity-60 sm:w-auto"
             >
               {sending ? 'Sending Invite...' : 'Send Invite'}
             </button>
@@ -1047,19 +1047,19 @@ function TeamAccessSection({
           </div>
         )}
 
-        <div className="border border-[#d6cec0] bg-white">
-          <div className="border-b border-[#d6cec0] bg-[#f4f1ea] px-4 py-3">
-            <h3 className="text-sm font-black uppercase tracking-wide text-[#6f675c]">
+        <div className="border border-[#d9ddd8] bg-white">
+          <div className="border-b border-[#d9ddd8] bg-[#f4f5f2] px-4 py-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-[#69716b]">
               Current Team Members
             </h3>
           </div>
 
           {members.length === 0 ? (
-            <div className="p-4 text-sm text-[#6f675c]">
+            <div className="p-4 text-sm text-[#69716b]">
               No team members found.
             </div>
           ) : (
-            <div className="divide-y divide-[#eee7da]">
+            <div className="divide-y divide-[#e1e4df]">
               {members.map((member) => {
                 const canDeleteMember =
                   canManageTeam && member.role !== 'owner'
@@ -1070,21 +1070,21 @@ function TeamAccessSection({
                     className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="font-black">
+                      <p className="font-semibold">
                         {member.full_name || 'Unnamed User'}
                       </p>
 
-                      <p className="mt-1 text-xs text-[#6f675c]">
+                      <p className="mt-1 text-xs text-[#69716b]">
                         {member.email || `User ${member.user_id.slice(0, 8).toUpperCase()}`}
                       </p>
 
-                      <p className="mt-1 text-xs font-medium text-[#6f675c]">
+                      <p className="mt-1 text-xs font-medium text-[#69716b]">
                         Added {new Date(member.created_at).toLocaleDateString()}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-black uppercase text-[#6f675c]">
+                      <span className="border border-[#d9ddd8] bg-[#f8f9f7] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#69716b]">
                         {member.role}
                       </span>
 
@@ -1093,7 +1093,7 @@ function TeamAccessSection({
                           type="button"
                           onClick={() => deleteMember(member)}
                           disabled={deletingMemberId === member.id}
-                          className="border border-red-300 bg-red-50 px-3 py-1 text-xs font-black uppercase text-red-700 disabled:opacity-50"
+                          className="border border-red-300 bg-red-50 px-3 py-1 text-xs font-semibold uppercase text-red-700 disabled:opacity-50"
                         >
                           {deletingMemberId === member.id
                             ? 'Removing...'
@@ -1162,18 +1162,18 @@ function EditableDeliverySection({
     <Section title="Delivery Address">
       {!editing ? (
         <div className="text-sm">
-          <p className="font-black">
+          <p className="font-semibold">
             {customer?.delivery_address || 'No delivery address on file'}
           </p>
 
           {(customer?.delivery_city || customer?.delivery_postal_code) && (
-            <p className="mt-1 font-medium text-[#6f675c]">
+            <p className="mt-1 font-medium text-[#69716b]">
               {customer?.delivery_city || '—'}, BC {customer?.delivery_postal_code || ''}
             </p>
           )}
 
-          <div className="mt-4 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-[#6f675c]">
-            <p className="text-xs font-black uppercase tracking-wide">
+          <div className="mt-4 border border-[#d9ddd8] bg-[#f8f9f7] p-4 text-[#69716b]">
+            <p className="text-xs font-semibold uppercase tracking-wide">
               Delivery Instructions
             </p>
 
@@ -1185,12 +1185,12 @@ function EditableDeliverySection({
           {canEditDelivery ? (
             <button
               onClick={() => setEditing(true)}
-              className="mt-4 w-full border border-[#244f3d] px-4 py-3 text-sm font-black text-[#244f3d] hover:bg-[#f4f1ea] sm:w-auto"
+              className="mt-4 w-full border border-[#1f5a43] px-4 py-3 text-sm font-bold text-[#1f5a43] transition-colors hover:bg-[#f1f5f2] hover:bg-[#f4f5f2] sm:w-auto"
             >
               Edit Delivery Info
             </button>
           ) : (
-            <div className="mt-4 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm font-bold text-[#6f675c]">
+            <div className="mt-4 border border-[#d9ddd8] bg-[#f8f9f7] p-4 text-sm font-bold text-[#69716b]">
               Only account owners can edit delivery address and instructions.
             </div>
           )}
@@ -1201,7 +1201,7 @@ function EditableDeliverySection({
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Street address"
-            className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+            className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
           />
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -1209,14 +1209,14 @@ function EditableDeliverySection({
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="City"
-              className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+              className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
             />
 
             <input
               value={postalCode}
               onChange={(e) => setPostalCode(e.target.value)}
               placeholder="Postal code"
-              className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+              className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
             />
           </div>
 
@@ -1225,21 +1225,21 @@ function EditableDeliverySection({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Delivery notes, receiving instructions, entrance details..."
-            className="w-full border border-[#d6cec0] bg-[#f4f1ea] px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
+            className="w-full border border-[#d9ddd8] bg-white px-4 py-3 text-sm outline-none focus:border-[#244f3d]"
           />
 
           <div className="grid gap-3 sm:flex">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-[#244f3d] px-4 py-3 text-sm font-black text-white disabled:opacity-60"
+              className="bg-[#1f5a43] px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#174735] disabled:opacity-60"
             >
               {saving ? 'Saving...' : 'Save Delivery Info'}
             </button>
 
             <button
               onClick={() => setEditing(false)}
-              className="border border-[#d6cec0] px-4 py-3 text-sm font-black text-[#6f675c]"
+              className="border border-[#d9ddd8] px-4 py-3 text-sm font-semibold text-[#69716b]"
             >
               Cancel
             </button>
@@ -1260,7 +1260,7 @@ function LockedSection({
   return (
     <div className="overflow-hidden border border-[#1e1e1e] bg-[#111] shadow-sm">
       <div className="border-b border-white/10 bg-black px-5 py-4">
-        <h2 className="text-base font-black text-white sm:text-lg">{title}</h2>
+        <h2 className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1f5a43] sm:text-[10px]">{title}</h2>
       </div>
 
       <div className="p-6">
@@ -1301,29 +1301,29 @@ function OrderDetailsModal({
 
       <div
 
-        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto border border-[#d6cec0] bg-white shadow-xl"
+        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto border border-[#d9ddd8] bg-white shadow-xl"
 
         onClick={(e) => e.stopPropagation()}
 
       >
 
-        <div className="flex items-start justify-between gap-4 border-b border-[#d6cec0] bg-[#244f3d] p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4 border-b border-[#d9ddd8] bg-white p-5 sm:p-6">
 
           <div className="min-w-0">
 
-            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
 
               Order Details
 
             </p>
 
-            <h2 className="mt-2 break-words text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">
+            <h2 className="mt-2 break-words text-2xl font-semibold tracking-[-0.04em] text-[#181c19] sm:text-3xl">
 
               Order #{order.id.slice(0, 8).toUpperCase()}
 
             </h2>
 
-            <p className="mt-2 text-sm font-medium text-white/75">
+            <p className="mt-2 text-sm text-[#69716b]">
 
               Submitted {new Date(order.created_at).toLocaleString()}
 
@@ -1335,7 +1335,7 @@ function OrderDetailsModal({
 
             onClick={onClose}
 
-            className="shrink-0 border border-white/40 bg-white px-3 py-2 text-sm font-black text-[#244f3d]"
+            className="shrink-0 border border-[#d9ddd8] bg-white px-3 py-2 text-sm font-semibold text-[#1f5a43] hover:bg-[#f8f9f7]"
 
           >
 
@@ -1385,7 +1385,7 @@ function OrderDetailsModal({
 
                 rel="noreferrer"
 
-                className="mt-5 inline-block w-full bg-[#244f3d] px-4 py-3 text-center text-sm font-black text-white sm:w-auto"
+                className="mt-5 inline-block w-full bg-[#244f3d] px-4 py-3 text-center text-sm font-semibold text-white sm:w-auto"
 
               >
 
@@ -1408,7 +1408,7 @@ function OrderDetailsModal({
 
   ) : (
 
-    <div className="border border-[#eee7da] bg-[#f4f1ea] p-4 text-sm font-medium text-[#6f675c]">
+    <div className="border border-[#e1e4df] bg-[#f8f9f7] p-4 text-sm font-medium text-[#69716b]">
 
       Delivery schedule will be confirmed by Local Connect.
 
@@ -1418,15 +1418,15 @@ function OrderDetailsModal({
 
   {order.fulfillment_summary && (
 
-    <div className="mt-4 border border-[#eee7da] bg-white p-4">
+    <div className="mt-4 border border-[#e1e4df] bg-white p-4">
 
-      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b]">
 
         Fulfillment Summary
 
       </p>
 
-      <pre className="mt-2 whitespace-pre-wrap break-words text-sm font-medium leading-6 text-[#6f675c]">
+      <pre className="mt-2 whitespace-pre-wrap break-words text-sm font-medium leading-6 text-[#69716b]">
 
         {order.fulfillment_summary}
 
@@ -1440,7 +1440,7 @@ function OrderDetailsModal({
 
           <Section title="Order Notes">
 
-            <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-[#6f675c]">
+            <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-[#69716b]">
 
               {order.notes || 'No notes added.'}
 
@@ -1466,9 +1466,9 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <div className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm">
-      <div className="border-b border-[#d6cec0] bg-[#244f3d] px-5 py-4">
-        <h2 className="text-base font-black text-white sm:text-lg">{title}</h2>
+    <div className="overflow-hidden border border-[#d9ddd8] bg-white">
+      <div className="border-b border-[#d9ddd8] bg-white px-5 py-4">
+        <h2 className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1f5a43] sm:text-[10px]">{title}</h2>
       </div>
       <div className="p-4 sm:p-6">{children}</div>
     </div>
@@ -1503,19 +1503,19 @@ function DeliverySummaryCards({
       {groups.map((group, index) => (
         <div
           key={`${group.title}-${index}`}
-          className="overflow-hidden border border-[#d6cec0] bg-white shadow-sm"
+          className="overflow-hidden border border-[#d9ddd8] bg-white"
         >
-          <div className="border-b border-[#d6cec0] bg-[#244f3d] px-4 py-3 sm:px-5 sm:py-4">
-            <p className="text-[10px] font-black uppercase tracking-wide text-white/70">
+          <div className="border-b border-[#d9ddd8] bg-[#f8f9f7] px-4 py-3 sm:px-5 sm:py-4">
+            <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#929994]">
               {group.category || 'Delivery Group'}
             </p>
 
-            <h3 className="mt-1 text-base font-black text-white sm:text-lg">
+            <h3 className="mt-1 text-base font-semibold text-[#181c19] sm:text-lg">
               {group.title}
             </h3>
           </div>
 
-          <div className="divide-y divide-[#eee7da]">
+          <div className="divide-y divide-[#e1e4df]">
             {group.items.map((line, itemIndex) => {
               const item = findOrderItem(line)
 
@@ -1542,10 +1542,10 @@ const lineTotal =
               return (
                 <div
                   key={`${line}-${itemIndex}`}
-                  className="flex gap-3 bg-[#f9f7f1] p-3 text-sm sm:items-center sm:justify-between"
+                  className="flex gap-3 bg-white p-3 text-sm sm:items-center sm:justify-between"
                 >
                   <div className="flex min-w-0 flex-1 gap-3">
-                    <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea] sm:h-20 sm:w-20">
+                    <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#d9ddd8] bg-[#f4f5f2] sm:h-20 sm:w-20">
                       {imageUrl ? (
                         <img
                           src={imageUrl}
@@ -1553,35 +1553,35 @@ const lineTotal =
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center px-1 text-center text-[9px] font-black uppercase tracking-wide text-[#8a8173] sm:text-[10px]">
+                        <div className="flex h-full w-full items-center justify-center px-1 text-center text-[9px] font-semibold uppercase tracking-wide text-[#8b928d] sm:text-[10px]">
                           No Image
                         </div>
                       )}
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-sm font-black leading-snug sm:text-base">
+                      <p className="line-clamp-2 text-sm font-semibold leading-snug sm:text-base">
                         {item?.product_name || line}
                       </p>
 
-                      <p className="mt-1 text-[11px] font-medium leading-4 text-[#6f675c] sm:text-xs">
+                      <p className="mt-1 text-[11px] font-medium leading-4 text-[#69716b] sm:text-xs">
                         {item?.quantity || '—'} × {formatMoney(item?.unit_price)}
                         {item?.products?.category
                           ? ` · ${item.products.category}`
                           : ''}
                       </p>
 
-                      <p className="mt-1 truncate font-mono text-[10px] text-[#8a8173] sm:text-[11px]">
+                      <p className="mt-1 truncate font-mono text-[10px] text-[#8b928d] sm:text-[11px]">
                         {item?.sku || '—'}
                       </p>
                     </div>
                   </div>
 
                   <div className="shrink-0 text-right">
-                    <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] sm:hidden">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b] sm:hidden">
                       Total
                     </p>
-                    <p className="text-sm font-black text-[#244f3d] sm:text-base">
+                    <p className="text-sm font-semibold text-[#244f3d] sm:text-base">
                       {formatMoney(lineTotal)}
                     </p>
                   </div>
@@ -1616,11 +1616,11 @@ function InfoGrid({ items }: { items: string[][] }) {
   return (
     <div className="grid gap-3 text-sm sm:grid-cols-2">
       {items.map(([label, value]) => (
-        <div key={label} className="border border-[#eee7da] bg-[#f4f1ea] p-3">
-          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+        <div key={label} className="border border-[#e1e4df] bg-[#f8f9f7] p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b]">
             {label}
           </p>
-          <p className="mt-1 break-words font-black">{value}</p>
+          <p className="mt-1 break-words font-semibold">{value}</p>
         </div>
       ))}
     </div>
@@ -1639,12 +1639,12 @@ function MiniStat({
   success?: boolean
 }) {
   return (
-    <div className="border border-[#eee7da] bg-[#f4f1ea] p-3">
-      <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
+    <div className="border border-[#e1e4df] bg-[#f8f9f7] p-3">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#69716b]">
         {label}
       </p>
       <p
-        className={`mt-1 break-words font-black ${
+        className={`mt-1 break-words font-semibold ${
           danger ? 'text-red-700' : success ? 'text-green-700' : ''
         }`}
       >
@@ -1672,13 +1672,13 @@ function FinanceCard({
           ? 'border-red-300 bg-red-50'
           : success
             ? 'border-green-300 bg-green-50'
-            : 'border-[#d6cec0] bg-white'
+            : 'border-[#d9ddd8] bg-white'
       }`}
     >
-      <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#69716b]">
         {title}
       </p>
-      <p className="mt-2 text-2xl font-black tracking-[-0.04em]">{value}</p>
+      <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#181c19]">{value}</p>
     </div>
   )
 }
@@ -1698,12 +1698,12 @@ function TabButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`border-b border-[#d6cec0] px-4 py-4 text-left text-sm font-black transition sm:text-center ${
+      className={`relative border-b border-[#d9ddd8] px-4 py-4 text-left text-[11px] font-bold uppercase tracking-[0.1em] transition sm:text-center ${
         disabled
-          ? 'cursor-not-allowed bg-[#f4f1ea] text-[#b0a79a] opacity-60'
+          ? 'cursor-not-allowed bg-[#f8f9f7] text-[#a4aaa5] opacity-60'
           : active
-            ? 'bg-[#244f3d] text-white'
-            : 'bg-white text-[#6f675c] hover:bg-[#f4f1ea]'
+            ? 'bg-[#f1f5f2] text-[#1f5a43] shadow-[inset_0_-2px_0_#1f5a43]'
+            : 'bg-white text-[#5f675f] hover:bg-[#f8f9f7] hover:text-[#1f5a43]'
       }`}
     >
       {label}
@@ -1715,22 +1715,22 @@ function getInvoiceStatusClass(status: string) {
   const normalized = status?.toLowerCase()
 
   if (normalized === 'paid') {
-    return 'shrink-0 border border-green-300 bg-green-50 px-3 py-1 text-xs font-black uppercase text-green-700'
+    return 'shrink-0 border border-green-300 bg-green-50 px-3 py-1 text-xs font-semibold uppercase text-green-700'
   }
 
   if (normalized === 'sent') {
-    return 'shrink-0 border border-blue-300 bg-blue-50 px-3 py-1 text-xs font-black uppercase text-blue-700'
+    return 'shrink-0 border border-blue-300 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase text-blue-700'
   }
 
   if (normalized === 'draft') {
-    return 'shrink-0 border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-black uppercase text-[#6f675c]'
+    return 'shrink-0 border border-[#d9ddd8] bg-[#f8f9f7] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#69716b]'
   }
 
   if (normalized === 'overdue') {
-    return 'shrink-0 border border-red-300 bg-red-50 px-3 py-1 text-xs font-black uppercase text-red-700'
+    return 'shrink-0 border border-red-300 bg-red-50 px-3 py-1 text-xs font-semibold uppercase text-red-700'
   }
 
-  return 'shrink-0 border border-[#d6cec0] bg-[#f4f1ea] px-3 py-1 text-xs font-black uppercase text-[#6f675c]'
+  return 'shrink-0 border border-[#d9ddd8] bg-[#f8f9f7] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#69716b]'
 }
 
 function formatMoney(value: any) {

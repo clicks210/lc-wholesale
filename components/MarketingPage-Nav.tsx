@@ -24,6 +24,7 @@ export default function MarketingPageNav() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setLoggedIn(!!session?.user)
+      setLoading(false)
     })
 
     return () => {
@@ -32,50 +33,125 @@ export default function MarketingPageNav() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#1d1d1b]/15 bg-white/92 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
+    <header
+      className="
+        sticky
+        top-0
+        z-50
+        w-full
+        border-b
+        border-black/10
+        bg-white/80
+        shadow-[0_6px_24px_rgba(18,32,24,0.07)]
+        backdrop-blur-xl
+        backdrop-saturate-150
+      "
+    >
+      <div
+        className="
+          mx-auto
+          flex
+          max-w-[1500px]
+          items-center
+          justify-between
+          px-5
+          py-3
+          sm:px-8
+          lg:px-12
+          xl:px-16
+        "
+      >
+        {/* LEFT */}
+        <div className="flex items-center gap-8 lg:gap-10">
 
-        {/* LOGO */}
-        <Link href="/" className="flex items-center gap-4">
-          <img
-            src="/images/logo.png"
-            alt="Local Connect"
-            className="h-14 w-auto object-contain transition duration-300 hover:opacity-80 sm:h-20"
-          />
-        </Link>
+          {/* LOGO */}
+          <Link
+            href="/"
+            aria-label="Local Connect home"
+            className="flex shrink-0 items-center"
+          >
+            <img
+              src="/images/logo.png"
+              alt="Local Connect"
+              className="
+                h-11
+                w-auto
+                object-contain
+                transition-opacity
+                duration-200
+                hover:opacity-75
+                sm:h-12
+              "
+            />
+          </Link>
 
-        {/* CTA BUTTON */}
-        <Link
-          href={loggedIn ? '/products' : '/signup'}
-          className="
-            inline-flex
-            items-center
-            justify-center
-            border
-            border-[#244f3d]
-            bg-[#244f3d]
-            px-4
-            py-2.5
-            text-[11px]
-            font-black
-            uppercase
-            tracking-[0.08em]
-            text-white
-            transition
-            hover:bg-transparent
-            hover:text-[#244f3d]
-            sm:px-5
-            sm:py-3
-            sm:text-xs
-          "
-        >
-          {loading
-            ? 'Loading...'
-            : loggedIn
-              ? 'Back to Marketplace'
-              : 'Account Access'}
-        </Link>
+          {/* DESKTOP NAVIGATION */}
+          <nav className="hidden items-center gap-8 md:flex">
+          
+          </nav>
+        </div>
 
+        {/* RIGHT */}
+        <div className="flex items-center gap-2 sm:gap-4">
+
+          {/* SIGN IN */}
+          {!loading && !loggedIn && (
+            <Link
+              href="/login"
+              className="
+                hidden
+                min-h-11
+                items-center
+                justify-center
+                px-3
+                text-[11px]
+                font-semibold
+                uppercase
+                tracking-[0.13em]
+                text-[#4f5751]
+                transition-colors
+                duration-200
+                hover:text-[#1f5a43]
+                sm:inline-flex
+              "
+            >
+              Sign in
+            </Link>
+          )}
+
+          {/* PRIMARY CTA */}
+          <Link
+            href={loggedIn ? '/products' : '/signup'}
+            className="
+              inline-flex
+              min-h-11
+              items-center
+              justify-center
+              border
+              border-[#1f5a43]
+              bg-[#1f5a43]
+              px-4
+              text-[10px]
+              font-bold
+              uppercase
+              tracking-[0.13em]
+              text-white
+              shadow-[0_4px_14px_rgba(31,90,67,0.16)]
+              transition-all
+              duration-200
+              hover:bg-[#174735]
+              hover:shadow-[0_7px_20px_rgba(31,90,67,0.22)]
+              sm:px-5
+              sm:text-[11px]
+            "
+          >
+            {loading
+              ? 'Loading...'
+              : loggedIn
+                ? 'Marketplace'
+                : 'Open Account'}
+          </Link>
+        </div>
       </div>
     </header>
   )

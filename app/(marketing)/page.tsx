@@ -1,639 +1,356 @@
-'use client'
-
+import Image from 'next/image'
 import Link from 'next/link'
 
 const productLines = [
-
   {
-
     name: 'Fresh Produce',
-
     href: '/products?category=Produce',
-
-    eyebrow: 'BC Farms',
-
+    eyebrow: 'BC Farms + Regional Supply',
     description:
-
-      'Our produce program is built in partnership with the Kamloops Farmers Market and a network of local farms, giving restaurants access to fresh, seasonal product sourced close to home. We focus on quality and consistency, aggregating supply and handling logistics so kitchens can rely on local produce without the usual friction.',
-
-    items: ['Greens', 'Root veg', 'Fruit', 'Herbs'],
-
+      'Seasonal BC produce alongside dependable regional staples, consolidated into the same order your kitchen already places.',
+    items: ['Seasonal produce', 'Potatoes', 'Greens', 'Fruit'],
     image: '/images/produce.jpg',
-
   },
-
   {
-
-    name: 'Frozen Bakery',
-
-    href: '/products?category=Bread',
-
-    eyebrow: 'Specialty Bakery',
-
+    name: 'Beef',
+    href: '/products?category=Beef',
+    eyebrow: 'Rainier Custom Cutting + Commodity',
     description:
-
-      'Our frozen bread program features premium products from Specialty Bakery, giving restaurants access to high-quality, artisan bread with the convenience of frozen inventory.',
-
-    items: ['Buns', 'Loaves', 'Pastries', 'Specialty'],
-
-    image: '/images/bread.jpg',
-
+      'Premium local cutting through Rainier Custom Cutting backed by commodity beef programs for the volume, consistency and price points your menu needs.',
+    items: ['Loins', 'Cut steaks', 'Brisket', 'Ground beef'],
+    image: '/images/beef.jpg',
   },
-
   {
-
+    name: 'Pork',
+    href: '/products?category=Pork',
+    eyebrow: 'Maple Leaf · Fribin · Britco',
+    description:
+      'A flexible pork program spanning Canadian staples and imported options, built around the cuts kitchens actually move.',
+    items: ['Shoulder', 'Belly', 'Bacon', 'Ribs'],
+    image: '/images/pork.jpg',
+  },
+  {
     name: 'Poultry',
-
-    href: '/products?category=Protein',
-
+    href: '/products?category=Poultry',
     eyebrow: 'Colonial Farms',
-
     description:
-
-      'Our poultry program features high-quality product from Colonial Farms, with both fresh and frozen options available.',
-
-    items: ['Fresh', 'Frozen'],
-
+      'Fresh and frozen poultry for everyday foodservice, from whole birds and commodity cuts to convenient IQF formats.',
+    items: ['Fresh chicken', 'IQF breasts', 'Thighs', 'Wings'],
     image: '/images/poultry.jpg',
-
   },
-
   {
-
-    name: 'Paper & Janitorial',
-
-    href: '/products?category=Paper',
-
-    eyebrow: 'R3 Distribution',
-
+    name: 'Seafood',
+    href: '/products?category=Seafood',
+    eyebrow: 'Authentic Indigenous Seafood',
     description:
-
-      'Our paper and janitorial program offers a full suite of products through R3 Redistribution.',
-
-    items: ['Takeout', 'Gloves', 'Chemicals', 'Paper'],
-
-    image: '/images/paper.jpg',
-
+      'Distinctive Canadian seafood sourced through Authentic Indigenous Seafood, bringing exceptional products and producer stories directly to local menus.',
+    items: ['Arctic char', 'Arctic turbot', 'Chinook salmon'],
+    image: '/images/seafood.jpg',
   },
-
+  {
+    name: 'Bakery',
+    href: '/products?category=Bread',
+    eyebrow: 'Specialty Bakery',
+    description:
+      'Premium frozen bakery built for restaurant service: dependable inventory, easy handling and products that still feel at home on a thoughtful menu.',
+    items: ['Brioche buns', 'Sub buns', 'Loaves', 'Specialty'],
+    image: '/images/bread.jpg',
+  },
 ]
 
 const steps = [
-
   {
-
-    title: 'Create account',
-
-    text: 'Set up your buyer profile and tell us what your kitchen usually orders.',
-
+    number: '01',
+    title: 'Open your account',
+    text: 'Tell us about your kitchen, delivery location and the products you buy.',
   },
-
   {
-
-    title: 'Browse supply',
-
-    text: 'View available product lines and build a clean weekly order guide.',
-
+    number: '02',
+    title: 'Build your order',
+    text: 'Shop across local suppliers, regional partners and core foodservice products.',
   },
-
   {
-
-    title: 'Submit order',
-
-    text: 'Send everything through one flow instead of chasing sheets and texts.',
-
+    number: '03',
+    title: 'Submit once',
+    text: 'One clean order flow replaces scattered texts, spreadsheets and supplier portals.',
   },
-
   {
-
-    title: 'We coordinate',
-
-    text: 'Your dedicated account representative handles supplier coordination, delivery planning, and communication.',
-
+    number: '04',
+    title: 'We handle the rest',
+    text: 'Local Connect coordinates supply, communication and last mile so your team can stay focused on service.',
   },
+]
 
+const partners = [
+  { name: 'Noble Pig', logo: '/images/partners/noble-pig.png' },
+  { name: 'Swelaps Market', logo: '/images/partners/swelaps.png' },
+  { name: 'Bright Eye Brewing', logo: '/images/partners/bright-eye.png' },
+  { name: 'Valhalla Smokehouse', logo: '/images/partners/valhalla.png' },
+  { name: 'Table 125', logo: '/images/partners/table-125.png' },
+  { name: 'TRU / Aramark', logo: '/images/partners/aramark.png' },
 ]
 
 export default function WholesaleLandingPage() {
-
   return (
-
-    <main className="min-h-screen bg-[#f4f1ea] text-[#1d1d1b]">
-
+    <main className="min-h-screen bg-white text-[#171b18]">
       {/* HERO */}
-
-      <section className="relative min-h-[82vh] overflow-hidden border-b border-[#1d1d1b]/25 sm:min-h-[90vh]">
-
-        {/* Mobile clean fallback image */}
-
-        <img
-
-          src="/images/hero-mobile.jpg"
-
-          alt="Local Connect wholesale"
-
-          className="absolute inset-0 h-full w-full object-cover sm:hidden"
-
-        />
-
-        {/* Desktop video */}
-
+      <section className="relative -mt-px min-h-[calc(100svh-0px)] overflow-hidden bg-black text-white">
         <iframe
-
-          src="https://www.youtube.com/embed/NMhskDzU4hI?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=NMhskDzU4hI"
-
-          title="Local Connect supplier video"
-
-          className="pointer-events-none absolute inset-0 hidden h-full w-full scale-125 object-cover opacity-60 sm:block"
-
+          src="https://www.youtube.com/embed/NMhskDzU4hI?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=1&playlist=NMhskDzU4hI&playsinline=1&iv_load_policy=3&cc_load_policy=0&fs=0&disablekb=1"
+          title="Local Connect foodservice"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 scale-[1.18] sm:scale-110 lg:scale-100"
           allow="autoplay; encrypted-media; picture-in-picture"
-
         />
 
-        <div className="absolute inset-0 bg-[#1d1d1b]/50 sm:bg-[#1d1d1b]/35" />
+        {/* Neutral contrast only — preserve the colour in the footage */}
+        <div className="absolute inset-0 bg-black/24 sm:bg-black/18" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/66 via-black/24 to-transparent sm:from-black/58 sm:via-black/18" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/42 via-black/14 to-transparent" />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1d1d1b]/45 via-[#1d1d1b]/20 to-[#1d1d1b]" />
+        <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] items-end px-5 pb-20 pt-24 sm:px-10 sm:pb-28 lg:px-12 xl:px-16">
+          <div className="max-w-[720px]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/62">
+              Local Connect Foodservice
+            </p>
 
-        <div className="relative z-10 mx-auto flex min-h-[82vh] max-w-7xl items-center px-4 py-14 sm:min-h-[90vh] sm:px-6 sm:py-20 lg:px-10">
-
-          <div className="max-w-3xl text-white">
-
-            <div className="mb-5 inline-flex border border-white/40 bg-black/30 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] backdrop-blur sm:mb-6 sm:px-5 sm:text-xs">
-
-              Wholesale marketplace
-
-            </div>
-
-            <h1 className="text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-6xl md:text-7xl lg:text-8xl">
-
-              Premium Food-Service Distribution.
-
+            <h1 className="mt-4 text-[46px] font-semibold leading-[0.94] tracking-[-0.055em] sm:mt-5 sm:text-[72px] lg:text-[88px]">
+              Heard, Chef.
             </h1>
 
-            <p className="mt-5 max-w-xl text-base leading-7 text-white/80 sm:mt-6 sm:text-lg sm:leading-8">
-
-              Local Connect provides your restaurant with affordable staples and top-quality local food through one reliable wholesale system.
-
+            <p className="mt-5 max-w-[560px] text-[16px] leading-6 text-white/82 sm:mt-6 sm:text-[18px] sm:leading-7">
+              The products you want to serve.
+              <span className="text-white/58"> One order. One delivery. A team that answers.</span>
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap">
-
+            <div className="mt-7 grid grid-cols-2 gap-2 sm:mt-8 sm:flex sm:flex-row sm:gap-3">
               <Link
-
                 href="/signup"
-
-                className="border border-white bg-white px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white sm:px-7"
-
+                className="inline-flex min-h-12 items-center justify-center bg-white px-4 text-center text-[10px] font-bold uppercase tracking-[0.09em] text-[#171b18] transition-colors hover:bg-[#ecece8] sm:px-6 sm:text-[12px] sm:tracking-[0.1em]"
               >
-
-                Request access
-
+                Open account
               </Link>
 
               <Link
-
                 href="/products"
-
-                className="border border-white/60 bg-black/20 px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white backdrop-blur transition hover:bg-white hover:text-[#1d1d1b] sm:px-7"
-
+                className="inline-flex min-h-12 items-center justify-center border border-white/70 px-4 text-center text-[10px] font-bold uppercase tracking-[0.09em] text-white transition-colors hover:bg-white hover:text-[#171b18] sm:px-6 sm:text-[12px] sm:tracking-[0.1em]"
               >
-
-                Browse marketplace
-
+                Browse products →
               </Link>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
 
-      {/* STORY / TRUST */}
-      <section className="border-b border-[#1d1d1b]/25">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10 lg:px-10">
-          <div className="border border-[#1d1d1b]/30 bg-white p-2 sm:p-3">
-            <div className="relative min-h-[260px] overflow-hidden border border-[#1d1d1b]/20 sm:min-h-[380px] md:min-h-[460px]">
-              <img
-                src="/images/lc-story.jpg"
-                alt="Local Connect working with suppliers"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent" />
-            </div>
-          </div>
+      {/* RELATIONSHIP */}
+      <section className="bg-[#f4f5f2] px-2.5 py-2.5 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
+        <div className="relative mx-auto min-h-[72svh] max-w-[1500px] overflow-hidden border border-white bg-black text-white shadow-[0_0_0_1px_rgba(23,27,24,0.08)] sm:min-h-[84vh]">
+          <Image
+            src="/images/relationship.jpg"
+            alt="Local Connect working alongside restaurant and foodservice partners"
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
 
-          <div className="flex items-center">
-            <div className="max-w-xl">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
+          {/* Local contrast only — this section should read as a framed photograph */}
+          <div className="absolute inset-0 bg-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/12 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/34 to-transparent" />
+
+          <div className="relative z-10 mx-auto flex min-h-[72svh] items-end px-5 pb-10 pt-20 sm:min-h-[84vh] sm:px-10 sm:pb-16 lg:px-12 xl:px-16">
+            <div className="max-w-[690px]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/58">
                 Why Local Connect
               </p>
-              <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
-                Built by chefs, for chefs.
+
+              <h2 className="mt-4 text-[36px] font-semibold leading-[0.98] tracking-[-0.05em] sm:mt-5 sm:text-5xl lg:text-6xl">
+                Foodservice is a
+                <br />
+                relationship business.
               </h2>
-              <p className="mt-5 text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
-                Local Connect was built inside kitchens to solve a simple problem: great local products weren’t reaching restaurants easily. We bring local produce, poultry, bread, paper, and janitorial products into one reliable, centralized wholesale system.
+
+              <p className="mt-5 max-w-xl text-[14px] leading-6 text-white/78 sm:mt-6 sm:text-[16px] sm:leading-7">
+                Need something? Ask us. Can’t get it? We’ll find it. Supplier
+                issue? We’ll help solve it. Local Connect is built to act like
+                part of your operation, not another vendor portal.
               </p>
-              <p className="mt-4 text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
-                We source directly, warehouse, and deliver ourselves, making buying local as seamless and dependable as traditional distribution while strengthening the local food system.
-              </p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Link
-                  href="/signup"
-                  className="border border-[#1d1d1b] bg-[#1d1d1b] px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#244f3d]"
-                >
-                  Request access
-                </Link>
-                <Link
-                  href="/products"
-                  className="border border-[#1d1d1b] bg-transparent px-6 py-4 text-center text-sm font-black uppercase tracking-[0.08em] transition hover:bg-[#1d1d1b] hover:text-white"
-                >
-                  View products
-                </Link>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
- {/* PRODUCER MARKETPLACE */}
-<section className="relative overflow-hidden border-b border-[#1d1d1b]/25 text-white">
-  {/* Background Image */}
-  <img
-    src="/images/producer-marketplace.png"
-    alt="Local producers and foodservice distribution"
-    className="absolute inset-0 h-full w-full object-cover"
-  />
-
-  {/* Overlays */}
-  <div className="absolute inset-0 bg-[#244f3d]/75" />
-  <div className="absolute inset-0 bg-gradient-to-r from-[#244f3d]/95 via-[#244f3d]/85 to-[#244f3d]/70" />
-
-  <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-10">
-    <div className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-center">
-      <div>
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-white/70">
-          For Producers & Suppliers
-        </p>
-
-        <h2 className="mt-3 max-w-4xl text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-5xl md:text-6xl">
-          Grow your wholesale sales through Local Connect.
-        </h2>
-
-        <p className="mt-6 max-w-3xl text-lg leading-8 text-white/80">
-          Sell directly into Local Connect's growing wholesale network of
-          restaurants, cafes, caterers, retailers, and institutional
-          foodservice operators. We help suppliers reach new customers,
-          streamline ordering, and grow wholesale sales without building
-          their own sales or technology infrastructure.
-        </p>
-
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <div className="border border-white/20 bg-black/20 p-5 backdrop-blur">
-            <h3 className="text-lg font-black">
-              Access Existing Buyers
-            </h3>
-
-            <p className="mt-3 text-sm leading-6 text-white/75">
-              Put your products in front of restaurants and food businesses
-              already purchasing through Local Connect.
+      {/* PRODUCTS */}
+      <section className="border-b border-[#bfc2bc] bg-white">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="px-5 py-10 sm:px-10 sm:py-16 lg:px-12 xl:px-16">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1f5a43]">
+              What we supply
             </p>
-          </div>
-
-          <div className="border border-white/20 bg-black/20 p-5 backdrop-blur">
-            <h3 className="text-lg font-black">
-              B2B Online Ordering
-            </h3>
-
-            <p className="mt-3 text-sm leading-6 text-white/75">
-              Enable wholesale customers to browse products, place orders,
-              and view delivery schedules through a professional ordering
-              platform.
-            </p>
-          </div>
-
-          <div className="border border-white/20 bg-black/20 p-5 backdrop-blur">
-            <h3 className="text-lg font-black">
-              Flexible Fulfillment
-            </h3>
-
-            <p className="mt-3 text-sm leading-6 text-white/75">
-              Deliver products yourself or leverage Local Connect logistics
-              and distribution to reach more customers.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link
-            href="/signup"
-            className="border border-white bg-white px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#244f3d] transition hover:bg-transparent hover:text-white"
-          >
-            Become a Supplier
-          </Link>
-
-         
-        </div>
-      </div>
-
-      <div className="border border-white/20 bg-black/20 p-8 backdrop-blur-xl">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-white/60">
-          Marketplace Snapshot
-        </p>
-
-        <div className="mt-8 space-y-5">
-          <div className="border-b border-white/15 pb-5">
-            <p className="text-4xl font-black">$6M+</p>
-            <p className="mt-1 text-sm text-white/70">
-              Annual buying power targeted through Local Connect's network
-            </p>
-          </div>
-
-          <div className="border-b border-white/15 pb-5">
-            <p className="text-4xl font-black">1 Platform</p>
-            <p className="mt-1 text-sm text-white/70">
-              Products, ordering, delivery schedules, and customer management
-            </p>
-          </div>
-
-          <div>
-            <p className="text-4xl font-black">2 Options</p>
-            <p className="mt-1 text-sm text-white/70">
-              Fulfill yourself or leverage Local Connect logistics
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-8 border border-white/15 bg-white/5 p-5">
-          <p className="text-lg font-black">
-            Sell more. Admin less.
-          </p>
-
-          <p className="mt-2 text-sm leading-6 text-white/70">
-            Local Connect helps suppliers spend less time managing orders
-            and more time producing great products.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{/* LOCAL CONNECT PARTNERS */}
-<section className="border-b border-[#1d1d1b]/25 bg-white">
-  <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
-    <div className="text-center">
-      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
-        Existing Wholesale Network
-      </p>
-
-      <h2 className="mt-3 text-4xl font-black tracking-[-0.045em] sm:text-5xl">
-        Local Connect is a partner in these businesses.
-      </h2>
-
-      <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-[#5f5f57]">
-        Local Connect works alongside restaurants, breweries, retailers,
-        caterers, and institutional foodservice operators throughout British
-        Columbia.
-      </p>
-    </div>
-
-    <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-      {[
-        {
-          name: 'Noble Pig',
-          logo: '/images/partners/noble-pig.png',
-          website: 'https://www.noblepig.ca',
-        },
-        {
-          name: 'Swelaps Market',
-          logo: '/images/partners/swelaps.png',
-          website: 'https://swelapsmarket.ca',
-        },
-        {
-          name: 'Bright Eye Brewing',
-          logo: '/images/partners/bright-eye.png',
-          website: 'https://www.brighteyebrewing.com',
-        },
-        {
-          name: 'Valhalla Smokehouse',
-          logo: '/images/partners/valhalla.png',
-          website: 'https://valhallasmokehouse.com',
-        },
-        {
-          name: 'Table 125',
-          logo: '/images/partners/table-125.png',
-          website: 'https://table125.ca',
-        },
-        {
-          name: 'TRU / Aramark',
-          logo: '/images/partners/aramark.png',
-          website: 'https://www.aramark.ca',
-        },
-      ].map((partner) => (
-        <a
-          key={partner.name}
-          href={partner.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex h-36 items-center justify-center border border-[#d6cec0] bg-[#f9f7f1] p-6 transition duration-200 hover:border-[#244f3d] hover:shadow-lg"
-        >
-          <img
-            src={partner.logo}
-            alt={partner.name}
-            className="max-h-20 w-auto object-contain transition duration-200 group-hover:scale-105"
-          />
-        </a>
-      ))}
-    </div>
-
-    <div className="mt-10 border border-[#d6cec0] bg-[#f4f1ea] p-6 text-center">
-      <p className="text-lg font-black text-[#244f3d]">
-        These partners — and many more — are actively purchasing through Local
-        Connect.
-      </p>
-
-      <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-[#5f5f57]">
-        Join the marketplace to put your products in front of an existing
-        wholesale customer network already purchasing produce, protein,
-        bakery, paper products, and foodservice essentials every week.
-      </p>
-
-      <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-        <Link
-          href="/signup"
-          className="border border-[#244f3d] bg-[#244f3d] px-7 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#1d1d1b]"
-        >
-          Become a Supplier
-        </Link>
-
-        
-      </div>
-    </div>
-  </div>
-</section>
-
-      
-      <section className="bg-white text-[#1d1d1b]">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
-          <div className="max-w-3xl">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
-              Product lines
-            </p>
-            <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
-              Four core categories. One clean wholesale system.
+            <h2 className="mt-3 max-w-4xl text-[34px] font-semibold leading-[1.02] tracking-[-0.045em] sm:mt-4 sm:text-5xl">
+              Local specialties. Serious foodservice staples.
             </h2>
+            <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#6c726d]">
+              A catalogue built around what kitchens need, not around one
+              supplier’s warehouse.
+            </p>
           </div>
-        </div>
 
-        <div className="border-t border-[#1d1d1b]/20">
-          {productLines.map((line, index) => {
-            const imageFirst = index % 2 === 0
-
-            return (
-              <section key={line.name} className="border-b border-[#1d1d1b]/20">
-                <div className="mx-auto grid max-w-7xl gap-4 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-0 lg:px-10 lg:py-20">
-                  <div
-                    className={`${
-                      imageFirst ? 'lg:order-1' : 'lg:order-2'
-                    } border border-[#1d1d1b]/30 bg-white p-2 sm:p-3`}
-                  >
-                    <div className="relative min-h-[250px] overflow-hidden border border-[#1d1d1b]/20 bg-[#2a2a26] sm:min-h-[340px] md:min-h-[460px]">
-                      <img
-                        src={line.image}
-                        alt={line.name}
-                        className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-500 hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
-                    </div>
-                  </div>
-
-                  <div
-                    className={`${
-                      imageFirst ? 'lg:order-2' : 'lg:order-1'
-                    } flex items-center border border-[#1d1d1b]/30 bg-[#244f3d] p-6 text-white sm:p-8 lg:p-12`}
-                  >
-                    <div className="max-w-xl">
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-white/70">
-                        {line.eyebrow}
-                      </p>
-                      <h3 className="mt-4 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-5xl md:text-6xl">
-                        {line.name}
-                      </h3>
-                      <p className="mt-5 text-base leading-7 text-white/82 sm:mt-6 sm:text-lg sm:leading-8">
-                        {line.description}
-                      </p>
-
-                      <div className="mt-6 flex flex-wrap gap-2 sm:mt-7">
-                        {line.items.map((item) => (
-                          <span
-                            key={item}
-                            className="border border-white/40 px-3 py-2 text-[11px] font-black uppercase tracking-[0.08em] text-white/80 sm:text-xs"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-
-                      <Link
-                        href={line.href}
-                        className="mt-8 inline-flex w-full justify-center border border-white bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white sm:mt-9 sm:w-auto"
-                      >
-                        Browse {line.name}
-                      </Link>
-                    </div>
-                  </div>
+          <div className="grid md:grid-cols-2">
+            {productLines.map((line, index) => (
+              <Link
+                key={line.name}
+                href={line.href}
+                className={`group border-b border-[#bfc2bc] ${
+                  index % 2 === 0 ? 'md:border-r' : ''
+                }`}
+              >
+                <div className="relative aspect-[5/4] overflow-hidden bg-[#dedfd9] sm:aspect-[4/3]">
+                  <Image
+                    src={line.image}
+                    alt={line.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                  />
                 </div>
-              </section>
-            )
-          })}
+
+                <div className="grid grid-cols-[1fr_auto] gap-4 px-5 py-6 sm:gap-6 sm:px-8 sm:py-8">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#6f766f]">
+                      {line.eyebrow}
+                    </p>
+                    <h3 className="mt-2 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
+                      {line.name}
+                    </h3>
+                    <p className="mt-2 max-w-xl text-[13px] leading-5 text-[#737974] sm:mt-3 sm:text-sm sm:leading-6">
+                      {line.description}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 sm:mt-5 sm:gap-x-5">
+                      {line.items.map((item) => (
+                        <span
+                          key={item}
+                          className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#777e78]"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <span className="text-xl text-[#1f5a43] transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* PAPER CREDIT PROGRAM */}
-   <section className="border-b border-[#1d1d1b]/25 bg-[#f4f1ea] px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
-  <div className="mx-auto max-w-5xl text-center">
-    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
-      Paper products rebate
-    </p>
+      {/* SUPPLIER NETWORK */}
+      <section className="relative min-h-[72svh] overflow-hidden border-b border-[#bfc2bc] text-white sm:min-h-[760px]">
+        <Image
+          src="/images/producer.png"
+          alt="Local producers and suppliers working through Local Connect"
+          fill
+          className="object-cover object-[62%_center] sm:object-center"
+          sizes="100vw"
+        />
 
-    <h2 className="mt-3 text-4xl font-black leading-[0.95] tracking-[-0.045em] sm:text-5xl md:text-6xl">
-      Turn paper into profit.
-    </h2>
+        <div className="absolute inset-0 bg-black/18" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/78 via-black/34 to-transparent" />
 
-    <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
-      Buy paper, takeout, and janitorial products through Local Connect and earn monthly LC Credit toward future food orders.
-    </p>
-
-    <div className="mx-auto mt-8 max-w-xl border border-[#1d1d1b] bg-white p-5 shadow-[7px_7px_0_#244f3d]">
-      <div className="grid gap-3 text-left sm:grid-cols-3 sm:text-center">
-        <div>
-          <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
-            Spend
-          </p>
-          <p className="mt-1 text-3xl font-black">$1,200</p>
-        </div>
-
-        <div>
-          <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
-            Earn
-          </p>
-          <p className="mt-1 text-3xl font-black text-[#244f3d]">$60</p>
-        </div>
-
-        <div>
-          <p className="text-xs font-black uppercase tracking-wide text-[#6f675c]">
-            Use On
-          </p>
-          <p className="mt-2 text-sm font-black leading-5">
-            Produce, bread, dairy, poultry.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <Link
-      href="/products?category=Paper"
-      className="mt-8 inline-flex justify-center border border-[#244f3d] bg-[#244f3d] px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#1d1d1b]"
-    >
-      Get paid for paper →
-    </Link>
-
- 
-  </div>
-</section>   
-
-
-
-      {/* HOW IT WORKS */}
-<section className="border-b border-[#1d1d1b]/25 bg-white px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#244f3d]">
-              How it works
+        <div className="relative z-10 mx-auto flex min-h-[72svh] max-w-[1500px] items-end px-5 pb-12 pt-20 sm:min-h-[760px] sm:px-10 sm:pb-20 lg:px-12 xl:px-16">
+          <div className="max-w-[760px]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
+              For producers + suppliers
             </p>
-            <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
-              From scattered sourcing to one clean order flow.
+
+            <h2 className="mt-4 text-[36px] font-semibold leading-[1] tracking-[-0.05em] sm:mt-5 sm:text-6xl">
+              Sell through Local Connect.
+              <span className="block text-white/55">Keep doing what you do best.</span>
             </h2>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-[#4b4b45] sm:text-lg sm:leading-8">
-              We’re not just a tech platform. We’re a hands-on partner in your business, with real people helping you source, order, warehouse, and receive the products your kitchen depends on.
+
+            <p className="mt-5 max-w-2xl text-[14px] leading-6 text-white/76 sm:mt-6 sm:text-[16px] sm:leading-7">
+              Bring your products into our customer network. We handle the
+              ordering infrastructure, customer relationship and, when it makes
+              sense, the last mile.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/65">
+              <span>Reach our buyers</span>
+              <span>Use our platform</span>
+              <span>Choose fulfillment</span>
+            </div>
+
+            <Link
+              href="/signup"
+              className="mt-9 inline-flex min-h-12 items-center bg-white px-6 text-[12px] font-bold uppercase tracking-[0.1em] text-[#171b18]"
+            >
+              Become a supplier →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* PARTNERS */}
+      <section className="border-b border-[#bfc2bc] bg-white">
+        <div className="mx-auto max-w-[1500px] px-5 py-10 sm:px-10 sm:py-16 lg:px-12 xl:px-16">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1f5a43]">
+            The businesses we serve
+          </p>
+
+          <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <h2 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.045em] sm:text-5xl">
+              Built around real kitchens.
+            </h2>
+
+            <p className="max-w-xl text-[15px] leading-7 text-[#6d736e]">
+              Restaurants, breweries, retailers and institutional foodservice
+              operators use Local Connect every week.
             </p>
           </div>
 
-          <div className="mt-9 grid gap-4 sm:mt-10 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, index) => (
+          <div className="mt-7 grid grid-cols-2 gap-x-5 gap-y-6 border-t border-[#d9dbd6] pt-6 sm:mt-10 sm:gap-x-8 sm:gap-y-10 sm:pt-8 md:grid-cols-3 lg:grid-cols-6">
+            {partners.map((partner) => (
               <div
-                key={step.title}
-                className="border border-[#1d1d1b] bg-[#fffaf1] p-5 sm:p-6"
+                key={partner.name}
+                className="flex h-16 items-center justify-center sm:h-20"
               >
-                <div className="mb-6 text-sm font-black text-[#244f3d] sm:mb-8">
-                  0{index + 1}
-                </div>
-                <h3 className="text-xl font-black tracking-[-0.03em] sm:text-2xl">
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="max-h-11 max-w-full object-contain opacity-75 sm:max-h-14"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="border-b border-[#bfc2bc] bg-[#f4f5f2]">
+        <div className="mx-auto max-w-[1500px] px-5 py-10 sm:px-10 sm:py-16 lg:px-12 xl:px-16">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1f5a43]">
+            How it works
+          </p>
+
+          <h2 className="mt-4 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] sm:text-5xl">
+            One clean order flow.
+          </h2>
+
+          <div className="mt-10 border-t border-[#bfc2bc]">
+            {steps.map((step) => (
+              <div
+                key={step.number}
+                className="grid grid-cols-[42px_1fr] gap-x-3 gap-y-1 border-b border-[#bfc2bc] py-5 sm:grid-cols-[60px_240px_1fr] sm:items-start sm:gap-3 sm:py-6"
+              >
+                <span className="text-[10px] font-bold tracking-[0.14em] text-[#1f5a43]">
+                  {step.number}
+                </span>
+                <h3 className="text-lg font-semibold tracking-[-0.02em]">
                   {step.title}
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-[#5f5f57] sm:mt-4 sm:text-base sm:leading-7">
+                <p className="col-start-2 max-w-2xl text-[13px] leading-5 text-[#717772] sm:col-start-auto sm:text-sm sm:leading-6">
                   {step.text}
                 </p>
               </div>
@@ -643,75 +360,29 @@ export default function WholesaleLandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
-        <div className="mx-auto max-w-7xl border border-[#1d1d1b] bg-[#244f3d] p-6 text-white shadow-[7px_7px_0_#1d1d1b] sm:p-8 sm:shadow-[12px_12px_0_#1d1d1b] md:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-white/60">
-                Buyer access
-              </p>
-              <h2 className="mt-3 max-w-3xl text-3xl font-black leading-tight tracking-[-0.04em] sm:text-4xl md:text-5xl">
-                Start ordering smarter.
-              </h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
-                Get access to the Local Connect wholesale marketplace and build your first order guide with support from a dedicated account representative.
-              </p>
-            </div>
-            <Link
-              href="/signup"
-              className="border border-white bg-white px-8 py-4 text-center text-sm font-black uppercase tracking-[0.08em] text-[#1d1d1b] transition hover:bg-transparent hover:text-white"
-            >
-              Sign up
-            </Link>
+      <section className="bg-[#171b18] text-white">
+        <div className="mx-auto grid max-w-[1500px] gap-7 px-5 py-12 sm:px-10 sm:py-16 lg:grid-cols-[1fr_auto] lg:items-end lg:px-12 lg:py-20 xl:px-16">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+              07 / Your next order
+            </p>
+            <h2 className="mt-4 text-[42px] font-semibold leading-[0.98] tracking-[-0.05em] sm:mt-5 sm:text-6xl">
+              Heard, Chef?
+            </h2>
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/60">
+              Build an order guide around the products your kitchen actually
+              uses.
+            </p>
           </div>
+
+          <Link
+            href="/signup"
+            className="inline-flex min-h-12 w-full items-center justify-center bg-white px-7 text-[11px] font-bold uppercase tracking-[0.1em] text-[#171b18] sm:w-auto sm:text-[12px]"
+          >
+            Open an account →
+          </Link>
         </div>
       </section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-[#1d1d1b]/25 bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 text-center sm:text-left md:grid-cols-3 md:gap-12">
-          <div>
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
-              Contact
-            </h3>
-            <p className="text-sm text-[#5f5f57]">Local Connect Wholesale</p>
-            <p className="mt-2 text-sm text-[#5f5f57]">Kamloops, BC</p>
-            <p className="mt-2 text-sm text-[#5f5f57]">lmilovick@gmail.com</p>
-          </div>
-
-          <div>
-  <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
-  <span className="border-b-2 border-[#244f3d] pb-1">
-    Our Mission
-  </span>
-</h3>
-
-  <p className="text-sm leading-6 text-[#5f5f57]">
-    Supporting Canadian foodservice by connecting kitchens directly with local producers and suppliers.
-  </p>
-
-  <p className="mt-3 text-sm font-bold leading-6 text-[#244f3d]">
-    Driving stronger local supply chains.
-  </p>
-</div>
-
-          <div>
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.12em]">
-              Suppliers
-            </h3>
-            <div className="grid gap-2 text-sm text-[#5f5f57]">
-              <p>Local Farms</p>
-              <p>Specialty Bakery</p>
-              <p>Colonial Farms</p>
-              <p>R3 Redistribution</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-10 border-t border-[#1d1d1b]/10 pt-6 text-center text-xs text-[#7a7a72] sm:mt-12">
-          © {new Date().getFullYear()} Local Connect. All rights reserved.
-        </div>
-      </footer>
     </main>
   )
 }

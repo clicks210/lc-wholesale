@@ -73,72 +73,85 @@ export default function OrderGuidesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-7xl border border-[#d6cec0] bg-white p-6 text-sm font-medium text-[#6f675c] shadow-sm sm:p-8">
-          Loading order guides...
+      <div className="min-h-screen bg-[#f4f5f2] px-5 py-8 text-[#181c19] sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1400px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
+            Local Connect / Order Guides
+          </p>
+
+          <div className="mt-5 border-t border-[#d9ddd8] pt-6">
+            <p className="text-sm text-[#69716b]">
+              Loading order guides…
+            </p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] px-4 py-5 text-[#1e1e1e] sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-7xl">
-        <section className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
-            Local Connect Wholesale
+    <div className="min-h-screen bg-[#f4f5f2] text-[#181c19]">
+      <div className="mx-auto max-w-[1400px] px-5 py-7 sm:px-8 sm:py-9 lg:px-12">
+
+        {/* PAGE HEADER */}
+        <section className="border-b border-[#d9ddd8] pb-7">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
+            Local Connect / Order Guides
           </p>
 
-          <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 className="text-3xl font-black tracking-[-0.04em] sm:text-4xl">
+              <h1 className="text-4xl font-semibold leading-[1] tracking-[-0.045em] sm:text-5xl">
                 Order Guides
               </h1>
-              <p className="mt-1 max-w-2xl text-sm font-medium leading-6 text-[#6f675c]">
+
+              <p className="mt-3 max-w-2xl text-[14px] leading-6 text-[#69716b] sm:text-[15px]">
                 Save repeat orders and reorder your regular products faster.
               </p>
             </div>
 
             <Link
               href="/products"
-              className="inline-flex w-full justify-center bg-[#244f3d] px-5 py-3 text-sm font-black text-white hover:bg-[#2f5d46] md:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center bg-[#1f5a43] px-6 text-[11px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#174735] sm:w-auto"
             >
               Build New Guide
             </Link>
           </div>
         </section>
 
-        <div className="mb-5 border border-[#1d1d1b]/15 bg-white p-4 text-sm font-medium leading-6 text-[#5f5f57] shadow-sm sm:p-5">
-          <p>
+        {/* REP SUPPORT */}
+        <section className="mt-6 border-l-2 border-[#1f5a43] bg-white px-5 py-4">
+          <p className="text-sm leading-6 text-[#5f675f]">
             Don’t want to build your order guide?{' '}
-            <span className="font-black text-[#244f3d]">
+            <span className="font-semibold text-[#1f5a43]">
               Your Local Connect rep can set it up for you.
             </span>
           </p>
 
-          <p className="mt-2">
+          <p className="mt-1 text-sm text-[#69716b]">
             Reach out or email{' '}
             <a
               href="mailto:liam@localconnectfood.ca"
-              className="font-black underline underline-offset-4 hover:text-[#244f3d]"
+              className="font-semibold text-[#1f5a43] underline underline-offset-4"
             >
               lmilovick@gmail.com
             </a>
           </p>
-        </div>
+        </section>
 
-        <div className="mb-5 border border-[#d6cec0] bg-white p-5 shadow-sm sm:p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        {/* PRODUCE PLANNING */}
+        <section className="mt-6 border border-[#d9ddd8] bg-white">
+          <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
                 Produce Planning
               </p>
 
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">
+              <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
                 Standard Weekly Produce Profile
               </h2>
 
-              <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#6f675c]">
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#69716b]">
                 Set your standard weekly produce usage so Local Connect can better
                 forecast inventory and source from local farms for your deliveries.
               </p>
@@ -146,92 +159,110 @@ export default function OrderGuidesPage() {
 
             <Link
               href="/produce-planner"
-              className="inline-flex w-full items-center justify-center bg-[#244f3d] px-5 py-3 text-sm font-black text-white transition hover:bg-[#2f5d46] md:w-auto"
+              className="inline-flex min-h-11 w-full items-center justify-center border border-[#1f5a43] px-5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f5a43] transition-colors hover:bg-[#f1f5f2] sm:w-auto"
             >
               Open Produce Planner
             </Link>
           </div>
-        </div>
+        </section>
 
         {message && (
-          <div className="mb-5 border border-[#d6cec0] bg-white p-4 text-sm font-medium text-[#6f675c] shadow-sm">
+          <div className="mt-6 border-l-2 border-[#1f5a43] bg-white px-4 py-3 text-sm text-[#69716b]">
             {message}
           </div>
         )}
 
-        {guides.length === 0 ? (
-          <div className="border border-[#d6cec0] bg-white p-6 shadow-sm sm:p-8">
-            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#244f3d]">
-              No saved guides
-            </p>
+        {/* GUIDES */}
+        <section className="mt-8">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8f9690]">
+                Saved Guides
+              </p>
 
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">
-              No order guides yet
-            </h2>
-
-            <p className="mt-3 max-w-xl text-sm font-medium leading-6 text-[#6f675c]">
-              Add products to your cart, then save the cart as an order guide.
-              Perfect for weekly kitchen orders, paper supplies, produce lists,
-              and recurring prep orders.
-            </p>
-
-            <Link
-              href="/products"
-              className="mt-5 inline-flex w-full justify-center bg-[#244f3d] px-5 py-3 text-sm font-black text-white hover:bg-[#2f5d46] sm:w-auto"
-            >
-              Browse Products
-            </Link>
+              <p className="mt-1 text-sm text-[#69716b]">
+                {guides.length} {guides.length === 1 ? 'guide' : 'guides'}
+              </p>
+            </div>
           </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {guides.map((guide) => (
-              <Link
-                key={guide.id}
-                href={`/order-guide/${guide.id}`}
-                className="group block border border-[#d6cec0] bg-white p-4 shadow-sm transition hover:border-[#244f3d] sm:p-5"
-              >
-                <div className="flex items-start justify-between gap-4 border-b border-[#eee7da] pb-4">
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#244f3d]">
-                      Saved Guide
-                    </p>
 
-                    <h2 className="mt-2 break-words text-xl font-black tracking-[-0.03em] group-hover:text-[#244f3d]">
-                      {guide.name || 'Untitled Guide'}
-                    </h2>
+          {guides.length === 0 ? (
+            <div className="border-y border-[#d9ddd8] bg-white px-6 py-16 sm:px-8">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1f5a43]">
+                No saved guides
+              </p>
+
+              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
+                No order guides yet
+              </h2>
+
+              <p className="mt-3 max-w-xl text-sm leading-6 text-[#69716b]">
+                Add products to your cart, then save the cart as an order guide.
+                Perfect for weekly kitchen orders, paper supplies, produce lists,
+                and recurring prep orders.
+              </p>
+
+              <Link
+                href="/products"
+                className="mt-6 inline-flex min-h-11 items-center bg-[#1f5a43] px-5 text-[10px] font-bold uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#174735]"
+              >
+                Browse Products
+              </Link>
+            </div>
+          ) : (
+            <div className="grid border-l border-t border-[#d9ddd8] sm:grid-cols-2 xl:grid-cols-3">
+              {guides.map((guide) => (
+                <Link
+                  key={guide.id}
+                  href={`/order-guide/${guide.id}`}
+                  className="group flex min-h-[280px] flex-col border-b border-r border-[#d9ddd8] bg-white p-5 transition-colors hover:bg-[#fafbf9] sm:p-6"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#8f9690]">
+                        Saved Guide
+                      </p>
+
+                      <h2 className="mt-3 break-words text-2xl font-semibold tracking-[-0.035em] transition-colors group-hover:text-[#1f5a43]">
+                        {guide.name || 'Untitled Guide'}
+                      </h2>
+                    </div>
+
+                    <span className="shrink-0 text-xl text-[#1f5a43] transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
                   </div>
 
-                  <span className="shrink-0 text-2xl font-black text-[#6f675c] group-hover:text-[#244f3d]">
-                    →
-                  </span>
-                </div>
+                  {guide.description ? (
+                    <p className="mt-4 line-clamp-3 text-sm leading-6 text-[#69716b]">
+                      {guide.description}
+                    </p>
+                  ) : (
+                    <p className="mt-4 text-sm leading-6 text-[#969c97]">
+                      No description added.
+                    </p>
+                  )}
 
-                {guide.description ? (
-                  <p className="mt-4 line-clamp-3 text-sm font-medium leading-6 text-[#6f675c]">
-                    {guide.description}
-                  </p>
-                ) : (
-                  <p className="mt-4 text-sm font-medium leading-6 text-[#6f675c]">
-                    No description added.
-                  </p>
-                )}
+                  <div className="mt-auto border-t border-[#e1e4df] pt-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#8f9690]">
+                        Created
+                      </span>
 
-                <div className="mt-5 flex items-center justify-between gap-3 border border-[#eee7da] bg-[#f4f1ea] p-3 text-xs">
-                  <span className="font-black uppercase tracking-wide text-[#6f675c]">
-                    Created
-                  </span>
-                  <span className="font-black text-[#244f3d]">
-                    {formatDate(guide.created_at)}
-                  </span>
-                </div>
+                      <span className="text-xs font-semibold text-[#1f5a43]">
+                        {formatDate(guide.created_at)}
+                      </span>
+                    </div>
 
-                <div className="mt-3 w-full border border-[#244f3d] px-4 py-3 text-center text-xs font-black uppercase tracking-wide text-[#244f3d] group-hover:bg-[#244f3d] group-hover:text-white">
-                  Open Guide
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+                    <div className="mt-4 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f5a43]">
+                      Open Guide →
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   )
