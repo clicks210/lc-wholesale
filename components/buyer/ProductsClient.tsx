@@ -229,7 +229,8 @@ export default function ProductsClient({
       .map((product) => product.category?.trim())
       .filter(
         (value): value is string =>
-          Boolean(value) &&
+          typeof value === 'string' &&
+          value.length > 0 &&
           value.toLowerCase() !==
             WEEKLY_SPECIAL_CATEGORY.toLowerCase()
       )
