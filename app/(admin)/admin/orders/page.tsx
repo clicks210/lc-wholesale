@@ -8,10 +8,17 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
 
+  /* =====================================================
+     LOAD ORDERS
+  ===================================================== */
+
   useEffect(() => {
     async function loadOrders() {
       setLoading(true)
-      const data = await getAdminOrders()
+
+      const data =
+        await getAdminOrders()
+
       setOrders(data)
       setLoading(false)
     }
@@ -19,198 +26,602 @@ export default function AdminOrdersPage() {
     loadOrders()
   }, [])
 
+  /* =====================================================
+     STATS
+  ===================================================== */
+
   const stats = useMemo(() => {
     const total = orders.reduce(
-      (sum, order) => sum + Number(order.subtotal || 0),
+      (sum, order) =>
+        sum +
+        Number(
+          order.subtotal || 0
+        ),
       0
     )
 
-    const itemCount = orders.reduce(
-      (sum, order) => sum + Number(order.order_items?.length || 0),
-      0
-    )
+    const itemCount =
+      orders.reduce(
+        (sum, order) =>
+          sum +
+          Number(
+            order.order_items
+              ?.length || 0
+          ),
+        0
+      )
 
     return {
-      orders: orders.length,
-      items: itemCount,
+      orders:
+        orders.length,
+
+      items:
+        itemCount,
+
       total,
     }
   }, [orders])
 
+  /* =====================================================
+     LOADING
+  ===================================================== */
+
   if (loading) {
     return (
-      <div className="border border-[#d6cec0] bg-white p-6 text-sm text-[#6f675c]">
-        Loading orders...
-      </div>
+      <main className="min-h-screen bg-[#f2f4f1] text-[#171b18]">
+
+        <div className="mx-auto max-w-[1500px] px-3 py-5 sm:px-6 sm:py-7 lg:px-8 xl:px-10">
+
+          <div className="border border-[#aeb6ae] bg-white">
+
+            <div className="border-b border-[#aeb6ae] bg-[#f7f8f5] p-5">
+
+              <div className="h-3 w-36 animate-pulse bg-[#dfe3df]" />
+
+              <div className="mt-4 h-10 w-72 max-w-full animate-pulse bg-[#dfe3df]" />
+
+              <div className="mt-3 h-3 w-96 max-w-full animate-pulse bg-[#e7eae7]" />
+
+            </div>
+
+            <div className="divide-y divide-[#c5cbc5]">
+
+              {Array.from({
+                length: 4,
+              }).map(
+                (_, index) => (
+                  <div
+                    key={index}
+                    className="p-5"
+                  >
+
+                    <div className="h-4 w-1/3 animate-pulse bg-[#e2e5e2]" />
+
+                    <div className="mt-3 h-3 w-1/2 animate-pulse bg-[#eceeeb]" />
+
+                    <div className="mt-5 h-20 w-full animate-pulse bg-[#f0f1ef]" />
+
+                  </div>
+                )
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
     )
   }
 
   return (
-    <div>
-      <div className="mb-8 border-b border-[#d6cec0] pb-6">
-        <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#244f3d]">
-          Order Management
-        </p>
+    <main className="min-h-screen bg-[#f2f4f1] text-[#171b18]">
 
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight">
-          Incoming Orders
-        </h1>
+      <div className="mx-auto max-w-[1500px] px-3 py-5 sm:px-6 sm:py-7 lg:px-8 xl:px-10">
 
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6f675c]">
-          Review wholesale orders, customer details, delivery notes, invoices,
-          and product quantities.
-        </p>
-      </div>
+        {/* =====================================================
+            PAGE HEADER
+        ===================================================== */}
 
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <StatCard label="Orders" value={stats.orders} />
-        <StatCard label="Items" value={stats.items} />
-        <StatCard label="Total" value={formatMoney(stats.total)} />
-      </div>
+        <section className="border-b-2 border-[#aeb6ae] pb-6 sm:pb-8">
 
-      {orders.length === 0 ? (
-        <div className="border border-[#d6cec0] bg-white p-8 text-sm text-[#6f675c]">
-          No orders found.
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1f5a43]">
+            Order Management
+          </p>
+
+          <h1 className="mt-2 text-[34px] font-bold leading-[0.98] tracking-[-0.045em] text-[#171b18] sm:text-5xl">
+            Incoming Orders
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-[13px] font-medium leading-5 text-[#5f675f] sm:text-[15px] sm:leading-6">
+            Review wholesale orders, customer details, delivery notes, invoices, and ordered products.
+          </p>
+
+        </section>
+
+        {/* =====================================================
+            STATS
+        ===================================================== */}
+
+        <section className="grid grid-cols-3 border-b border-[#aeb6ae]">
+
+          <StatMetric
+            label="Orders"
+            value={
+              stats.orders
+            }
+          />
+
+          <StatMetric
+            label="Items"
+            value={
+              stats.items
+            }
+          />
+
+          <StatMetric
+            label="Order Value"
+            value={
+              formatMoney(
+                stats.total
+              )
+            }
+          />
+
+        </section>
+
+        {/* =====================================================
+            STATUS BAR
+        ===================================================== */}
+
+        <div className="flex items-center justify-between py-4">
+
+          <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#596159] sm:text-[10px]">
+            Active Orders
+
+            <span className="ml-2 text-[#8a918b]">
+              / {orders.length}{' '}
+              {orders.length === 1
+                ? 'order'
+                : 'orders'}
+            </span>
+          </p>
+
         </div>
-      ) : (
-        <div className="space-y-5">
-          {orders.map((order) => {
-            const items = order.order_items || []
-            const deliveryAddress = formatDeliveryAddress(order)
-            const orderTotal = Number(order.subtotal || 0)
 
-            const invoiceId =
-              order.zoho_invoice_id ||
-              order.invoice_id ||
-              order.zoho_invoice?.invoice_id
+        {/* =====================================================
+            EMPTY
+        ===================================================== */}
 
-            const invoiceUrl = invoiceId
-              ? `/api/admin/invoices/${invoiceId}/pdf`
-              : null
+        {orders.length === 0 ? (
 
-            return (
-              <section
-                key={order.id}
-                className="overflow-hidden border border-[#d6cec0] bg-white"
-              >
-                <div className="border-b border-[#eee7da] bg-[#fbfaf7] px-5 py-5">
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                    <div>
-                      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#6f675c]">
-                        Order #{order.id.slice(0, 8).toUpperCase()}
-                      </p>
+          <section className="border border-[#aeb6ae] bg-white px-5 py-16 text-center sm:py-24">
 
-                      <h2 className="mt-2 text-2xl font-black tracking-[-0.03em]">
-                        {order.customers?.business_name || 'Customer Account'}
-                      </h2>
+            <p className="text-[9px] font-black uppercase tracking-[0.18em] text-[#1f5a43]">
+              No Orders
+            </p>
 
-                      <p className="mt-1 text-sm font-semibold text-[#6f675c]">
-                        {order.customers?.contact_name || 'No contact'}
-                      </p>
+            <h2 className="mt-3 text-2xl font-bold tracking-[-0.04em] text-[#202621]">
+              No orders found.
+            </h2>
 
-                      <p className="mt-1 text-sm text-[#6f675c]">
-                        Submitted {formatDateTime(order.created_at)}
-                      </p>
+            <p className="mt-2 text-[13px] font-medium text-[#5f675f]">
+              New wholesale orders will appear here.
+            </p>
+
+          </section>
+
+        ) : (
+
+          /* =====================================================
+             ORDERS
+          ===================================================== */
+
+          <div className="space-y-6">
+
+            {orders.map(
+              (order) => {
+                const items =
+                  order.order_items ||
+                  []
+
+                const deliveryAddress =
+                  formatDeliveryAddress(
+                    order
+                  )
+
+                const orderTotal =
+                  Number(
+                    order.subtotal ||
+                      0
+                  )
+
+                const invoiceId =
+                  order.zoho_invoice_id ||
+                  order.invoice_id ||
+                  order.zoho_invoice
+                    ?.invoice_id
+
+                const invoiceUrl =
+                  invoiceId
+                    ? `/api/admin/invoices/${invoiceId}/pdf`
+                    : null
+
+                return (
+                  <section
+                    key={
+                      order.id
+                    }
+                    className="
+                      relative
+                      overflow-hidden
+                      border-2
+                      border-[#9fb0a4]
+                      bg-[#e9f0eb]
+                    "
+                  >
+
+                    {/* LEFT ACCENT */}
+
+                    <div className="absolute bottom-0 left-0 top-0 w-[5px] bg-[#1f5a43]" />
+
+                    {/* =================================================
+                        ORDER HEADER
+                    ================================================= */}
+
+                    <div className="border-b border-[#9fb0a4] bg-[#dfe9e3] px-5 py-5 sm:px-6">
+
+                      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+
+                        {/* CUSTOMER */}
+
+                        <div className="min-w-0">
+
+                          <div className="flex flex-wrap items-center gap-2">
+
+                            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#455047]">
+                              Order #
+                              {order.id
+                                .slice(
+                                  0,
+                                  8
+                                )
+                                .toUpperCase()}
+                            </p>
+
+                            <StatusBadge
+                              status={
+                                order.status
+                              }
+                            />
+
+                          </div>
+
+                          <h2 className="mt-3 text-[24px] font-bold leading-tight tracking-[-0.035em] text-[#202621] sm:text-[28px]">
+                            {order.customers
+                              ?.business_name ||
+                              'Customer Account'}
+                          </h2>
+
+                          <p className="mt-1 text-[12px] font-bold text-[#4f5750]">
+                            {order.customers
+                              ?.contact_name ||
+                              'No contact'}
+                          </p>
+
+                          <p className="mt-1 text-[11px] font-semibold text-[#687068]">
+                            Submitted{' '}
+                            {formatDateTime(
+                              order.created_at
+                            )}
+                          </p>
+
+                        </div>
+
+                        {/* SUMMARY */}
+
+                        <div className="grid grid-cols-2 gap-px border border-[#9fb0a4] bg-[#9fb0a4] sm:grid-cols-4 lg:min-w-[470px]">
+
+                          <HeaderStat
+                            label="Delivery"
+                            value={
+                              order.delivery_date ||
+                              'TBD'
+                            }
+                          />
+
+                          <HeaderStat
+                            label="Items"
+                            value={String(
+                              items.length
+                            )}
+                          />
+
+                          <HeaderStat
+                            label="Total"
+                            value={
+                              formatMoney(
+                                orderTotal
+                              )
+                            }
+                          />
+
+                          <div className="flex items-center justify-center bg-white p-2">
+
+                            {invoiceUrl ? (
+                              <a
+                                href={
+                                  invoiceUrl
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                className="
+                                  flex
+                                  min-h-10
+                                  w-full
+                                  items-center
+                                  justify-center
+                                  bg-[#1f5a43]
+                                  px-3
+                                  text-[9px]
+                                  font-black
+                                  uppercase
+                                  tracking-[0.08em]
+                                  text-white
+                                  transition-colors
+                                  hover:bg-[#163f30]
+                                "
+                              >
+                                Invoice
+                              </a>
+                            ) : (
+                              <span className="text-center text-[9px] font-black uppercase tracking-[0.08em] text-[#737b74]">
+                                No Invoice
+                              </span>
+                            )}
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                      {/* ORDER ACTION */}
+
+                      <div className="mt-5 flex justify-end">
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedOrder(
+                              order
+                            )
+                          }
+                          className="
+                            min-h-10
+                            bg-[#1f5a43]
+                            px-4
+                            text-[9px]
+                            font-black
+                            uppercase
+                            tracking-[0.1em]
+                            text-white
+                            transition-colors
+                            hover:bg-[#163f30]
+                          "
+                        >
+                          View Full Order
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                    {/* =================================================
+                        WHITE ORDER BODY
+                    ================================================= */}
+
+                    <div className="mx-3 mb-3 bg-white sm:mx-4 sm:mb-4">
+
+                      {/* DELIVERY */}
 
                       {deliveryAddress && (
-                        <div className="mt-4 border border-[#d6cec0] bg-white p-4">
-                          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
-                            Delivery Address
-                          </p>
+                        <div className="grid border-b border-[#bfc5bf] md:grid-cols-2">
 
-                          <p className="mt-1 text-sm font-bold leading-6 text-[#1d1d1b]">
-                            {deliveryAddress}
-                          </p>
+                          <div className="border-b border-[#bfc5bf] p-5 md:border-b-0 md:border-r">
 
-                          {order.customers?.delivery_notes && (
-                            <p className="mt-2 text-sm leading-6 text-[#6f675c]">
-                              {order.customers.delivery_notes}
+                            <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#596159]">
+                              Delivery Address
                             </p>
-                          )}
+
+                            <p className="mt-2 text-[13px] font-bold leading-6 text-[#303732]">
+                              {deliveryAddress}
+                            </p>
+
+                          </div>
+
+                          <div className="p-5">
+
+                            <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#596159]">
+                              Delivery Notes
+                            </p>
+
+                            <p className="mt-2 text-[12px] font-medium leading-6 text-[#5f675f]">
+                              {order.customers
+                                ?.delivery_notes ||
+                                'No delivery notes.'}
+                            </p>
+
+                          </div>
+
                         </div>
                       )}
-                    </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      <InfoPill
-                        label="Delivery"
-                        value={order.delivery_date || 'TBD'}
-                      />
+                      {/* BUYER NOTES */}
 
-                      <InfoPill label="Items" value={String(items.length)} />
+                      {order.notes && (
+                        <div className="border-b border-[#bfc5bf] bg-[#fff8e8] px-5 py-4 sm:px-6">
 
-                      <InfoPill label="Total" value={formatMoney(orderTotal)} />
+                          <p className="text-[9px] font-black uppercase tracking-[0.12em] text-[#805c24]">
+                            Buyer Notes
+                          </p>
 
-                      <StatusPill status={order.status} />
+                          <p className="mt-2 text-[12px] font-semibold leading-6 text-[#5c4931]">
+                            {order.notes}
+                          </p>
 
-                      {invoiceUrl ? (
-                        <a
-                          href={invoiceUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="border border-[#244f3d] bg-white px-4 py-2 text-xs font-black uppercase tracking-wide text-[#244f3d] hover:bg-[#244f3d] hover:text-white"
-                        >
-                          View Invoice
-                        </a>
-                      ) : (
-                        <span className="border border-[#d6cec0] bg-[#f4f1ea] px-4 py-2 text-xs font-black uppercase tracking-wide text-[#6f675c]">
-                          No Invoice
-                        </span>
+                        </div>
                       )}
 
-                      <button
-                        type="button"
-                        onClick={() => setSelectedOrder(order)}
-                        className="border border-[#244f3d] bg-[#244f3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-white hover:bg-[#1d1d1b]"
+                      {/* PRODUCT HEADER */}
+
+                      <div
+                        className="
+                          hidden
+                          grid-cols-[minmax(0,1fr)_110px_140px]
+                          border-b
+                          border-[#bfc5bf]
+                          bg-[#f7f8f5]
+                          px-5
+                          py-3
+                          text-[9px]
+                          font-black
+                          uppercase
+                          tracking-[0.12em]
+                          text-[#596159]
+                          md:grid
+                        "
                       >
-                        View Order
-                      </button>
+                        <div>
+                          Product
+                        </div>
+
+                        <div>
+                          Quantity
+                        </div>
+
+                        <div>
+                          Line Total
+                        </div>
+                      </div>
+
+                      {/* PREVIEW ITEMS */}
+
+                      <div className="divide-y divide-[#c5cbc5]">
+
+                        {items
+                          .slice(
+                            0,
+                            4
+                          )
+                          .map(
+                            (
+                              item: any
+                            ) => (
+                              <OrderItemRow
+                                key={
+                                  item.id
+                                }
+                                item={
+                                  item
+                                }
+                              />
+                            )
+                          )}
+
+                      </div>
+
+                      {/* MORE ITEMS */}
+
+                      {items.length > 4 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedOrder(
+                              order
+                            )
+                          }
+                          className="
+                            w-full
+                            border-t
+                            border-[#bfc5bf]
+                            bg-[#f7f8f5]
+                            px-5
+                            py-4
+                            text-[9px]
+                            font-black
+                            uppercase
+                            tracking-[0.1em]
+                            text-[#1f5a43]
+                            transition-colors
+                            hover:bg-[#edf1ed]
+                          "
+                        >
+                          View{' '}
+                          {items.length -
+                            4}{' '}
+                          More{' '}
+                          {items.length -
+                            4 ===
+                          1
+                            ? 'Item'
+                            : 'Items'}
+                        </button>
+                      )}
+
+                      {/* TOTAL */}
+
+                      <div className="flex items-center justify-between border-t border-[#bfc5bf] bg-[#f7f8f5] px-5 py-4">
+
+                        <p className="text-[9px] font-black uppercase tracking-[0.12em] text-[#596159]">
+                          Order Total
+                        </p>
+
+                        <p className="text-xl font-bold tracking-[-0.03em] text-[#1f5a43]">
+                          {formatMoney(
+                            orderTotal
+                          )}
+                        </p>
+
+                      </div>
+
                     </div>
-                  </div>
-                </div>
 
-                {order.notes && (
-                  <div className="border-b border-[#eee7da] bg-[#f4f1ea] px-5 py-4">
-                    <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
-                      Buyer Notes
-                    </p>
+                  </section>
+                )
+              }
+            )}
 
-                    <p className="mt-1 text-sm leading-6 text-[#4d4d4d]">
-                      {order.notes}
-                    </p>
-                  </div>
-                )}
+          </div>
+        )}
 
-                <div className="divide-y divide-[#eee7da]">
-                  {items.slice(0, 4).map((item: any) => (
-                    <OrderItemRow key={item.id} item={item} />
-                  ))}
-                </div>
+      </div>
 
-                {items.length > 4 && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedOrder(order)}
-                    className="w-full border-t border-[#eee7da] bg-[#fbfaf7] px-5 py-4 text-xs font-black uppercase tracking-wide text-[#244f3d] hover:bg-[#f4f1ea]"
-                  >
-                    View {items.length - 4} More Items
-                  </button>
-                )}
-              </section>
-            )
-          })}
-        </div>
-      )}
+      {/* =====================================================
+          ORDER MODAL
+      ===================================================== */}
 
       {selectedOrder && (
         <OrderModal
-          order={selectedOrder}
-          onClose={() => setSelectedOrder(null)}
+          order={
+            selectedOrder
+          }
+          onClose={() =>
+            setSelectedOrder(
+              null
+            )
+          }
         />
       )}
-    </div>
+
+    </main>
   )
 }
+
+/* =========================================================
+   ORDER MODAL
+========================================================= */
 
 function OrderModal({
   order,
@@ -219,105 +630,350 @@ function OrderModal({
   order: any
   onClose: () => void
 }) {
-  const items = order.order_items || []
+  const items =
+    order.order_items || []
 
   const invoiceId =
     order.zoho_invoice_id ||
     order.invoice_id ||
-    order.zoho_invoice?.invoice_id
+    order.zoho_invoice
+      ?.invoice_id
 
-  const invoiceUrl = invoiceId ? `/api/admin/invoices/${invoiceId}/pdf` : null
+  const invoiceUrl =
+    invoiceId
+      ? `/api/admin/invoices/${invoiceId}/pdf`
+      : null
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      className="
+        fixed
+        inset-0
+        z-50
+        flex
+        items-end
+        justify-center
+        bg-black/50
+        backdrop-blur-[2px]
+        sm:items-center
+        sm:px-4
+        sm:py-8
+      "
       onClick={onClose}
     >
+
       <div
-        className="max-h-[90vh] w-full max-w-5xl overflow-y-auto border border-[#d6cec0] bg-white"
-        onClick={(e) => e.stopPropagation()}
+        className="
+          max-h-[94dvh]
+          w-full
+          overflow-y-auto
+          border
+          border-[#8f9990]
+          bg-[#f2f4f1]
+          shadow-2xl
+          sm:max-w-6xl
+        "
+        onClick={(e) =>
+          e.stopPropagation()
+        }
       >
-        <div className="flex items-start justify-between border-b border-[#d6cec0] bg-[#fbfaf7] p-6">
+
+        {/* MODAL HEADER */}
+
+        <div className="sticky top-0 z-20 flex items-start justify-between gap-4 border-b border-[#9fb0a4] bg-[#dfe9e3] p-5 sm:p-6">
+
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#244f3d]">
+
+            <p className="text-[9px] font-black uppercase tracking-[0.18em] text-[#1f5a43]">
               Order Details
             </p>
 
-            <h2 className="mt-2 text-3xl font-black tracking-[-0.03em]">
-              Order #{order.id.slice(0, 8).toUpperCase()}
+            <h2 className="mt-2 text-[26px] font-bold leading-none tracking-[-0.04em] text-[#202621] sm:text-3xl">
+              Order #
+              {order.id
+                .slice(0, 8)
+                .toUpperCase()}
             </h2>
 
-            <p className="mt-2 text-sm text-[#6f675c]">
-              Submitted {formatDateTime(order.created_at)}
+            <p className="mt-2 text-[11px] font-semibold text-[#5f675f]">
+              Submitted{' '}
+              {formatDateTime(
+                order.created_at
+              )}
             </p>
+
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-2">
+
             {invoiceUrl && (
               <a
-                href={invoiceUrl}
+                href={
+                  invoiceUrl
+                }
                 target="_blank"
                 rel="noreferrer"
-                className="border border-[#244f3d] bg-[#244f3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-white hover:bg-[#1d1d1b]"
+                className="
+                  hidden
+                  min-h-10
+                  items-center
+                  bg-[#1f5a43]
+                  px-4
+                  text-[9px]
+                  font-black
+                  uppercase
+                  tracking-[0.08em]
+                  text-white
+                  transition-colors
+                  hover:bg-[#163f30]
+                  sm:flex
+                "
               >
                 View Invoice
               </a>
             )}
 
             <button
-              onClick={onClose}
-              className="border border-[#d6cec0] bg-white px-3 py-2 text-sm font-bold text-[#6f675c] hover:border-red-700 hover:bg-red-700 hover:text-white"
+              type="button"
+              onClick={
+                onClose
+              }
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                border
+                border-[#8f9990]
+                bg-white
+                text-[#596159]
+                transition-colors
+                hover:border-[#944d44]
+                hover:bg-[#fff0ed]
+                hover:text-[#944d44]
+              "
+              aria-label="Close order"
             >
-              ✕
+              <CloseIcon />
             </button>
+
           </div>
+
         </div>
 
-        <div className="space-y-6 p-6">
-          <Section title="Customer">
+        {/* MODAL BODY */}
+
+        <div className="space-y-6 p-4 sm:p-6">
+
+          {/* CUSTOMER */}
+
+          <ModalSection
+            eyebrow="01"
+            title="Customer"
+          >
+
             <InfoGrid
               items={[
-                ['Business', order.customers?.business_name],
-                ['Contact', order.customers?.contact_name],
-                ['Phone', order.customers?.phone],
-                ['Status', order.status],
+                [
+                  'Business',
+                  order.customers
+                    ?.business_name,
+                ],
+                [
+                  'Contact',
+                  order.customers
+                    ?.contact_name,
+                ],
+                [
+                  'Phone',
+                  order.customers
+                    ?.phone,
+                ],
+                [
+                  'Status',
+                  formatStatus(
+                    order.status
+                  ),
+                ],
               ]}
             />
-          </Section>
 
-          <Section title="Delivery">
+          </ModalSection>
+
+          {/* DELIVERY */}
+
+          <ModalSection
+            eyebrow="02"
+            title="Delivery"
+          >
+
             <InfoGrid
               items={[
-                ['Requested Date', order.delivery_date],
-                ['Address', order.customers?.delivery_address],
-                ['City', order.customers?.delivery_city],
-                ['Postal Code', order.customers?.delivery_postal_code],
+                [
+                  'Requested Date',
+                  order.delivery_date,
+                ],
+                [
+                  'Address',
+                  order.customers
+                    ?.delivery_address,
+                ],
+                [
+                  'City',
+                  order.customers
+                    ?.delivery_city,
+                ],
+                [
+                  'Postal Code',
+                  order.customers
+                    ?.delivery_postal_code,
+                ],
               ]}
             />
 
-            <NoteBox label="Order Notes" value={order.notes} />
-            <NoteBox
-              label="Saved Delivery Notes"
-              value={order.customers?.delivery_notes}
-            />
-          </Section>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
 
-          <Section title="Items">
-            <div className="divide-y divide-[#eee7da] border border-[#d6cec0]">
-              {items.map((item: any) => (
-                <OrderItemRow key={item.id} item={item} showUnitPrice />
-              ))}
+              <NoteBox
+                label="Order Notes"
+                value={
+                  order.notes
+                }
+              />
+
+              <NoteBox
+                label="Saved Delivery Notes"
+                value={
+                  order.customers
+                    ?.delivery_notes
+                }
+              />
+
             </div>
 
-            <div className="mt-5 flex justify-end text-xl font-black text-[#244f3d]">
-              Total: {formatMoney(order.subtotal)}
+          </ModalSection>
+
+          {/* ITEMS */}
+
+          <ModalSection
+            eyebrow="03"
+            title="Order Items"
+          >
+
+            <div className="border border-[#aeb6ae]">
+
+              <div
+                className="
+                  hidden
+                  grid-cols-[minmax(0,1fr)_110px_110px_140px]
+                  border-b
+                  border-[#aeb6ae]
+                  bg-[#f7f8f5]
+                  px-5
+                  py-3
+                  text-[9px]
+                  font-black
+                  uppercase
+                  tracking-[0.12em]
+                  text-[#596159]
+                  md:grid
+                "
+              >
+                <div>
+                  Product
+                </div>
+
+                <div>
+                  Unit Price
+                </div>
+
+                <div>
+                  Quantity
+                </div>
+
+                <div>
+                  Line Total
+                </div>
+              </div>
+
+              <div className="divide-y divide-[#c5cbc5]">
+
+                {items.map(
+                  (
+                    item: any
+                  ) => (
+                    <OrderItemRow
+                      key={
+                        item.id
+                      }
+                      item={
+                        item
+                      }
+                      showUnitPrice
+                    />
+                  )
+                )}
+
+              </div>
+
+              <div className="flex items-center justify-between border-t border-[#aeb6ae] bg-[#dfe9e3] px-5 py-4">
+
+                <p className="text-[9px] font-black uppercase tracking-[0.12em] text-[#455047]">
+                  Order Total
+                </p>
+
+                <p className="text-2xl font-bold tracking-[-0.04em] text-[#1f5a43]">
+                  {formatMoney(
+                    order.subtotal
+                  )}
+                </p>
+
+              </div>
+
             </div>
-          </Section>
+
+          </ModalSection>
+
+          {/* MOBILE INVOICE */}
+
+          {invoiceUrl && (
+            <a
+              href={
+                invoiceUrl
+              }
+              target="_blank"
+              rel="noreferrer"
+              className="
+                flex
+                min-h-13
+                w-full
+                items-center
+                justify-center
+                bg-[#1f5a43]
+                px-5
+                text-[10px]
+                font-black
+                uppercase
+                tracking-[0.1em]
+                text-white
+                sm:hidden
+              "
+            >
+              View Invoice
+            </a>
+          )}
+
         </div>
+
       </div>
+
     </div>
   )
 }
+
+/* =========================================================
+   ORDER ITEM
+========================================================= */
 
 function OrderItemRow({
   item,
@@ -328,86 +984,254 @@ function OrderItemRow({
 }) {
   return (
     <div
-      className={
-        showUnitPrice
-          ? 'grid gap-4 px-5 py-4 md:grid-cols-[1fr_110px_110px_130px] md:items-center'
-          : 'grid gap-4 px-5 py-4 md:grid-cols-[1fr_110px_130px] md:items-center'
-      }
+      className={`
+        grid
+        gap-4
+        bg-white
+        px-4
+        py-4
+        transition-colors
+        hover:bg-[#fafbf9]
+        sm:px-5
+
+        ${
+          showUnitPrice
+            ? 'md:grid-cols-[minmax(0,1fr)_110px_110px_140px]'
+            : 'md:grid-cols-[minmax(0,1fr)_110px_140px]'
+        }
+
+        md:items-center
+      `}
     >
-      <div className="flex min-w-0 gap-4">
-        <div className="h-16 w-16 shrink-0 overflow-hidden border border-[#d6cec0] bg-[#f4f1ea]">
-          {item.image_url ? (
-            <img
-              src={item.image_url}
-              alt={item.product_name || 'Product image'}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center px-2 text-center text-[9px] font-black uppercase text-[#8a8173]">
-              No Image
-            </div>
-          )}
-        </div>
+
+      {/* PRODUCT */}
+
+      <div className="flex min-w-0 items-center gap-4">
+
+        <ProductImage
+          item={
+            item
+          }
+        />
 
         <div className="min-w-0">
-          <p className="font-black leading-snug">{item.product_name}</p>
 
-          <p className="mt-1 font-mono text-xs text-[#6f675c]">
-            {item.sku || '—'} · {item.unit || '—'}
+          <p className="line-clamp-2 text-[13px] font-bold leading-snug text-[#202621] sm:text-[14px]">
+            {item.product_name}
+          </p>
+
+          <p className="mt-1 font-mono text-[10px] font-semibold text-[#737b74]">
+            {item.sku ||
+              '—'}
+            {' · '}
+            {item.unit ||
+              '—'}
           </p>
 
           {item.category && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              <span className="border border-[#d6cec0] bg-[#f4f1ea] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-[#6f675c]">
-                {item.category}
-              </span>
-            </div>
+            <span className="mt-2 inline-flex bg-[#eef0ed] px-2 py-1 text-[8px] font-black uppercase tracking-[0.08em] text-[#596159]">
+              {item.category}
+            </span>
           )}
+
         </div>
+
       </div>
 
-      {showUnitPrice && (
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] md:hidden">
-            Unit Price
-          </p>
-          <p className="text-sm font-bold">{formatMoney(item.unit_price)}</p>
-        </div>
-      )}
+      {/* MOBILE NUMBERS */}
 
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] md:hidden">
-          Quantity
-        </p>
-        <p className="text-xl font-black">{item.quantity}</p>
+      <div
+        className={`
+          grid
+          gap-px
+          border
+          border-[#c5cbc5]
+          bg-[#c5cbc5]
+          md:contents
+
+          ${
+            showUnitPrice
+              ? 'grid-cols-3'
+              : 'grid-cols-2'
+          }
+        `}
+      >
+
+        {showUnitPrice && (
+          <MetricCell
+            label="Unit Price"
+            value={
+              formatMoney(
+                item.unit_price
+              )
+            }
+          />
+        )}
+
+        <MetricCell
+          label="Quantity"
+          value={String(
+            item.quantity
+          )}
+        />
+
+        <MetricCell
+          label="Line Total"
+          value={
+            formatMoney(
+              item.line_total
+            )
+          }
+          emphasized
+        />
+
       </div>
 
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-wide text-[#6f675c] md:hidden">
-          Line Total
-        </p>
-        <p className="text-xl font-black text-[#244f3d]">
-          {formatMoney(item.line_total)}
-        </p>
-      </div>
     </div>
   )
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+function ProductImage({
+  item,
+}: {
+  item: any
+}) {
+  if (
+    !item.image_url
+  ) {
+    return (
+      <div
+        className="
+          flex
+          h-16
+          w-16
+          shrink-0
+          items-center
+          justify-center
+          border
+          border-[#aeb6ae]
+          bg-[#f4f5f2]
+          px-2
+          text-center
+          text-[8px]
+          font-black
+          uppercase
+          tracking-[0.08em]
+          text-[#7d857e]
+        "
+      >
+        No Image
+      </div>
+    )
+  }
+
   return (
-    <div className="border border-[#d6cec0] bg-white p-4">
-      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#6f675c]">
+    <div
+      className="
+        h-16
+        w-16
+        shrink-0
+        overflow-hidden
+        border
+        border-[#aeb6ae]
+        bg-white
+      "
+    >
+
+      <img
+        src={
+          item.image_url
+        }
+        alt={
+          item.product_name ||
+          'Product image'
+        }
+        loading="lazy"
+        decoding="async"
+        className="h-full w-full object-contain p-1"
+      />
+
+    </div>
+  )
+}
+
+/* =========================================================
+   MOBILE / DESKTOP METRIC CELL
+========================================================= */
+
+function MetricCell({
+  label,
+  value,
+  emphasized = false,
+}: {
+  label: string
+  value: string
+  emphasized?: boolean
+}) {
+  return (
+    <div className="bg-white p-3 md:bg-transparent md:p-0">
+
+      <p className="text-[8px] font-black uppercase tracking-[0.1em] text-[#596159] md:hidden">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-black tracking-[-0.04em] text-[#244f3d]">
+
+      <p
+        className={`
+          mt-1
+          font-bold
+          md:mt-0
+
+          ${
+            emphasized
+              ? 'text-lg text-[#1f5a43]'
+              : 'text-[13px] text-[#202621]'
+          }
+        `}
+      >
         {value}
       </p>
+
     </div>
   )
 }
 
-function InfoPill({
+/* =========================================================
+   PAGE STATS
+========================================================= */
+
+function StatMetric({
+  label,
+  value,
+}: {
+  label: string
+  value:
+    | string
+    | number
+}) {
+  return (
+    <div className="border-r border-[#aeb6ae] px-3 py-4 last:border-r-0 sm:px-5 sm:py-5">
+
+      <p className="text-[8px] font-black uppercase tracking-[0.14em] text-[#596159] sm:text-[9px]">
+        {label}
+      </p>
+
+      <p className="mt-1 text-xl font-bold tracking-[-0.04em] text-[#1f5a43] sm:text-2xl">
+        {value}
+      </p>
+
+    </div>
+  )
+}
+
+/* =========================================================
+   ORDER HEADER STAT
+========================================================= */
+
+function HeaderStat({
   label,
   value,
 }: {
@@ -415,91 +1239,295 @@ function InfoPill({
   value: string
 }) {
   return (
-    <div className="border border-[#d6cec0] bg-white px-4 py-2">
-      <p className="text-[9px] font-black uppercase tracking-wide text-[#6f675c]">
+    <div className="bg-white p-3">
+
+      <p className="text-[8px] font-black uppercase tracking-[0.11em] text-[#596159]">
         {label}
       </p>
-      <p className="mt-1 text-xs font-black text-[#1d1d1b]">{value}</p>
+
+      <p className="mt-1 truncate text-[11px] font-bold text-[#303732]">
+        {value}
+      </p>
+
     </div>
   )
 }
 
-function StatusPill({ status }: { status: string }) {
+/* =========================================================
+   STATUS
+========================================================= */
+
+function StatusBadge({
+  status,
+}: {
+  status: string
+}) {
+  const normalized =
+    String(
+      status || ''
+    ).toLowerCase()
+
+  const className =
+    normalized ===
+      'completed' ||
+    normalized ===
+      'fulfilled' ||
+    normalized ===
+      'paid'
+      ? 'bg-[#eaf4ee] text-[#26734f]'
+      : normalized ===
+          'cancelled' ||
+        normalized ===
+          'canceled'
+        ? 'bg-[#fff0ed] text-[#9a4e43]'
+        : normalized ===
+            'processing'
+          ? 'bg-[#edf4f8] text-[#4d7896]'
+          : 'bg-[#fff0dc] text-[#875521]'
+
   return (
-    <span className="border border-[#d6cec0] bg-[#f4f1ea] px-4 py-2 text-xs font-black uppercase tracking-wide text-[#6f675c]">
-      {status || 'Pending'}
+    <span
+      className={`
+        inline-flex
+        px-2.5
+        py-1
+        text-[8px]
+        font-black
+        uppercase
+        tracking-[0.08em]
+        ${className}
+      `}
+    >
+      {formatStatus(
+        status
+      )}
     </span>
   )
 }
 
-function Section({
+/* =========================================================
+   MODAL SECTION
+========================================================= */
+
+function ModalSection({
+  eyebrow,
   title,
   children,
 }: {
+  eyebrow: string
   title: string
-  children: React.ReactNode
+  children:
+    React.ReactNode
 }) {
   return (
-    <div className="border border-[#d6cec0] bg-white">
-      <div className="border-b border-[#d6cec0] bg-[#fbfaf7] px-5 py-3">
-        <h3 className="font-black tracking-[-0.02em]">{title}</h3>
+    <section className="border border-[#aeb6ae] bg-white">
+
+      <div className="flex items-center gap-3 border-b border-[#aeb6ae] bg-[#f7f8f5] px-5 py-4">
+
+        <span
+          className="
+            flex
+            h-7
+            w-7
+            shrink-0
+            items-center
+            justify-center
+            bg-[#dfe9e3]
+            text-[9px]
+            font-black
+            text-[#1f5a43]
+          "
+        >
+          {eyebrow}
+        </span>
+
+        <h3 className="text-[15px] font-bold tracking-[-0.02em] text-[#202621]">
+          {title}
+        </h3>
+
       </div>
-      <div className="p-5">{children}</div>
+
+      <div className="p-5">
+        {children}
+      </div>
+
+    </section>
+  )
+}
+
+/* =========================================================
+   INFO GRID
+========================================================= */
+
+function InfoGrid({
+  items,
+}: {
+  items: [
+    string,
+    any,
+  ][]
+}) {
+  return (
+    <div className="grid gap-px border border-[#aeb6ae] bg-[#aeb6ae] md:grid-cols-2">
+
+      {items.map(
+        ([
+          label,
+          value,
+        ]) => (
+          <div
+            key={
+              label
+            }
+            className="min-w-0 bg-white p-4"
+          >
+
+            <p className="text-[8px] font-black uppercase tracking-[0.12em] text-[#596159]">
+              {label}
+            </p>
+
+            <p className="mt-1.5 break-words text-[12px] font-bold leading-5 text-[#303732]">
+              {value ||
+                '—'}
+            </p>
+
+          </div>
+        )
+      )}
+
     </div>
   )
 }
 
-function InfoGrid({ items }: { items: [string, any][] }) {
-  return (
-    <div className="grid gap-5 text-sm md:grid-cols-2">
-      {items.map(([label, value]) => (
-        <div key={label}>
-          <p className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
-            {label}
-          </p>
-          <p className="mt-2 break-words font-semibold">{value || '—'}</p>
-        </div>
-      ))}
-    </div>
-  )
-}
+/* =========================================================
+   NOTES
+========================================================= */
 
-function NoteBox({ label, value }: { label: string; value: any }) {
+function NoteBox({
+  label,
+  value,
+}: {
+  label: string
+  value: any
+}) {
   return (
-    <div className="mt-5 border border-[#d6cec0] bg-[#f4f1ea] p-4 text-sm">
-      <p className="text-xs font-bold uppercase tracking-wide text-[#6f675c]">
+    <div className="border border-[#aeb6ae] bg-[#f7f8f5] p-4">
+
+      <p className="text-[9px] font-black uppercase tracking-[0.12em] text-[#596159]">
         {label}
       </p>
-      <p className="mt-2 leading-6">{value || 'None.'}</p>
+
+      <p className="mt-2 whitespace-pre-wrap text-[12px] font-medium leading-6 text-[#4f5750]">
+        {value ||
+          'None.'}
+      </p>
+
     </div>
   )
 }
 
-function formatDeliveryAddress(order: any) {
+/* =========================================================
+   CLOSE ICON
+========================================================= */
+
+function CloseIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-4 w-4"
+    >
+      <path
+        d="m6 6 12 12M18 6 6 18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function formatDeliveryAddress(
+  order: any
+) {
   return [
-    order.customers?.delivery_address,
-    order.customers?.delivery_city,
-    order.customers?.delivery_postal_code,
+    order.customers
+      ?.delivery_address,
+
+    order.customers
+      ?.delivery_city,
+
+    order.customers
+      ?.delivery_postal_code,
   ]
     .filter(Boolean)
     .join(', ')
 }
 
-function formatDateTime(value: string | null | undefined) {
-  if (!value) return '—'
+function formatDateTime(
+  value:
+    | string
+    | null
+    | undefined
+) {
+  if (!value) {
+    return '—'
+  }
 
-  return new Date(value).toLocaleString('en-CA', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  })
+  return new Date(
+    value
+  ).toLocaleString(
+    'en-CA',
+    {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    }
+  )
 }
 
-function formatMoney(value: any) {
-  return new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-  }).format(Number(value || 0))
+function formatStatus(
+  status:
+    | string
+    | null
+    | undefined
+) {
+  if (!status) {
+    return 'Pending'
+  }
+
+  return status
+    .replace(
+      /_/g,
+      ' '
+    )
+    .replace(
+      /\b\w/g,
+      (
+        character
+      ) =>
+        character.toUpperCase()
+    )
+}
+
+function formatMoney(
+  value: any
+) {
+  return new Intl.NumberFormat(
+    'en-CA',
+    {
+      style: 'currency',
+      currency: 'CAD',
+    }
+  ).format(
+    Number(
+      value || 0
+    )
+  )
 }
